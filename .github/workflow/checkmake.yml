@@ -1,0 +1,21 @@
+name: checkmake action
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Makefile"
+  workflow_dispatch:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  checkmake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v3
+
+      - name: checkmake action
+        uses: Uno-Takashi/checkmake-action@main
