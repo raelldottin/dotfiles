@@ -1,7 +1,7 @@
 <!---
 This file is auto-generate by a github hook please modify readme.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.0.1-31
+# raelldottin/dotfiles v0.0.1-32
 [![Makefile testing](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script testing](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 
@@ -24,7 +24,6 @@ My dotfiles; buyers beware!
 ### Installing
 ```
 # ./homebrewsetup.sh
-
 ```
 
 This will automated the homebrew installation.

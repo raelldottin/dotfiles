@@ -21,7 +21,6 @@ My dotfiles; buyers beware!
 ### Installing
 ```
 # ./homebrewsetup.sh
-
 ```
 
 This will automated the homebrew installation.
