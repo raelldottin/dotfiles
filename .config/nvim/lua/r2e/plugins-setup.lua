@@ -31,6 +31,8 @@ return packer.startup(function(use)
   -- packer can manage itself
   use("wbthomason/packer.nvim")
 
+  use({ "codota/tabnine-nvim", run = "./dl_binaries.sh" }) -- open ai
+
   use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
 
   use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
@@ -55,13 +57,10 @@ return packer.startup(function(use)
   -- statusline
   use("nvim-lualine/lualine.nvim")
 
-  -- tabnine open ai plugin
-  use({ "codota/tabnine-nvim", run = "./dl_binaries.sh" })
-
   -- fuzzy finding w/ telescope
   use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" }) -- dependency for better sorting performance
-  use("nvim-lua/popup.nvim")
   use({ "nvim-telescope/telescope.nvim", branch = "0.1.x" }) -- fuzzy finder
+  use("nvim-lua/popup.nvim")
 
   -- autocompletion
   use("hrsh7th/nvim-cmp") -- completion plugin
@@ -88,6 +87,13 @@ return packer.startup(function(use)
   use("jose-elias-alvarez/null-ls.nvim") -- configure formatters & linters
   use("jayp0521/mason-null-ls.nvim") -- bridges gap b/w mason & null-ls
 
+  -- dap
+  use("mfussenegger/nvim-dap")
+  use("mfussenegger/nvim-dap-python")
+  use("rcarriga/nvim-dap-ui")
+  use("theHamsta/nvim-dap-virtual-text")
+  use("nvim-telescope/telescope-dap.nvim")
+
   -- treesitter configuration
   use({
     "nvim-treesitter/nvim-treesitter",
@@ -103,13 +109,6 @@ return packer.startup(function(use)
 
   -- git integration
   use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
-
-  -- dap setup
-  use("mfussenegger/nvim-dap")
-  use("mfussenegger/nvim-dap-python")
-  use("rcarriga/nvim-dap-ui")
-  use("theHamsta/nvim-dap-virtual-text")
-  use("nvim-telescope/telescope-dap.nvim")
 
   if packer_bootstrap then
     require("packer").sync()
