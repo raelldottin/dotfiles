@@ -1,4 +1,4 @@
-SHEL := bash
+SHELL := bash
 
 .PHONY: all
 all: zsh tmux iterm nvim
@@ -107,5 +107,4 @@ clean:
 
 .PHONY: test
 test:
-	echo "Checking if configuration files and folders setup"; \
-	echo "Tests complete."
+	./test.sh
