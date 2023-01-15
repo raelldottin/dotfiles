@@ -60,8 +60,5 @@ linkfile "config/nvim/lua/r2e/plugins/treesitter.lua" \
   "$HOME/.config/nvim/lua/r2e/plugins"
 linkfile "config/nvim/lua/r2e/plugins-setup.lua" \
   "$HOME/.config/nvim/lua/r2e"
-linkfile "hyper.js" "$HOME/.hyper.js"
-linkfile "tmux.conf" "$HOME/.tmux.conf"
-linkfile "zshrc" "$HOME/.zshrc"
 
 echo "Setup complete."
