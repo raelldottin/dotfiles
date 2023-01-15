@@ -10,5 +10,5 @@ tabnine.setup({
   dismiss_keymap = "<C-]>",
   debounce_ms = 300,
   suggestion_color = { gui = "#808080", cterm = 244 },
-  execlude_filetypes = { "TelescopePrompt" },
+  execlude_filetypes = { "TelescopePrompt", ".secrets" },
 })
