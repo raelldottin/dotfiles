@@ -1,4 +1,4 @@
-name: Shell checker
+name: Shell script linter
 
 on:
   push:
