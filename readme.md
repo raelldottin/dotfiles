@@ -3,7 +3,7 @@ This file is auto-generate by a github hook please modify readme.template if you
 -->
 # dotfiles
 
-# raelldottin/dotfiles v0.0.1-5
+# raelldottin/dotfiles v0.0.1-6
 
 **Table of Contents**
 
@@ -99,3 +99,6 @@ make uninstall
 ```
 make test
 ```
+
+[![Makefile testing](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
+[![Shell Script testing](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
