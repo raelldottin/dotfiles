@@ -1,23 +1,23 @@
-name: Makefile Linter
+name: Makefile linter
 
 on:
   push:
     branches:
       - main
     paths:
-      - "**Makefile**"
+      - "Makefile"
   workflow_dispatch:
   pull_request:
 
 permissions: {}
 
 jobs:
-  checkmake:
+  shellcheck:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
-      - name: Run checkmate
-        id: checkmake
+      - name: Run ShellCheck
+        id: shellcheck
         uses: Uno-Takashi/checkmake-action@main
