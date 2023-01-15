@@ -3,7 +3,7 @@ This file is auto-generate by a github hook please modify readme.template if you
 -->
 # dotfiles
 
-# raelldottin/dotfiles 0.0.1-1
+# raelldottin/dotfiles v0.0.1-2
 
 **Table of Contents**
 

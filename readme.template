@@ -1,6 +1,6 @@
 # dotfiles
 
-# {{ repository.name }} {{ current.version }}
+# {{ repository.name }} v{{ current.version }}
 
 **Table of Contents**
 
