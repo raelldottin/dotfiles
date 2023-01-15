@@ -3,7 +3,7 @@ This file is auto-generate by a github hook please modify readme.template if you
 -->
 # dotfiles
 
-# raelldottin/dotfiles v0.0.1-6
+# raelldottin/dotfiles v0.0.1-7
 
 **Table of Contents**
 
@@ -91,13 +91,13 @@ Repo file structure
 ### Uninstalling
 
 ```
-make uninstall
+$ make uninstall
 ```
 
 ### Running tests
 
 ```
-make test
+$ make test
 ```
 
 [![Makefile testing](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)

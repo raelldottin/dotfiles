@@ -88,13 +88,13 @@ Repo file structure
 ### Uninstalling
 
 ```
-make uninstall
+$ make uninstall
 ```
 
 ### Running tests
 
 ```
-make test
+$ make test
 ```
 
 [![Makefile testing](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
