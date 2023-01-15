@@ -1,7 +1,7 @@
 <!---
 This file is auto-generate by a github hook please modify readme.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.0.1-29
+# raelldottin/dotfiles v0.0.1-30
 
 **Table of Contents**
 
@@ -20,6 +20,12 @@ This file is auto-generate by a github hook please modify readme.template if you
 My dotfiles; buyers beware!
 
 ### Installing
+```
+# ./homebrewsetup.sh
+
+```
+
+This will automated the homebrew installation.
 
 ```
 $ make
@@ -33,7 +39,18 @@ Repo file structure
 
 ```
 .
-├── .config
+├── .githooks
+│   ├── post-commit
+│   ├── pre-commit
+│   └── replace_by_git_vars.py
+├── .github
+│   └── workflows
+│       ├── checkmake.yml
+│       └── shellcheck.yml
+├── .gitignore
+├── Makefile
+├── clean.sh
+├── config
 │   └── nvim
 │       ├── .gitignore
 │       ├── .stylua.toml
@@ -48,11 +65,9 @@ Repo file structure
 │       │       │   ├── autopairs.lua
 │       │       │   ├── comment.lua
 │       │       │   ├── dap
-│       │       │   ├── fidget.nvim.lua
 │       │       │   ├── gitsigns.lua
 │       │       │   ├── lsp
 │       │       │   │   ├── lspconfig.lua
-│       │       │   │   ├── lspsaga.lua
 │       │       │   │   ├── mason.lua
 │       │       │   │   └── null-ls.lua
 │       │       │   ├── lualine.lua
@@ -64,26 +79,20 @@ Repo file structure
 │       │       │   └── treesitter.lua
 │       │       └── plugins-setup.lua
 │       └── plugin
-├── .githooks
-│   ├── post-commit
-│   ├── pre-commit
-│   └── replace_by_git_vars.py
-├── .github
-│   └── workflows
-│       ├── checkmake.yml
-│       └── shellcheck.yml
-├── .gitignore
-├── .hyper.js
-├── .tmux.conf
-├── .zprofile
-├── .zshenv
-├── .zshrc
-├── Makefile
 ├── homebrew_installed_app.txt
+├── homebrewsetup.sh
+├── hyper.js
+├── hypersetup.sh
+├── nvimsetup.sh
 ├── readme.md
-└── readme.template
+├── readme.template
+├── test.sh
+├── tmux.conf
+├── tmuxsetup.sh
+├── zshrc
+└── zshsetup.sh
 
-13 directories, 37 files
+13 directories, 40 files
 ```
 
 ### Uninstalling
