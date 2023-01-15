@@ -1,29 +1,98 @@
+# dotfiles
+
 # {{ repository.name }} {{ current.version }}
 
-# Requirements
+**Table of Contents**
 
-`pip3 install xmltodict`
+<!-- toc -->
 
-`pip3 install requests`
+- [About](#about)
+  * [Installing](#installing)
+  * [Customizing](#customizing)
+  * [Uninstalling](#uninstalling)
+  * [Running tests](#running-tests)
 
-# Docs
+<!-- tocstop -->
 
-It's super basic, one thing to note: `Device` class automatically saves generated device. Call `.reset()` method to cleanup saved data.
+## About
 
-It also stores a token to relogin without credentials.
+My dotfiles; buyers beware!
 
-* One creates a device `device = Device(language='ru')`
-* Then a client must be created `client = Client(device=device)`
-* Use `client.login()` and `client.heartbeat()` to keep your session alive as a guest
-* Use `client.login(email='supra@mail', password='1337')` and `client.heartbeat()` to keep authorized session alive
-* Use `client.quickReload()` to re-authenticate your session
-* Use `client.listActiveMarketplaceMessages()` to list all items you have available for sell in the marketplace
-* Use `client.collectAllResources()` to collect all resources on your ship
-* Use `client.collectDailyReward()` to collect the daily reward
+### Installing
 
-It seems that battle is simulated server-side so we have to simulate it client-side, and I don't have enough time to make it. Maybe later.
-But you could join first battle and leave. Server would insta-simulate data as soon as you reconnect.
+```
+$ make
+```
 
----
-![Profile views](https://visitor-badge.glitch.me/badge?page_id=raelldottin)
-[![GitHub Metrics Updates](https://github.com/{{ repository.name }}/actions/workflows/daily-run.yml/badge.svg)](https://github.com/{{ repository.name }}/actions/workflows/dail-run.yml)
+This will create hard links from this repo to your home folder.
+
+### Customizing
+
+Repo file structure
+
+```
+.
+├── .config
+│   └── nvim
+│       ├── .gitignore
+│       ├── .stylua.toml
+│       ├── init.lua
+│       ├── lua
+│       │   └── r2e
+│       │       ├── core
+│       │       │   ├── colorscheme.lua
+│       │       │   ├── keymaps.lua
+│       │       │   └── options.lua
+│       │       ├── plugins
+│       │       │   ├── autopairs.lua
+│       │       │   ├── comment.lua
+│       │       │   ├── dap
+│       │       │   ├── fidget.nvim.lua
+│       │       │   ├── gitsigns.lua
+│       │       │   ├── lsp
+│       │       │   │   ├── lspconfig.lua
+│       │       │   │   ├── lspsaga.lua
+│       │       │   │   ├── mason.lua
+│       │       │   │   └── null-ls.lua
+│       │       │   ├── lualine.lua
+│       │       │   ├── mason.lua
+│       │       │   ├── nvim-cmp.lua
+│       │       │   ├── nvim-tree.lua
+│       │       │   ├── tabnine.lua
+│       │       │   ├── telescope.lua
+│       │       │   └── treesitter.lua
+│       │       └── plugins-setup.lua
+│       └── plugin
+├── .githooks
+│   ├── post-commit
+│   ├── pre-commit
+│   └── replace_by_git_vars.py
+├── .github
+│   └── workflows
+│       ├── checkmake.yml
+│       └── shellcheck.yml
+├── .gitignore
+├── .hyper.js
+├── .tmux.conf
+├── .zprofile
+├── .zshenv
+├── .zshrc
+├── Makefile
+├── homebrew_installed_app.txt
+├── readme.md
+└── readme.template
+
+13 directories, 37 files
+```
+
+### Uninstalling
+
+```
+make uninstall
+```
+
+### Running tests
+
+```
+make test
+```
