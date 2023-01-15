@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 runtest() {
   repo_file="$1"
