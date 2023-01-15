@@ -96,7 +96,7 @@ Repo file structure
 ### Uninstalling
 
 ```
-$ make uninstall
+$ make clean
 ```
 
 ### Running tests

@@ -1,7 +1,7 @@
 <!---
 This file is auto-generate by a github hook please modify readme.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.0.1-32
+# raelldottin/dotfiles v0.0.1-33
 [![Makefile testing](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script testing](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 
@@ -99,7 +99,7 @@ Repo file structure
 ### Uninstalling
 
 ```
-$ make uninstall
+$ make clean
 ```
 
 ### Running tests
