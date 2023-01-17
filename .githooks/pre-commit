@@ -5,6 +5,9 @@
 
 # run from the root of the repo
 .githooks/replace_by_git_vars.py readme.template readme.md
+brew list > homebrew_installed_app.txt
+git add homebrew_installed_app.txt
+git commit -m "update list of installed homebrew apps"
 
 # Example:
 # [![Integration Tests](https://github.com/{{ repository.name }}/actions/workflows/integration-tests.yaml/badge.svg?branch={{ current.branch }})](https://github.com/{{ repository.name }}/actions/workflows/integration-tests.yaml?query=branch%3A{{ current.branch }})
