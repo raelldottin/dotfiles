@@ -6,6 +6,7 @@ ca-certificates
 checkmake
 cmake
 coreutils
+docker
 fortune
 gdbm
 gettext
@@ -17,6 +18,7 @@ gnupg
 gnutls
 go
 golangci-lint
+grep
 guile
 icu4c
 irssi
@@ -49,6 +51,7 @@ nettle
 node
 npth
 openssl@1.1
+openssl@3
 p11-kit
 pcre
 pcre2
@@ -59,6 +62,7 @@ python@3.11
 readline
 reattach-to-user-namespace
 ruby
+rust
 shellcheck
 sqlite
 tmux
@@ -72,4 +76,5 @@ zsh
 aerial
 brave-browser
 iterm2
+powershell
 slack
