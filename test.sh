@@ -49,4 +49,7 @@ runtest() {
   runtest "hyper.js" "$HOME/.hyper.js"
   runtest "tmux.conf" "$HOME/.tmux.conf"
   runtest "zshrc" "$HOME/.zshrc"
+  if [[ "$(brew list > homebrew_installed_app.txt)" == "$(cat homebrew_installed_app.txt)" ]]; then
+    echo "homebrew_installed_app.txt is out of sync with repo."
+  fi
 	echo "Tests complete."
