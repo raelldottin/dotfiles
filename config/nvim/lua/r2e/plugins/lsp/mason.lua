@@ -30,7 +30,6 @@ mason_lspconfig.setup({
   -- list of servers for mason to install
   ensure_installed = {
     "awk_ls",
-    "asm_lsp",
     "bashls",
     "clangd",
     "dockerls",
