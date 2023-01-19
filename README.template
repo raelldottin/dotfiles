@@ -1,6 +1,7 @@
 # {{ repository.name }} v{{ current.version }}
-[![Makefile testing](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
-[![Shell Script testing](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
+[![Makefile](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
+[![Shell Script](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
+[![Lua](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 
 [![ v{{ current.version }} ](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)
 
@@ -35,64 +36,10 @@ This will create hard links from this repo to your home folder.
 
 ### Customizing
 
-Repo file structure
+Repo file hierarchy
 
 ```
-.
-├── .githooks
-│   ├── post-commit
-│   ├── pre-commit
-│   └── replace_by_git_vars.py
-├── .github
-│   └── workflows
-│       ├── checkmake.yml
-│       └── shellcheck.yml
-├── .gitignore
-├── Makefile
-├── clean.sh
-├── config
-│   └── nvim
-│       ├── .gitignore
-│       ├── .stylua.toml
-│       ├── init.lua
-│       ├── lua
-│       │   └── r2e
-│       │       ├── core
-│       │       │   ├── colorscheme.lua
-│       │       │   ├── keymaps.lua
-│       │       │   └── options.lua
-│       │       ├── plugins
-│       │       │   ├── autopairs.lua
-│       │       │   ├── comment.lua
-│       │       │   ├── dap
-│       │       │   ├── gitsigns.lua
-│       │       │   ├── lsp
-│       │       │   │   ├── lspconfig.lua
-│       │       │   │   ├── mason.lua
-│       │       │   │   └── null-ls.lua
-│       │       │   ├── lualine.lua
-│       │       │   ├── mason.lua
-│       │       │   ├── nvim-cmp.lua
-│       │       │   ├── nvim-tree.lua
-│       │       │   ├── tabnine.lua
-│       │       │   ├── telescope.lua
-│       │       │   └── treesitter.lua
-│       │       └── plugins-setup.lua
-│       └── plugin
-├── homebrew_installed_app.txt
-├── homebrewsetup.sh
-├── hyper.js
-├── hypersetup.sh
-├── nvimsetup.sh
-├── readme.md
-├── readme.template
-├── test.sh
-├── tmux.conf
-├── tmuxsetup.sh
-├── zshrc
-└── zshsetup.sh
-
-13 directories, 40 files
+{{ current.filehierarchy }}
 ```
 
 ### Uninstalling
