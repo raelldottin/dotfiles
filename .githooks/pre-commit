@@ -4,7 +4,7 @@
 # git config core.hooksPath .githooks
 
 # run from the root of the repo
-.githooks/replace_by_git_vars.py readme.template readme.md
+.githooks/replace_by_git_vars.py README.template README.md
 brew list > homebrew_installed_app.txt
 
 # Example:
