@@ -1,7 +1,6 @@
 # {{ repository.name }} v{{ current.version }}
 [![Makefile](https://github.com/{{ repository.name }}/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script](https://github.com/{{ repository.name }}/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
-[![Lua](https://github.com/{{ repository.name }}/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 
 [![ v{{ current.version }} ](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)
 
