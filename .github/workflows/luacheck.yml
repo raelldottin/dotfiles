@@ -1,0 +1,23 @@
+name: Lua linter
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "*.lua"
+  workflow_dispatch:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  luacheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run Lua Linter
+        id: luacheck
+        uses: leafo/gh-actions-lua@v9
