@@ -75,6 +75,5 @@ xz
 zsh
 aerial
 brave-browser
-iterm2
 powershell
 slack
