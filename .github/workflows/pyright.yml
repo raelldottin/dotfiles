@@ -1,0 +1,26 @@
+name: Python Linter
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "*.py"
+  workflow_dispatch:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  pyright:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run Pyright
+        id: pyright
+        uses: jakebailey/pyright-action@v1
+        with:
+          python-platform: Darwin
+          venv-path: venv
