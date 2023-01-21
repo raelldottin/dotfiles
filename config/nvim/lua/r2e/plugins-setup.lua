@@ -31,8 +31,6 @@ return packer.startup(function(use)
   -- packer can manage itself
   use("wbthomason/packer.nvim")
 
-  use({ "codota/tabnine-nvim", run = "./dl_binaries.sh" }) -- open ai
-
   use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
 
   use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
