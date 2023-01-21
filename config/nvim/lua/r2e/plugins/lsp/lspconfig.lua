@@ -118,9 +118,9 @@ lspconfig["pyright"].setup({
     python = {
       analysis = {
         autoSearchPaths = true,
-        diagnosticMode = "openFilesOnly",
+        diagnosticMode = "workspace",
+        venvpath = "venv",
         useLibraryCodeForTypes = true,
-        typeCheckingMode = "strict",
       },
     },
   },
