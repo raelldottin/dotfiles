@@ -115,7 +115,7 @@ alias tree='tree -a'
 echo "Quote:" | lolcat -f
 fortune -s | lolcat -f
 echo
-#echo "GitHub Activity:" | lolcat -f
+echo "GitHub Activity:" | lolcat -f
 gh status | lolcat -f
 echo
 echo "Outdated Homebrew Packages:" | lolcat -f
