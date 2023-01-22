@@ -7,6 +7,7 @@ checkmake
 cmake
 coreutils
 docker
+felinks
 fortune
 gdbm
 gettext
@@ -26,6 +27,7 @@ libassuan
 libevent
 libgcrypt
 libgpg-error
+libidn
 libidn2
 libksba
 libnghttp2
@@ -42,6 +44,7 @@ lua
 luajit
 luarocks
 luv
+lz4
 m4
 mpdecimal
 msgpack
@@ -68,6 +71,7 @@ shellcheck
 sqlite
 tmux
 transmission-cli
+tre
 tree
 tree-sitter
 unbound
@@ -75,6 +79,7 @@ unibilium
 utf8proc
 xz
 zsh
+zstd
 aerial
 brave-browser
 plex-media-player
