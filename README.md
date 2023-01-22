@@ -1,13 +1,13 @@
 <!---
 This file is auto-generate by a github hook please modify README.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.1.1-3
+# raelldottin/dotfiles v0.1.1-4
 [![Makefile Linter](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script Linter](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 [![Lua Linter](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 [![Python Linter](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
 
-[![ v0.1.1-3 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
+[![ v0.1.1-4 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
 
 **Table of Contents**
 
@@ -44,7 +44,6 @@ Repo file hierarchy
 
 ```
 .
-├── '
 ├── .githooks
 │   ├── post-commit
 │   ├── pre-commit
@@ -100,7 +99,7 @@ Repo file hierarchy
 ├── zshrc
 └── zshsetup.sh
 
-13 directories, 43 files
+13 directories, 42 files
 ```
 
 ### Uninstalling

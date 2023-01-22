@@ -54,7 +54,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -77,7 +77,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git web-search zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -112,9 +112,17 @@ alias ls="ls -laGF"
 alias tree='tree -a'
 
 # Display message of the day
+echo "Quote:" | lolcat -f
 fortune -s | lolcat -f
+echo
+#echo "GitHub Activity:" | lolcat -f
 gh status | lolcat -f
+echo
+echo "Outdated Homebrew Packages:" | lolcat -f
 brew outdated | lolcat -f
  
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Created by `pipx` on 2023-01-21 11:16:32
+export PATH="$PATH:/Users/r2e/.local/bin"
