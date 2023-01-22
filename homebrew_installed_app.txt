@@ -57,6 +57,7 @@ pcre
 pcre2
 perl
 pinentry
+pipx
 pkg-config
 python@3.11
 readline
@@ -66,6 +67,7 @@ rust
 shellcheck
 sqlite
 tmux
+transmission-cli
 tree
 tree-sitter
 unbound
@@ -75,5 +77,7 @@ xz
 zsh
 aerial
 brave-browser
+plex-media-player
 powershell
 slack
+transmission
