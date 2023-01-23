@@ -70,7 +70,6 @@ rust
 shellcheck
 sqlite
 tmux
-transmission-cli
 tre
 tree
 tree-sitter
@@ -82,7 +81,7 @@ zsh
 zstd
 aerial
 brave-browser
+deluge
 plex-media-player
 powershell
 slack
-transmission
