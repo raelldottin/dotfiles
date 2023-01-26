@@ -4,7 +4,7 @@ createdirectory() {
   local_directory="$1"
   if [[ ! -d "$local_directory" ]]; then
     echo "Creating $local_directory"
-    mkdir "$local_directory"
+    mkdir -p "$local_directory"
   fi
 }
 
@@ -23,6 +23,7 @@ createdirectory "$HOME/.config/nvim/lua"
 createdirectory "$HOME/.config/nvim/lua/r2e"
 createdirectory "$HOME/.config/nvim/lua/r2e/core"
 createdirectory "$HOME/.config/nvim/lua/r2e/plugins"
+createdirectory "$HOME/.config/nvim/lua/r2e/plugins/lsp"
 
 linkfile "config/nvim/init.lua" \
   "$HOME/.config/nvim"
@@ -51,8 +52,6 @@ linkfile "config/nvim/lua/r2e/plugins/mason.lua" \
 linkfile "config/nvim/lua/r2e/plugins/nvim-cmp.lua" \
   "$HOME/.config/nvim/lua/r2e/plugins"
 linkfile "config/nvim/lua/r2e/plugins/nvim-tree.lua" \
-  "$HOME/.config/nvim/lua/r2e/plugins"
-linkfile "config/nvim/lua/r2e/plugins/tabnine.lua" \
   "$HOME/.config/nvim/lua/r2e/plugins"
 linkfile "config/nvim/lua/r2e/plugins/telescope.lua" \
   "$HOME/.config/nvim/lua/r2e/plugins"
