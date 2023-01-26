@@ -21,7 +21,6 @@ runclean() {
   runclean "$HOME/.config/nvim/lua/r2e/plugins/mason.lua"
   runclean "$HOME/.config/nvim/lua/r2e/plugins/nvim-cmp.lua"
   runclean "$HOME/.config/nvim/lua/r2e/plugins/nvim-tree.lua"
-  runclean "$HOME/.config/nvim/lua/r2e/plugins/tabnine.lua"
   runclean "$HOME/.config/nvim/lua/r2e/plugins/telescope.lua"
   runclean "$HOME/.config/nvim/lua/r2e/plugins/treesitter.lua"
   runclean "$HOME/.config/nvim/lua/r2e/plugins-setup.lua"
