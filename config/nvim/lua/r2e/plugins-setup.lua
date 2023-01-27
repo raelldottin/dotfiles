@@ -109,6 +109,7 @@ return packer.startup(function(use)
       ts_update()
     end,
   })
+  use("nvim-treesitter/nvim-treesitter-context")
 
   -- auto closing
   use("windwp/nvim-autopairs") -- autoclose parens, brackets, quotes, etc...
