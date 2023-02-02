@@ -107,14 +107,14 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-if which nvim 2>&1 1>/dev/null; then
+if which nvim 1>/dev/null 2>&1; then
   alias vim="nvim"
   alias vi="nvim"
 else
   echo "Please install nvim"
 fi
 alias ls="ls -laGF"
-if which tree 2>&1 1>/dev/null; then
+if which tree 1>/dev/null 2>&1; then
   alias tree='tree -a'
 else
   echo "Please install tree"
