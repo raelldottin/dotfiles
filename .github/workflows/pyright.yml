@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "*.py"
+      - "**.py"
   workflow_dispatch:
   pull_request:
 
@@ -23,4 +23,3 @@ jobs:
         uses: jakebailey/pyright-action@v1
         with:
           python-platform: Darwin
-          venv-path: venv

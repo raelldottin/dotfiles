@@ -1,3 +1,4 @@
+awscli
 bdw-gc
 berkeley-db
 brotli
@@ -7,6 +8,7 @@ checkmake
 cmake
 coreutils
 docker
+docutils
 felinks
 fortune
 gdbm
@@ -68,6 +70,7 @@ reattach-to-user-namespace
 ruby
 rust
 shellcheck
+six
 sqlite
 tmux
 tre
@@ -81,7 +84,7 @@ zsh
 zstd
 aerial
 brave-browser
-deluge
 plex-media-player
 powershell
 slack
+transmission
