@@ -21,5 +21,8 @@ if [[ ! -d ~/.tmux/plugins/tpm ]]; then
 fi
 if [[ -d "$HOME"/.tmux/plugins/tpm ]]; then
   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+  echo "Please use prefix + I in a tmux session to install pending plugins."
 fi
 echo "Tmux configuration complete."
+
