@@ -77,7 +77,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions fast-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,30 +106,23 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-if which nvim 1>/dev/null 2>&1; then
-  alias vim="nvim"
-  alias vi="nvim"
-else
-  echo "Please install nvim"
-fi
+alias vim="nvim"
+alias vi="nvim"
 alias ls="ls -laGF"
-if which tree 1>/dev/null 2>&1; then
-  alias tree='tree -a'
-else
-  echo "Please install tree"
-fi
+alias tree='tree -a'
 
 # Display message of the day
 echo "Quote:" | lolcat -f
 fortune -s | lolcat -f
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  echo
-  echo "GitHub Activity:" | lolcat -f
-  gh status | lolcat -f
+echo
+echo "GitHub Activity:" | lolcat -f
+gh status | lolcat -f
+output=$(brew outdated | lolcat -f)
+if [[ ! -z "$output" ]]; then
   echo
   echo "Outdated Homebrew Packages:" | lolcat -f
-  brew outdated | lolcat -f
+  echo "$output"
+  echo
 fi
  
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
