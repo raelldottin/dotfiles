@@ -3,9 +3,15 @@
 runtest() {
   repo_file="$1"
   local_file="$2"
-	if [[ $(diff "$repo_file" "$local_file") ]]; then 
-		echo "$local_file is out of sync with repo."
-	fi
+  if [[ -r "$repo_file" ]]; then
+    if [[ ! -e "$local_file" ]]; then
+      if [[ $(diff "$repo_file" "$local_file") ]]; then 
+        echo "$local_file is out of sync with repo."
+      fi
+    fi
+  else
+    echo "$repo_file doesn't exists."
+  fi
 }
 	echo "Runnings tests on configuration files:"; \
 	runtest "config/nvim/init.lua" \
@@ -38,8 +44,6 @@ runtest() {
     "$HOME/.config/nvim/lua/r2e/plugins/nvim-cmp.lua"
   runtest "config/nvim/lua/r2e/plugins/nvim-tree.lua" \
     "$HOME/.config/nvim/lua/r2e/plugins/nvim-tree.lua"
-  runtest "config/nvim/lua/r2e/plugins/tabnine.lua" \
-    "$HOME/.config/nvim/lua/r2e/plugins/tabnine.lua"
   runtest "config/nvim/lua/r2e/plugins/telescope.lua" \
     "$HOME/.config/nvim/lua/r2e/plugins/telescope.lua"
   runtest "config/nvim/lua/r2e/plugins/treesitter.lua" \
@@ -47,7 +51,18 @@ runtest() {
   runtest "config/nvim/lua/r2e/plugins-setup.lua" \
     "$HOME/.config/nvim/lua/r2e/plugins-setup.lua"
   runtest "hyper.js" "$HOME/.hyper.js"
-  runtest "tmux.conf" "$HOME/.tmux.conf"
+  case "$OSTYPE" in
+    linux-gnu)
+      tmux_conf="linux-gnu_tmux.conf"
+      ;;
+    darwin*)
+      tmux_conf="darwin_tmux.conf"
+      ;;
+    *)
+      echo "Unable to determine operating system"
+      ;;
+esac
+  runtest "$tmux_conf" "$HOME/.tmux.conf"
   runtest "zshrc" "$HOME/.zshrc"
   if [[ "$(brew list > homebrew_installed_app.txt)" == "$(cat homebrew_installed_app.txt)" ]]; then
     echo "homebrew_installed_app.txt is out of sync with repo."
