@@ -118,7 +118,7 @@ echo
 echo "GitHub Activity:" | lolcat -f
 gh status | lolcat -f
 output=$(brew outdated | lolcat -f)
-if [[ ! -z "$output" ]]; then
+if [[ -n "$output" ]]; then
   echo
   echo "Outdated Homebrew Packages:" | lolcat -f
   echo "$output"
