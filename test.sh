@@ -4,13 +4,17 @@ runtest() {
   repo_file="$1"
   local_file="$2"
   if [[ -r "$repo_file" ]]; then
-    if [[ ! -e "$local_file" ]]; then
-      if [[ $(diff "$repo_file" "$local_file") ]]; then 
-        echo "$local_file is out of sync with repo."
+    if [[ -r "$local_file" ]]; then
+      if diff "$repo_file" "$local_file"; then 
+        echo "$repo_file" and "$local_file" are in sync.
+      else
+        echo "$repo_file" and "$local_file" are out of sync.
       fi
+    else
+      echo "$local_file" is not readable.
     fi
   else
-    echo "$repo_file doesn't exists."
+    echo "$repo_file" is not readable.
   fi
 }
 	echo "Runnings tests on configuration files:"; \
