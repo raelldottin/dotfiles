@@ -62,7 +62,6 @@ mason_null_ls.setup({
     "shellcheck",
     "shellharden",
     "shfmt",
-    "jq",
     "stylua", -- lua formatter
   },
   -- auto-install configured formatters & linters (with null-ls)
