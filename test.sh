@@ -42,6 +42,8 @@ runtest() {
     "$HOME/.config/nvim/lua/r2e/plugins/lsp/null-ls.lua"
   runtest "config/nvim/lua/r2e/plugins/lualine.lua" \
     "$HOME/.config/nvim/lua/r2e/plugins/lualine.lua"
+  runtest "config/nvim/lua/r2e/plugins/tabline.lua" \
+    "$HOME/.config/nvim/lua/r2e/plugins/tabline.lua"
   runtest "config/nvim/lua/r2e/plugins/mason.lua" \
     "$HOME/.config/nvim/lua/r2e/plugins/mason.lua"
   runtest "config/nvim/lua/r2e/plugins/nvim-cmp.lua" \
