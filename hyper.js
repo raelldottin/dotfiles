@@ -10,7 +10,7 @@ module.exports = {
     // default font size in pixels for all tabs
     fontSize: 16,
     // font family with optional fallbacks
-    fontFamily: "Meslo LG L DZ for Powerline", // Menlo, "DejaVu Sans Mono", Consolas, "Lucida Console", monospace',
+    fontFamily: "Hack Nerd Font",
     // default font weight: 'normal' or 'bold'
     fontWeight: "normal",
     // font weight for bold characters: 'normal' or 'bold'
@@ -92,7 +92,7 @@ module.exports = {
     //
     // Cygwin
     // - Example: `C:\\cygwin64\\bin\\bash.exe`
-    shell: "",
+    shell: "/bin/zsh",
     // for setting shell arguments (i.e. for using interactive shellArgs: `['-i']`)
     // by default `['--login']` will be used
     shellArgs: ["--login"],
