@@ -4,9 +4,20 @@ if not setup then
   return
 end
 
--- for conciseness
-local formatting = null_ls.builtins.formatting -- to setup formatters
+-- code action sources
+local code_actions = null_ls.builtins.diagnostics
+
+-- diagnostic sources
 local diagnostics = null_ls.builtins.diagnostics -- to setup linters
+
+--  formatting sources
+local formatting = null_ls.builtins.formatting -- to setup formatters
+
+-- hover sources
+local hover = null_ls.builtins.hover
+
+-- completion sources
+local completion = null_ls.builtins.completion
 
 -- to setup format on save
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
@@ -17,14 +28,22 @@ null_ls.setup({
   sources = {
     --  to disable file types use
     --  "formatting.prettier.with({disabled_filetypes: {}})" (see null-ls docs)
-    formatting.prettier, -- js/ts formatter
-    formatting.stylua, -- lua formatter
-    diagnostics.eslint_d.with({ -- js/ts linter
-      -- only enable eslint if root has .eslintrc.js (not in youtube nvim video)
-      condition = function(utils)
-        return utils.root_has_file(".eslintrc.js") -- change file extension if you use something else
-      end,
+    diagnostics.cpplint,
+    formatting.clang_format,
+    diagnostics.hadolint,
+    diagnostics.gitlint,
+    formatting.gofumpt,
+    diagnostics.alex,
+    formatting.autopep8,
+    formatting.black,
+    diagnostics.pylint,
+    diagnostics.shellcheck.with({ diagnostics_format = "[#{c}] #{m} (#{s})" }),
+    code_actions.shellcheck,
+    formatting.shellharden,
+    formatting.shfmt.with({
+      extra_args = { "-i", "2", "-sr", "-s", "-ci" },
     }),
+    formatting.stylua, -- lua formatter
   },
   -- configure format on save
   on_attach = function(current_client, bufnr)
