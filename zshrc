@@ -119,10 +119,7 @@ echo "GitHub Activity:" | lolcat -f
 gh status | lolcat -f
 output=$(brew outdated | lolcat -f)
 if [[ -n "$output" ]]; then
-  echo
-  echo "Outdated Homebrew Packages:" | lolcat -f
-  echo "$output"
-  echo
+  brew upgrade
 fi
  
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
