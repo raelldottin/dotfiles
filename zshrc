@@ -109,7 +109,10 @@ source $ZSH/oh-my-zsh.sh
 alias vim="nvim"
 alias vi="nvim"
 alias ls="ls -laGF"
-alias tree='tree -a'
+alias tree="tree -a"
+if [[ -x "/usr/local/microsoft/powershell/7/pwsh" ]]; then
+  alias powershell="/usr/local/microsoft/powershell/7/pwsh"
+fi
 
 # Display message of the day
 echo "Quote:" | lolcat -f
@@ -119,14 +122,18 @@ echo "GitHub Activity:" | lolcat -f
 gh status | lolcat -f
 output=$(brew outdated | lolcat -f)
 if [[ -n "$output" ]]; then
-  echo
-  echo "Outdated Homebrew Packages:" | lolcat -f
-  echo "$output"
-  echo
+  brew upgrade
 fi
  
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Created by `pipx` on 2023-01-21 11:16:32
-export PATH="$PATH:/Users/r2e/.local/bin"
+if [[ -d "/Users/r2e/.local/bin" ]]; then
+  export PATH="$PATH:/Users/r2e/.local/bin"
+fi
+
+# Add a python binary path
+if [[ -d "/Users/raell.dottin/Library/Python/3.9/bin" ]]; then
+  export PATH="$PATH:/Users/raell.dottin/Library/Python/3.9/bin"
+fi
