@@ -37,12 +37,9 @@ null_ls.setup({
     formatting.autopep8,
     formatting.black,
     diagnostics.pylint,
-    diagnostics.shellcheck.with({ diagnostics_format = "[#{c}] #{m} (#{s})" }),
-    code_actions.shellcheck,
+    diagnostics.shellcheck,
     formatting.shellharden,
-    formatting.shfmt.with({
-      extra_args = { "-i", "2", "-sr", "-s", "-ci" },
-    }),
+    formatting.shfmt,
     formatting.stylua, -- lua formatter
   },
   -- configure format on save

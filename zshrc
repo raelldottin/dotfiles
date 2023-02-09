@@ -109,7 +109,10 @@ source $ZSH/oh-my-zsh.sh
 alias vim="nvim"
 alias vi="nvim"
 alias ls="ls -laGF"
-alias tree='tree -a'
+alias tree="tree -a"
+if [[ -x "/usr/local/microsoft/powershell/7/pwsh" ]]; then
+  alias powershell="/usr/local/microsoft/powershell/7/pwsh"
+fi
 
 # Display message of the day
 echo "Quote:" | lolcat -f
@@ -126,4 +129,11 @@ fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Created by `pipx` on 2023-01-21 11:16:32
-export PATH="$PATH:/Users/r2e/.local/bin"
+if [[ -d "/Users/r2e/.local/bin" ]]; then
+  export PATH="$PATH:/Users/r2e/.local/bin"
+fi
+
+# Add a python binary path
+if [[ -d "/Users/raell.dottin/Library/Python/3.9/bin" ]]; then
+  export PATH="$PATH:/Users/raell.dottin/Library/Python/3.9/bin"
+fi
