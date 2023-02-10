@@ -189,6 +189,22 @@ lspconfig["prosemd_lsp"].setup({
 	on_attach = on_attach,
 })
 
+-- configure pyright
+lspconfig["pyright"].setup({
+	on_attach = on_attach,
+	settings = {
+		pyright = { autoImportCompletion = true },
+		python = {
+			analysis = {
+				autoSearchPaths = true,
+				diagnosticMode = "workspace",
+				venvpath = "venv",
+				useLibraryCodeForTypes = true,
+			},
+		},
+	},
+})
+
 -- configure marksman
 lspconfig["marksman"].setup({
 	capabilities = capabilities,
