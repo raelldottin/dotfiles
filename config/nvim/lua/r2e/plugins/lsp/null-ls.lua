@@ -36,7 +36,6 @@ null_ls.setup({
 		diagnostics.alex,
 		formatting.autopep8,
 		formatting.black,
-		diagnostics.pyright,
 		diagnostics.pylint,
 		diagnostics.shellcheck,
 		formatting.shellharden,
