@@ -28,20 +28,20 @@ Table of Contents
 =================
 
 
-* About :ref:`About <About:link-target>`
-* Installing :ref:`Installing<Installing:link-target>`
-* Customizing :ref:`Customizing<Customizing:link-target>`
-* Uninstalling :ref:`Uninstalling<Uninstalling:link-target>`
-* Running tests :ref:`Running-tests<Running-tests:link-target>`
+* About :ref:`About <about>`
+* Installing :ref:`Installing<installing>`
+* Customizing :ref:`Customizing<customizing>`
+* Uninstalling :ref:`Uninstalling<uninstalling>`
+* Running tests :ref:`Running-tests<running-tests>`
 
 
-.. _About:
+.. _about:
 About
 =====
 
 My dotfiles; buyers beware!
 
-.. _Installing:
+.. _installing:
 Installing
 ==========
 
@@ -57,6 +57,7 @@ This will create hard links from this repo to your home folder.
    make
 
 
+.. _customizing:
 Customizing
 ===========
 
@@ -122,6 +123,8 @@ File hierarchy of the repository.
 
 13 directories, 43 files
 
+.. _uninstalling:
+
 Uninstalling
 ============
 
@@ -129,6 +132,8 @@ Removing dotfiles
 
 .. code-block:: bash
        make clean
+
+.. _running-tests:
 
 Running tests
 =============
