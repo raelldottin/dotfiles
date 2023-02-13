@@ -90,6 +90,7 @@ reattach-to-user-namespace
 ruby
 rust
 shellcheck
+shellharden
 six
 sqlite
 tmux
