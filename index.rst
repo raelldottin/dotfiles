@@ -28,11 +28,11 @@ Table of Contents
 =================
 
 
-* About :ref:`About<About>`
-* Installing :ref:`Installing<Installing>`
-* Customizing :ref:`Customizing<Customizing>`
-* Uninstalling :ref:`Uninstalling<Uninstalling>`
-* Running tests :ref:`Running-tests<Running-tests>`
+* About :ref:`About <About:link-target>`
+* Installing :ref:`Installing<Installing:link-target>`
+* Customizing :ref:`Customizing<Customizing:link-target>`
+* Uninstalling :ref:`Uninstalling<Uninstalling:link-target>`
+* Running tests :ref:`Running-tests<Running-tests:link-target>`
 
 
 .. _About:
