@@ -23,25 +23,20 @@ raelldottin/dotfiles v0.1.1-38
    :align: center
    :alt: v0.1.1-38
 
-
 Table of Contents
 =================
 
+* `About`_
+* `Installing`_
+* `Customizing`_
+* `Uninstalling`_
+* `Running tests`_
 
-* About :ref:`About <about>`
-* Installing :ref:`Installing<installing>`
-* Customizing :ref:`Customizing<customizing>`
-* Uninstalling :ref:`Uninstalling<uninstalling>`
-* Running tests :ref:`Running-tests<running-tests>`
-
-
-.. _about:
 About
 =====
 
 My dotfiles; buyers beware!
 
-.. _installing:
 Installing
 ==========
 
@@ -56,8 +51,6 @@ This will create hard links from this repo to your home folder.
 .. code-block:: bash
    make
 
-
-.. _customizing:
 Customizing
 ===========
 
@@ -123,8 +116,6 @@ File hierarchy of the repository.
 
 13 directories, 43 files
 
-.. _uninstalling:
-
 Uninstalling
 ============
 
@@ -132,8 +123,6 @@ Removing dotfiles
 
 .. code-block:: bash
        make clean
-
-.. _running-tests:
 
 Running tests
 =============
