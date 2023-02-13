@@ -28,11 +28,11 @@ Table of Contents
 =================
 
 
-* About :ref:`About`
-* Installing :ref:`Installing`
-* Customizing :ref:`Customizing`
-* Uninstalling :ref:`Uninstalling`
-* Running tests :ref:`Running-tests`
+* About :ref:`About<About>`
+* Installing :ref:`Installing<Installing>`
+* Customizing :ref:`Customizing<Customizing>`
+* Uninstalling :ref:`Uninstalling<Uninstalling>`
+* Running tests :ref:`Running-tests<Running-tests>`
 
 
 .. _About:
@@ -44,25 +44,25 @@ My dotfiles; buyers beware!
 .. _Installing:
 Installing
 ==========
-.. code-block:: bash
-   :caption: This will automated the homebrew installation.
 
-        sudo ./homebrewsetup.sh
-
+This will automated the homebrew installation.
 
 .. code-block:: bash
-   :caption: This will create hard links from this repo to your home folder.
+   sudo ./homebrewsetup.sh
 
-       make
+
+This will create hard links from this repo to your home folder.
+
+.. code-block:: bash
+   make
 
 
 Customizing
 ===========
 
-Repo file hierarchy
+File hierarchy of the repository.
 
-.. code-block:: console
-   :caption: File hierarchy of the repository.
+.. code-block::
 .
 ├── .githooks
 │   ├── post-commit
@@ -125,15 +125,15 @@ Repo file hierarchy
 Uninstalling
 ============
 
-.. code-block:: console
-   :caption: Removing dotfiles
+Removing dotfiles
 
+.. code-block:: bash
        make clean
 
 Running tests
 =============
 
-.. code-block:: console
-   :caption: Running tests
+Running tests
 
+.. code-block:: bash
        make test
