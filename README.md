@@ -14,10 +14,10 @@ This file is auto-generate by a github hook please modify README.template if you
 <!-- toc -->
 
 - [About](#about)
-  * [Installing](#installing)
-  * [Customizing](#customizing)
-  * [Uninstalling](#uninstalling)
-  * [Running tests](#running-tests)
+- [Installing](#installing)
+- [Customizing](#customizing)
+- [Uninstalling](#uninstalling)
+- [Running tests](#running-tests)
 
 <!-- tocstop -->
 
