@@ -11,6 +11,7 @@ cmake
 coreutils
 docker
 docutils
+felinks
 fontconfig
 fortune
 freetype
@@ -67,7 +68,6 @@ lzo
 m4
 mpdecimal
 msgpack
-mysql@5.7
 ncurses
 neovim
 nettle
@@ -84,15 +84,15 @@ pinentry
 pipx
 pixman
 pkg-config
-protobuf
+python@3.10
 python@3.11
 readline
 reattach-to-user-namespace
 ruby
 rust
 shellcheck
+shellharden
 six
-sphinx
 sqlite
 tmux
 tre
@@ -106,8 +106,8 @@ xz
 zsh
 zstd
 aerial
-font-hack-nerd-font
-microsoft-remote-desktop
+brave-browser
+plex-media-player
 powershell
-rectangle
 slack
+transmission
