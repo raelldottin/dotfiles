@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "*.py"
+      - '**.py'
   workflow_dispatch:
   pull_request:
 
