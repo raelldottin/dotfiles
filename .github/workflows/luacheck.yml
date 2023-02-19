@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "**.lua"
+      - '**.lua'
   workflow_dispatch:
   pull_request:
 
