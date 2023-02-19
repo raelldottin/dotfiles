@@ -18,6 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Run ShellCheck
-        id: shellcheck
+      - name: Run Checkmake
+        id: checkmake
         uses: Uno-Takashi/checkmake-action@main
