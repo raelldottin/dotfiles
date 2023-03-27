@@ -5,9 +5,10 @@ runtest() {
   local_file="$2"
   if [[ -r "$repo_file" ]]; then
     if [[ -r "$local_file" ]]; then
-      if diff "$repo_file" "$local_file"; then 
-        echo "$repo_file" and "$local_file" are in sync.
-      else
+      #if diff "$repo_file" "$local_file" > /dev/null; then 
+      #  echo "$repo_file" and "$local_file" are in sync.
+      #else
+      if ! diff "$repo_file" "$local_file" > /dev/null; then 
         echo "$repo_file" and "$local_file" are out of sync.
       fi
     else
@@ -70,7 +71,9 @@ runtest() {
 esac
   runtest "$tmux_conf" "$HOME/.tmux.conf"
   runtest "zshrc" "$HOME/.zshrc"
-  if [[ "$(brew list > homebrew_installed_app.txt)" == "$(cat homebrew_installed_app.txt)" ]]; then
-    echo "homebrew_installed_app.txt is out of sync with repo."
+  if which brew >/dev/null; then                                                                                                                                                                                  96.239.22.2 ip | 95% battery
+    if [[ "$(brew list > homebrew_installed_app.txt)" == "$(cat homebrew_installed_app.txt)" ]]; then
+      echo "homebrew_installed_app.txt is out of sync with repo."
+    fi
   fi
 	echo "Tests complete."
