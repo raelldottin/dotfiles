@@ -58,10 +58,11 @@ return packer.startup(function(use)
 		"kdheepak/tabline.nvim",
 		config = function()
 			vim.cmd([[
-      set guioptions-=e " Use showtabline in gui vim
-      set sessionoptions+=tabpages,globals " store tabpages and globals in session
-    ]])
+        set guioptions-=e " Use showtabline in gui vim
+        set sessionoptions+=tabpages,globals " store tabpages and globals in session
+      ]])
 		end,
+		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
 	})
 
 	-- fuzzy finding w/ telescope
@@ -94,7 +95,6 @@ return packer.startup(function(use)
 		config = function()
 			require("lspsaga").setup({})
 		end,
-		requires = { { "nvim-tree/nvim-web-devicons" } },
 	})
 
 	-- formatting & linting
@@ -116,6 +116,7 @@ return packer.startup(function(use)
 			ts_update()
 		end,
 	})
+	use("nvim-treesitter/nvim-treesitter-context")
 
 	-- auto closing
 	use("windwp/nvim-autopairs") -- autoclose parens, brackets, quotes, etc...
@@ -123,9 +124,6 @@ return packer.startup(function(use)
 
 	-- git integration
 	use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
-
-	-- ale
-	use("dense-analysis/ale")
 
 	if packer_bootstrap then
 		require("packer").sync()
