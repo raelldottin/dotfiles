@@ -69,6 +69,7 @@ COMPLETION_WAITING_DOTS="true"
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
 
+POWERLEVEL9K_INSTANT_PROMPT=quiet
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
@@ -114,26 +115,47 @@ if [[ -x "/usr/local/microsoft/powershell/7/pwsh" ]]; then
   alias powershell="/usr/local/microsoft/powershell/7/pwsh"
 fi
 
+# Useful homebrew function
+function brew_find_pkg {
+  file_to_search="$@"
+  for package in $(brew list); do
+    if [[ $? -eq 0 ]]; then
+      echo "\"$@\" is located in \"$pacakge\""
+      break
+    fi
+  done
+}
+
 # Display message of the day
-echo "Quote:" | lolcat -f
+echo "Quote:"
 fortune -s | lolcat -f
 echo
-echo "GitHub Activity:" | lolcat -f
+echo "GitHub Activity:"
 gh status | lolcat -f
-output=$(brew outdated | lolcat -f)
-if [[ -n "$output" ]]; then
+if [[ -n "$(brew outdated)" ]]; then
   brew upgrade
+fi
+if [[ -n "$(npm outdated)" ]]; then
+  npm update
 fi
  
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Created by `pipx` on 2023-01-21 11:16:32
-if [[ -d "/Users/r2e/.local/bin" ]]; then
-  export PATH="$PATH:/Users/r2e/.local/bin"
+if [[ -d "$HOME/.local/bin" ]]; then
+  export PATH="$PATH:$HOME/.local/bin"
 fi
 
 # Add a python binary path
-if [[ -d "/Users/raell.dottin/Library/Python/3.9/bin" ]]; then
-  export PATH="$PATH:/Users/raell.dottin/Library/Python/3.9/bin"
+if [[ -d "$HOME/Library/Python/3.9/bin" ]]; then
+  export PATH="$PATH:$HOME/Library/Python/3.9/bin"
+fi
+
+# Java configuration
+if  [[ -d "/opt/homebrew/opt/openjdk/bin" ]]; then
+  export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+fi
+if [[ -d "/opt/homebrew/opt/openjdk/include" ]]; then
+  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
 fi
