@@ -5,7 +5,8 @@
 
 # run from the root of the repo
 .githooks/replace_by_git_vars.py README.template README.md
-brew list > homebrew_installed_app.txt
+brew list >homebrew_installed_app.txt
+npm list -g >npm_installed_app.txt
 
 # Example:
 # [![Integration Tests](https://github.com/{{ repository.name }}/actions/workflows/integration-tests.yaml/badge.svg?branch={{ current.branch }})](https://github.com/{{ repository.name }}/actions/workflows/integration-tests.yaml?query=branch%3A{{ current.branch }})
