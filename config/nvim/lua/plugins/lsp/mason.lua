@@ -35,7 +35,7 @@ mason_lspconfig.setup({
 		"golangci_lint_ls",
 		"gopls",
 		"jsonls",
-		"sumneko_lua",
+		"lua_ls",
 		"prosemd_lsp",
 		"marksman",
 		"powershell_es",
