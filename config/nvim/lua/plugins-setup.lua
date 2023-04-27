@@ -119,8 +119,19 @@ return packer.startup(function(use)
 	use("nvim-treesitter/nvim-treesitter-context")
 
 	-- auto closing
-	use("windwp/nvim-autopairs") -- autoclose parens, brackets, quotes, etc...
-	use({ "windwp/nvim-ts-autotag", after = "nvim-treesitter" }) -- autoclose tags
+	use({
+		"windwp/nvim-autopairs",
+		after = "nvim-treesitter",
+		wants = "nvim-treesitter",
+		module = {
+			"nvim-autopairs.autopairs.rule",
+			"nvim-autopairs.ts-conds",
+			"nvim-autopairs.completion.cmp",
+			"nvim-autopairs",
+		},
+	})
+	-- autoclose parens, brackets, quotes, etc...
+	use({ "windwp/nvim-ts-autotag", after = "nvim-treesitter", wants = "nvim-treesitter", event = "InsertEnter" }) -- autoclose tags
 
 	-- git integration
 	use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
