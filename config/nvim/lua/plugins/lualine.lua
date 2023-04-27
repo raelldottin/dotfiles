@@ -50,7 +50,7 @@ lualine.setup({
 		lualine_z = {},
 	},
 	tabline = {
-		lualine_a = { require("tabline").tabline_buffers, "location", "lsp_progress", "progress" },
+		lualine_a = { require("tabline").tabline_buffers, "location", "lsp_progress" },
 		lualine_b = {},
 		lualine_c = {},
 		lualine_x = {},
