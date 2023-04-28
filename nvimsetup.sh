@@ -63,5 +63,7 @@ linkfile "config/nvim/lua/plugins/treesitter.lua" \
 	"$HOME/.config/nvim/lua/plugins"
 linkfile "config/nvim/lua/plugins-setup.lua" \
 	"$HOME/.config/nvim/lua"
+linkfile "pylintrc" \
+	"$HOME/.pylintrc"
 
 echo "Setup complete."
