@@ -76,9 +76,15 @@ darwin*)
 esac
 runtest "$tmux_conf" "$HOME/.tmux.conf"
 runtest "zshrc" "$HOME/.zshrc"
+runtest "pylintrc" "$HOME/.pylintrc"
 if which brew >/dev/null; then
-	if [[ "$(brew list >homebrew_installed_app.txt)" == "$(cat homebrew_installed_app.txt)" ]]; then
+	if [[ -r homebrew_installed_app.txt && "$(brew list)" == "$(cat homebrew_installed_app.txt)" ]]; then
 		echo "homebrew_installed_app.txt is out of sync with repo."
+	fi
+fi
+if which npm >/dev/null; then
+	if [[ -r npm_installed_app.txt && "$(npm list -g)" == "$(cat npm_installed_app.txt)" ]]; then
+		echo "npm_installed_app.txt is out of sync with repo."
 	fi
 fi
 echo "Tests complete."
