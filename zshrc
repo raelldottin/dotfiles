@@ -115,17 +115,6 @@ if [[ -x "/usr/local/microsoft/powershell/7/pwsh" ]]; then
   alias powershell="/usr/local/microsoft/powershell/7/pwsh"
 fi
 
-# Useful homebrew function
-function brew_find_pkg {
-  file_to_search="$@"
-  for package in $(brew list); do
-    if [[ $? -eq 0 ]]; then
-      echo "\"$@\" is located in \"$pacakge\""
-      break
-    fi
-  done
-}
-
 # Display message of the day
 echo "Quote:"
 fortune -s | lolcat -f
