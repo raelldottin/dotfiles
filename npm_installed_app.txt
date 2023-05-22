@@ -1,0 +1,10 @@
+/opt/homebrew/lib
+├── bash-language-server@4.9.1
+├── homebridge-config-ui-x@4.50.2
+├── homebridge-lg-thinq-ac@2.2.0
+├── homebridge@1.6.0
+├── npm@9.6.6
+├── pyright@1.1.290
+├── tree-sitter-markdown@0.7.1
+└── typescript@5.0.4
+
