@@ -149,6 +149,6 @@ if [[ -d "/opt/homebrew/opt/openjdk/include" ]]; then
   export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
 fi
 
-if [[ -d "$HOME/bin/gamadv-xtd3/gam"
+if [[ -d "$HOME/bin/gamadv-xtd3/gam" ]]; then
   alias gam="$HOME/bin/gamadv-xtd3/gam"
 fi
