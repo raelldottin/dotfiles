@@ -1,13 +1,14 @@
 <!---
 This file is auto-generate by a github hook please modify README.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.2.0-57
+# raelldottin/dotfiles v0.2.0-59
+
 [![Makefile Linter](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script Linter](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 [![Lua Linter](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 [![Python Linter](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
 
-[![ v0.2.0-57 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
+[![ v0.2.0-59 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
 
 **Table of Contents**
 
@@ -65,32 +66,28 @@ Repo file hierarchy
 │       ├── .gitignore
 │       ├── .stylua.toml
 │       ├── init.lua
-│       ├── lua
-│       │   ├── core
-│       │   │   ├── colorscheme.lua
-│       │   │   ├── keymaps.lua
-│       │   │   └── options.lua
-│       │   ├── plugins
-│       │   │   ├── autopairs.lua
-│       │   │   ├── comment.lua
-│       │   │   ├── gitsigns.lua
-│       │   │   ├── lsp
-│       │   │   │   ├── lspconfig.lua
-│       │   │   │   ├── mason.lua
-│       │   │   │   └── null-ls.lua
-│       │   │   ├── lualine.lua
-│       │   │   ├── mason.lua
-│       │   │   ├── nvim-cmp.lua
-│       │   │   ├── nvim-tree.lua
-│       │   │   ├── tabline.lua
-│       │   │   ├── telescope.lua
-│       │   │   ├── treesitter.lua
-│       │   │   └── ts-autotag.lua
-│       │   ├── plugins-setup.lua
-│       │   └── r2e
-│       │       └── plugins
-│       │           └── dap
-│       └── plugin
+│       └── lua
+│           ├── core
+│           │   ├── colorscheme.lua
+│           │   ├── keymaps.lua
+│           │   └── options.lua
+│           ├── plugins
+│           │   ├── autopairs.lua
+│           │   ├── comment.lua
+│           │   ├── gitsigns.lua
+│           │   ├── lsp
+│           │   │   ├── lspconfig.lua
+│           │   │   ├── mason.lua
+│           │   │   └── null-ls.lua
+│           │   ├── lualine.lua
+│           │   ├── mason.lua
+│           │   ├── nvim-cmp.lua
+│           │   ├── nvim-tree.lua
+│           │   ├── tabline.lua
+│           │   ├── telescope.lua
+│           │   ├── treesitter.lua
+│           │   └── ts-autotag.lua
+│           └── plugins-setup.lua
 ├── darwin_tmux.conf
 ├── homebrew_installed_app.txt
 ├── homebrewsetup.sh
@@ -101,12 +98,13 @@ Repo file hierarchy
 ├── npm_installed_app.txt
 ├── nvimsetup.sh
 ├── pre-install.sh
+├── pylintrc
 ├── test.sh
 ├── tmuxsetup.sh
 ├── zshrc
 └── zshsetup.sh
 
-14 directories, 48 files
+10 directories, 49 files
 ```
 
 ### Uninstalling

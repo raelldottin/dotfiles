@@ -28,8 +28,9 @@ runclean "$HOME/.config/nvim/lua/plugins-setup.lua"
 runclean "$HOME/.hyper.js"
 runclean "$HOME/.tmux.conf"
 runclean "$HOME/.zshrc"
-if [[ -d ~/.local ]]; then
-	echo "If you encounter issues, please delete the respective files in $HOME/.local"
+runclean "$HOME/.pylintrc"
+if [[ -d ~/.local/nvim ]]; then
+	echo "If you encounter issues, please delete $HOME/.local/nvim"
 fi
 
 echo "Uninstallation complete."
