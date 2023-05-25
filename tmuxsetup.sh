@@ -20,10 +20,10 @@ else
 	echo "$HOME/.tmux.conf is already configured."
 fi
 
-if [[ ! -d ~/.tmux/plugins/tpm ]]; then
-	mkdir -p ~/.tmux/plugins/tpm
+if [[ ! -d ~/.tmux/plugins ]]; then
+	mkdir -p ~/.tmux/plugins
 else
-	echo "$HOME/.tmux/plugins/tpm already exists."
+	echo "$HOME/.tmux/plugins already exists."
 fi
 
 if [[ -d "$HOME"/.tmux/plugins/tpm ]]; then
