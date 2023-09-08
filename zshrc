@@ -150,5 +150,5 @@ if [[ -d "/opt/homebrew/opt/openjdk/include" ]]; then
 fi
 
 if [[ -d "$HOME/bin/gamadv-xtd3/gam" ]]; then
-  alias gam="$HOME/bin/gamadv-xtd3/gam"
+  alias gam='eval $HOME/bin/gamadv-xtd3/gam'
 fi
