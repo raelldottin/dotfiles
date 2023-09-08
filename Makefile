@@ -7,34 +7,34 @@ all install: dependencies zsh tmux hyper nvim
 #Install dependencies
 .PHONY: dependencies
 dependencies:
-	./pre-install.sh
+	${SHELL} ./pre-install.sh
 
 #Setup zsh
 .PHONY: zsh
 zsh:
-	./zshsetup.sh
+	${SHELL} ./zshsetup.sh
 
 #Setup tmux
 .PHONY: tmux
 tmux:
-	./tmuxsetup.sh
+	${SHELL} ./tmuxsetup.sh
 
 #Setup hyper
 .PHONY: hyper
 hyper:
-	./hypersetup.sh
+	${SHELL} ./hypersetup.sh
 
 #Setup nvim
 .PHONY: nvim
 nvim:
-	./nvimsetup.sh
+	${SHELL} ./nvimsetup.sh
 
 #Remove all generated files
 .PHONY: clean uninstall
 clean uninstall:
-	./clean.sh
+	${SHELL} ./clean.sh
 
 #Run tests
 .PHONY: test
 test:
-	./test.sh
+	${SHELL} ./test.sh
