@@ -26,7 +26,7 @@ else
 	echo "$HOME/.tmux/plugins already exists."
 fi
 
-if [[ -d "$HOME"/.tmux/plugins/tpm ]]; then
+if [[ ! -d "$HOME"/.tmux/plugins/tpm ]]; then
 	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins
 	echo "Please use prefix + I in a tmux session to install pending plugins."
 fi
