@@ -1,60 +1,43 @@
--- auto install packer if not installed
-local ensure_packer = function()
-	local fn = vim.fn
-	local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-	if fn.empty(fn.glob(install_path)) > 0 then
-		fn.system({ "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path })
-		vim.cmd([[packadd packer.nvim]])
-		return true
-	end
-	return false
+-- bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git", "--branch=stable", -- latest stable release
+    lazypath,
+  })
 end
-local packer_bootstrap = ensure_packer() -- true if packer was just installed
+vim.opt.rtp:prepend(lazypath)
 
--- autocommand that reloads neovim and installs/updates/removes plugins
--- when file is saved
-vim.cmd([[ 
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
-  augroup end
-]])
+-- set leader key to space
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
--- import packer safely
-local status, packer = pcall(require, "packer")
-if not status then
-	return
-end
 
--- add list of plugins to install
-return packer.startup(function(use)
-	-- packer can manage itself
-	use("wbthomason/packer.nvim")
+require('lazy').setup({
+	"nvim-lua/plenary.nvim", -- lua functions for many other plugins
 
-	use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
+	"bluz71/vim-nightfly-guicolors", -- preferred colorscheme
 
-	use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
+	"christoomey/vim-tmux-navigator", -- tmux & split window navigation
 
-	use("christoomey/vim-tmux-navigator") -- tmux & split window navigation
-
-	use("szw/vim-maximizer") -- maximizes and restores current window
+	"szw/vim-maximizer", -- maximizes and restores current window
 
 	-- essential plugins
-	use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
-	use("inkarkat/vim-ReplaceWithRegister") -- replace with register contents using motion (gr + motion)
+	"tpope/vim-surround", -- add, delete, change surroundings (it's awesome,
+	"inkarkat/vim-ReplaceWithRegister", -- replace with register contents using motion (gr + motion,
 
 	-- commenting with gc
-	use("numToStr/Comment.nvim")
+	"numToStr/Comment.nvim",
 
 	-- file explorer
-	use("nvim-tree/nvim-tree.lua")
-
-	-- vs-code like icons
-	use("nvim-tree/nvim-web-devicons")
+	"nvim-tree/nvim-tree.lua",
 
 	-- statusline
-	use("nvim-lualine/lualine.nvim")
-	use({
+	"nvim-lualine/lualine.nvim",
+	{
 		"kdheepak/tabline.nvim",
 		config = function()
 			vim.cmd([[
@@ -62,81 +45,80 @@ return packer.startup(function(use)
         set sessionoptions+=tabpages,globals " store tabpages and globals in session
       ]])
 		end,
-		requires = { { "hoob3rt/lualine.nvim", opt = true }, { "kyazdani42/nvim-web-devicons", opt = true } },
-	})
+		dependencies = { "nvim-lualine/lualine.nvim", "kyazdani42/nvim-web-devicons" },
+	},
 
 	-- fuzzy finding w/ telescope
-	use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" }) -- dependency for better sorting performance
-	use({ "nvim-telescope/telescope.nvim", branch = "0.1.x" }) -- fuzzy finder
-	use("nvim-lua/popup.nvim")
+	{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" }, -- dependency for better sorting performance
+	{ "nvim-telescope/telescope.nvim", branch = "0.1.x" }, -- fuzzy finder
+	"nvim-lua/popup.nvim",
 
 	-- autocompletion
-	use("hrsh7th/nvim-cmp") -- completion plugin
-	use("hrsh7th/cmp-buffer") -- source for text in buffer
-	use("hrsh7th/cmp-path") -- source for file system paths
+	"hrsh7th/nvim-cmp", -- completion plugin
+	"hrsh7th/cmp-buffer", -- source for text in buffer
+	"hrsh7th/cmp-path", -- source for file system paths
 
 	-- snippets
-	use("L3MON4D3/LuaSnip") -- snippet engine
-	use("saadparwaiz1/cmp_luasnip") -- for autocompletion
-	use("rafamadriz/friendly-snippets") -- useful snippets
+	"L3MON4D3/LuaSnip", -- snippet engine
+	"saadparwaiz1/cmp_luasnip", -- for autocompletion
+	"rafamadriz/friendly-snippets", -- useful snippets
 
 	-- managing & installing lsp servers, linters & formatters
-	use("williamboman/mason.nvim") -- in charge of managing lsp servers, linters & formatters
-	use("williamboman/mason-lspconfig.nvim") -- bridges gap b/w mason & lspconfig
+	"williamboman/mason.nvim", -- in charge of managing lsp servers, linters & formatters
+	"williamboman/mason-lspconfig.nvim", -- bridges gap b/w mason & lspconfig
 
 	-- configuring lsp servers
-	use("neovim/nvim-lspconfig") -- easily configure language servers
-	use("hrsh7th/cmp-nvim-lsp") -- for autocompletion
-	use("jose-elias-alvarez/typescript.nvim") -- additional functionality for typescript server (e.g. rename file & update imports)
-	use("onsails/lspkind.nvim") -- vs-code like icons for autocompletion
-	use({
+	"neovim/nvim-lspconfig", -- easily configure language servers
+	"hrsh7th/cmp-nvim-lsp", -- for autocompletion
+	"jose-elias-alvarez/typescript.nvim", -- additional functionality for typescript server (e.g. rename file & update imports,
+	"onsails/lspkind.nvim", -- vs-code like icons for autocompletion
+	{
 		"glepnir/lspsaga.nvim",
 		branch = "main",
 		config = function()
 			require("lspsaga").setup({})
 		end,
-	})
+	},
 
 	-- formatting & linting
-	use("jose-elias-alvarez/null-ls.nvim") -- configure formatters & linters
-	use("jayp0521/mason-null-ls.nvim") -- bridges gap b/w mason & null-ls
+	"jose-elias-alvarez/null-ls.nvim", -- configure formatters & linters
+	"jayp0521/mason-null-ls.nvim", -- bridges gap b/w mason & null-ls
 
 	-- dap
-	use("mfussenegger/nvim-dap")
-	use("mfussenegger/nvim-dap-python")
-	use("rcarriga/nvim-dap-ui")
-	use("theHamsta/nvim-dap-virtual-text")
-	use("nvim-telescope/telescope-dap.nvim")
+	"mfussenegger/nvim-dap",
+	"mfussenegger/nvim-dap-python",
+	"rcarriga/nvim-dap-ui",
+	"theHamsta/nvim-dap-virtual-text",
+	"nvim-telescope/telescope-dap.nvim",
 
 	-- treesitter configuration
-	use({
+	{
 		"nvim-treesitter/nvim-treesitter",
-		run = ":TSUpdate",
-	})
-	use("nvim-treesitter/nvim-treesitter-context")
-
-	-- auto closing
-	use({
+		build = ":TSUpdate",
+		dependencies = {
 		"windwp/nvim-autopairs",
-		after = "nvim-treesitter",
-		wants = "nvim-treesitter",
-		module = {
-			"nvim-autopairs.autopairs.rule",
-			"nvim-autopairs.ts-conds",
-			"nvim-autopairs.completion.cmp",
-			"nvim-autopairs",
-		},
-	})
-	-- autoclose parens, brackets, quotes, etc...
-	use({ "windwp/nvim-ts-autotag", after = "nvim-treesitter", wants = "nvim-treesitter", event = "InsertEnter" }) -- autoclose tags
+		"windwp/nvim-ts-autotag",
+		}
+	},
+  {
+    'windwp/nvim-autopairs',
+    event = "InsertEnter",
+    opts = {} -- this is equalent to setup({}) function
+  },
+	"nvim-treesitter/nvim-treesitter-context",
 
 	-- git integration
-	use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
+	"lewis6991/gitsigns.nvim", -- show line modifications on left hand side
 
 	-- wakatime
-	use("wakatime/vim-wakatime")
+	"wakatime/vim-wakatime",
 
-	if packer_bootstrap then
-		require("packer").sync()
-	end
-end)
+
+	-- hard time
+	--{
+	--	"m4xshen/hardtime.nvim",
+	--	dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+	--	opts = {}
+	--},
+	-- "madox2/vim-ai",
+})
