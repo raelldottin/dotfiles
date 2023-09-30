@@ -37,11 +37,5 @@ if not cmp_setup then
 	return
 end
 
-autopairs_rules.add_rules({
-	autopairs_rules(require("nvim-autopairs.rules.endwise-lua")),
-	autopairs_rules("%", "%", "lua"):with_pair(autopairs_ts_conds.is_ts_node({ "string", "comment" })),
-	autopairs_rules("$", "$", "lua"):with_pair(autopairs_ts_conds.is_not_ts_node({ "function" })),
-})
-
 -- make autopairs and completion work together
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
