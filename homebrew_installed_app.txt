@@ -135,9 +135,10 @@ z3
 zstd
 aerial
 blockblock
+brave-browser
+discord
 font-hack-nerd-font
 grammarly
-hyper
 kitty
 knockknock
 lulu
