@@ -4,29 +4,41 @@ echo "Setting up Zsh configuration file."
 ln -fn zshrc "$HOME"/.zshrc
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-	if which curl >/dev/null; then
-		sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	elif which wget >/dev/null; then
-		sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	elif which fetch >/dev/null; then
-		sh -c "$(fetch -o - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-	else
-		echo "No utility found to perform download."
-	fi
+    download_script() {
+        local download_command
+        if command -v curl &> /dev/null; then
+            download_command="curl -fsSL"
+        elif command -v wget &> /dev/null; then
+            download_command="wget -O-"
+        elif command -v fetch &> /dev/null; then
+            download_command="fetch -o -"
+        else
+            echo "Error: No utility found to perform download."
+            exit 1
+        fi
+        $download_command "$1" | sh
+    }
+
+    download_script "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 fi
 
-if which git >/dev/null; then
-	if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"/themes/powerlevel10k ]]; then
-		git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"/themes/powerlevel10k
-	fi
-	if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions ]]; then
-		git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
-	fi
-	if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"/plugins/fast-syntax-highlighting ]]; then
-		git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"/plugins/fast-syntax-highlighting
-	fi
+if command -v git &> /dev/null; then
+    clone_repo() {
+        local repo_url="$1"
+        local target_directory="$2"
+        if [[ ! -d "$target_directory" ]]; then
+            git clone --depth=1 "$repo_url" "$target_directory"
+        fi
+    }
+
+    ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+    clone_repo "https://github.com/romkatv/powerlevel10k.git" "$ZSH_CUSTOM/themes/powerlevel10k"
+    clone_repo "https://github.com/zsh-users/zsh-autosuggestions" "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+    clone_repo "https://github.com/zdharma-continuum/fast-syntax-highlighting.git" "$ZSH_CUSTOM/plugins/fast-syntax-highlighting"
 else
-	echo "Please install git."
+    echo "Error: Please install git."
+    exit 1
 fi
 
 echo "Zsh configuration complete."
