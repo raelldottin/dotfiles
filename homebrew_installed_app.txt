@@ -30,6 +30,7 @@ go
 graphite2
 harfbuzz
 highway
+hyperfine
 icu4c
 imath
 isl
@@ -71,6 +72,7 @@ libxrender
 libzip
 little-cms2
 llvm
+llvm@16
 lolcat
 lua
 lua-language-server
@@ -133,10 +135,13 @@ z3
 zstd
 aerial
 blockblock
+brave-browser
+discord
 font-hack-nerd-font
 grammarly
-hyper
+kitty
 knockknock
 lulu
 oversight
+plex
 rectangle

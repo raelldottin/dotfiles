@@ -2,11 +2,12 @@ SHELL := bash
 
 #Build all items
 .PHONY: all install
-all install: dependencies zsh tmux hyper nvim
+all install: dependencies zsh tmux nvim
 
 #Install dependencies
 .PHONY: dependencies
 dependencies:
+
 	${SHELL} ./pre-install.sh
 
 #Setup zsh
@@ -18,11 +19,6 @@ zsh:
 .PHONY: tmux
 tmux:
 	${SHELL} ./tmuxsetup.sh
-
-#Setup hyper
-.PHONY: hyper
-hyper:
-	${SHELL} ./hypersetup.sh
 
 #Setup nvim
 .PHONY: nvim
