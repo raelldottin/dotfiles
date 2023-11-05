@@ -8,8 +8,8 @@ require("core.colorscheme")
 
 --Plugins
 require("plugins.autopairs")
-require("plugins.ts-autotag")
-require("plugins.comment")
+--require("plugins.ts-autotag")
+--require("plugins.comment")
 require("plugins.gitsigns")
 require("plugins.lualine")
 require("plugins.mason")
