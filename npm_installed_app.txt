@@ -1,7 +1,7 @@
 /opt/homebrew/lib
 ├── bash-language-server@4.9.1
 ├── neovim@4.10.1
-├── npm@10.1.0
+├── npm@10.2.0
 ├── tree-sitter-markdown@0.7.1
 └── typescript@5.0.4
 
