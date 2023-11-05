@@ -1,22 +1,22 @@
 -- bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git", "--branch=stable", -- latest stable release
-    lazypath,
-  })
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- set leader key to space
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
-
-require('lazy').setup({
+require("lazy").setup({
 	"nvim-lua/plenary.nvim", -- lua functions for many other plugins
 
 	"bluz71/vim-nightfly-guicolors", -- preferred colorscheme
@@ -30,7 +30,7 @@ require('lazy').setup({
 	"inkarkat/vim-ReplaceWithRegister", -- replace with register contents using motion (gr + motion,
 
 	-- commenting with gc
-	"numToStr/Comment.nvim",
+	--	"numToStr/Comment.nvim",
 
 	-- file explorer
 	"nvim-tree/nvim-tree.lua",
@@ -61,7 +61,7 @@ require('lazy').setup({
 	-- snippets
 	"L3MON4D3/LuaSnip", -- snippet engine
 	"saadparwaiz1/cmp_luasnip", -- for autocompletion
-	"rafamadriz/friendly-snippets", -- useful snippets
+	--"rafamadriz/friendly-snippets", -- useful snippets
 
 	-- managing & installing lsp servers, linters & formatters
 	"williamboman/mason.nvim", -- in charge of managing lsp servers, linters & formatters
@@ -96,15 +96,15 @@ require('lazy').setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		dependencies = {
-		"windwp/nvim-autopairs",
-		"windwp/nvim-ts-autotag",
-		}
+			"windwp/nvim-autopairs",
+			--		"windwp/nvim-ts-autotag",
+		},
 	},
-  {
-    'windwp/nvim-autopairs',
-    event = "InsertEnter",
-    opts = {} -- this is equalent to setup({}) function
-  },
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		opts = {}, -- this is equalent to setup({}) function
+	},
 	"nvim-treesitter/nvim-treesitter-context",
 
 	-- git integration
@@ -112,7 +112,6 @@ require('lazy').setup({
 
 	-- wakatime
 	"wakatime/vim-wakatime",
-
 
 	-- hard time
 	--{
