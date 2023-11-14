@@ -125,6 +125,7 @@ python-packaging
 python-psutil
 python-setuptools
 python@3.11
+python@3.12
 pyyaml
 readline
 reattach-to-user-namespace
