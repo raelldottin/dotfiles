@@ -1,13 +1,13 @@
 <!---
 This file is auto-generate by a github hook please modify README.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.2.0-105
+# raelldottin/dotfiles v0.2.0-106
 [![Makefile Linter](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script Linter](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 [![Lua Linter](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 [![Python Linter](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
 
-[![ v0.2.0-105 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
+[![ v0.2.0-106 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
 
 **Table of Contents**
 
@@ -71,7 +71,6 @@ Repo file hierarchy
 │           │   ├── keymaps.lua
 │           │   └── options.lua
 │           ├── plugins
-│           │   ├── comment.lua
 │           │   ├── gitsigns.lua
 │           │   ├── lsp
 │           │   │   ├── lspconfig.lua
@@ -100,7 +99,7 @@ Repo file hierarchy
 ├── zshrc
 └── zshsetup.sh
 
-10 directories, 46 files
+10 directories, 45 files
 ```
 
 ### Uninstalling
