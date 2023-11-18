@@ -42,7 +42,6 @@ jpeg-turbo
 jpeg-xl
 jq
 julia
-jupyterlab
 krb5
 kubernetes-cli
 libavif
@@ -120,10 +119,10 @@ pydocstyle
 pygments
 pyright
 python-certifi
-python-lsp-server
 python-packaging
 python-psutil
 python-setuptools
+python-typing-extensions
 python@3.11
 python@3.12
 pyyaml
@@ -132,6 +131,7 @@ reattach-to-user-namespace
 ripgrep
 rtmpdump
 ruff
+ruff-lsp
 rust
 sevenzip
 shellcheck

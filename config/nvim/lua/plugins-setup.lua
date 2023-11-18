@@ -46,7 +46,7 @@ require("lazy").setup({
       {
         "nvim-telescope/telescope-fzf-native.nvim",
         build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && make --build build --config Release && cmake --install build --prefix build",
-        conda = function()
+        cond = function()
           return vim.fn.executable("make") == 1
         end,
       },

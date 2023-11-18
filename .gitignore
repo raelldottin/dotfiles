@@ -1,2 +1,4 @@
 .git
 *.log
+package-lock.json
+package.json
