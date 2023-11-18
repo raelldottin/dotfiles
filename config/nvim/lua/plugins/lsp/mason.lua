@@ -56,7 +56,7 @@ mason_null_ls.setup({
     "stylua",
     "alex",
     "black",
-    "pylint",
+    "pyright",
     "shellcheck",
     "shfmt",
     "stylua", -- lua formatter

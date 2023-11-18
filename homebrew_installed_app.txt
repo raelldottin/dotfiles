@@ -160,6 +160,7 @@ blockblock
 brave-browser
 discord
 font-hack-nerd-font
+font-monaspace
 grammarly
 kitty
 knockknock
