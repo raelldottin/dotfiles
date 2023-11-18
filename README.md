@@ -1,13 +1,13 @@
 <!---
 This file is auto-generate by a github hook please modify README.template if you don't want to loose your work
 -->
-# raelldottin/dotfiles v0.2.0-107
+# raelldottin/dotfiles v0.2.0-108
 [![Makefile Linter](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script Linter](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 [![Lua Linter](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 [![Python Linter](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
 
-[![ v0.2.0-107 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
+[![ v0.2.0-108 ](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)](https://github.com/raelldottin/dotfiles/blob/main/PNGimage.png)
 
 **Table of Contents**
 
@@ -80,7 +80,6 @@ Repo file hierarchy
 │           │   ├── mason.lua
 │           │   ├── nvim-cmp.lua
 │           │   ├── nvim-tree.lua
-│           │   ├── tabline.lua
 │           │   ├── telescope.lua
 │           │   └── treesitter.lua
 │           └── plugins-setup.lua
@@ -98,7 +97,7 @@ Repo file hierarchy
 ├── zshrc
 └── zshsetup.sh
 
-10 directories, 44 files
+10 directories, 43 files
 ```
 
 ### Uninstalling
