@@ -117,10 +117,10 @@ fi
 
 # Display message of the day
 echo "Quote:"
-fortune -s | lolcat -f
+fortune -s | lolcat -fa
 echo
 echo "GitHub Activity:"
-gh status | lolcat -f
+gh status | lolcat -fa
 if [[ -n "$(brew outdated)" ]]; then
   brew upgrade
 fi
