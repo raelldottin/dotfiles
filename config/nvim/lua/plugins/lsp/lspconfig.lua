@@ -16,96 +16,39 @@ if not typescript_setup then
   return
 end
 
-local keymap = vim.keymap -- for conciseness
+-- See: https://github.com/neovim/nvim-lspconfig/tree/54eb2a070a4f389b1be0f98070f81d23e2b1a715#suggested-configuration
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
 
--- enable keybinds only for when lsp server available
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
-  -- keybind options
-  local opts = { noremap = true, silent = true, buffer = bufnr }
+  -- Enable completion triggered by <c-x><c-o>
+  vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
-  -- set keybinds
-
-  -- LSP finder - Find the symbol's definition
-  -- If there is no definition, it will instead be hidden
-  -- When you use an action in finder like "open vsplit",
-  -- you can use <C-t> to jump back
-  keymap.set("n", "gf", "<cmd>Lspsaga lsp_finder<CR>", opts)
-
-  -- Code action
-  keymap.set("n", "<leader>ca", "<cmd>Lspsaga code_action<CR>", opts)
-
-  -- Rename all occurrences of the hovered word for the entire file
-  keymap.set("n", "rn", "<cmd>Lspsaga rename<CR>", opts)
-
-  -- Rename all occurrences of the hovered word for the selected files
-  keymap.set("n", "gr", "<cmd>Lspsaga rename ++project<CR>", opts)
-
-  -- Peek definition
-  -- You can edit the file containing the definition in the floating window
-  -- It also supports open/vsplit/etc operations, do refer to "definition_action_keys"
-  -- It also supports tagstack
-  -- Use <C-t> to jump back
-  keymap.set("n", "gD", "<cmd>Lspsaga peek_definition<CR>", opts)
-
-  -- Go to definition
-  keymap.set("n", "gd", "<cmd>Lspsaga goto_definition<CR>", opts)
-
-  -- Show line diagnostics
-  -- You can pass argument ++unfocus to
-  -- unfocus the show_line_diagnostics floating window
-  keymap.set("n", "<leader>sl", "<cmd>Lspsaga show_line_diagnostics<CR>", opts)
-
-  -- Show cursor diagnostics
-  -- Like show_line_diagnostics, it supports passing the ++unfocus argument
-  keymap.set("n", "<leader>sc", "<cmd>Lspsaga show_cursor_diagnostics<CR>", opts)
-
-  -- Show buffer diagnostics
-  keymap.set("n", "<leader>sb", "<cmd>Lspsaga show_buf_diagnostics<CR>", opts)
-
-  -- Diagnostic jump
-  -- You can use <C-o> to jump back to your previous location
-  keymap.set("n", "[e", "<cmd>Lspsaga diagnostic_jump_prev<CR>", opts)
-  keymap.set("n", "]e", "<cmd>Lspsaga diagnostic_jump_next<CR>", opts)
-
-  -- Diagnostic jump with filters such as only jumping to an error
-  keymap.set("n", "[E", function()
-    require("lspsaga.diagnostic"):goto_prev({ severity = vim.diagnostic.severity.ERROR })
-  end)
-  keymap.set("n", "]E", function()
-    require("lspsaga.diagnostic"):goto_next({ severity = vim.diagnostic.severity.ERROR })
-  end)
-
-  -- Toggle outline
-  keymap.set("n", "<leader>o", "<cmd>Lspsaga outline<CR>", opts)
-
-  -- Hover Doc
-  -- If there is no hover doc,
-  -- there will be a notification stating that
-  -- there is no information available.
-  -- To disable it just use ":Lspsaga hover_doc ++quiet"
-  -- Pressing the key twice will enter the hover window
-  keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", opts)
-
-  -- If you want to keep the hover window in the top right hand corner,
-  -- you can pass the ++keep argument
-  -- Note that if you use hover with ++keep, pressing this key again will
-  -- close the hover window. If you want to jump to the hover window
-  -- you should use the wincmd command "<C-w>w"
-  keymap.set("n", "K", "<cmd>Lspsaga hover_doc ++keep<CR>", opts)
-
-  -- Call hierarchy
-  keymap.set("n", "<Leader>ci", "<cmd>Lspsaga incoming_calls<CR>", opts)
-  keymap.set("n", "<Leader>co", "<cmd>Lspsaga outgoing_calls<CR>", opts)
-
-  -- Floating terminal
-  keymap.set({ "n", "t" }, "<A-d>", "<cmd>Lspsaga term_toggle<CR>", opts)
-
-  -- typescript specific keymaps (e.g. rename file and update imports)
-  if client.name == "tsserver" then
-    keymap.set("n", "<leader>rf", ":TypescriptRenameFile<CR>", opts) -- rename file and update imports
-    keymap.set("n", "<leader>oi", ":TypescriptOrganizeImports<CR>", opts) -- organize imports (not in youtube nvim video)
-    keymap.set("n", "<leader>ru", ":TypescriptRemoveUnused<CR>", opts) -- remove unused variables (not in youtube nvim video)
-  end
+  -- Mappings.
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  local bufopts = { noremap = true, silent = true, buffer = bufnr }
+  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
+  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+  vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set("n", "<space>wl", function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, bufopts)
+  vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
+  vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+  vim.keymap.set("n", "<space>f", function()
+    vim.lsp.buf.format({ async = true })
+  end, bufopts)
 end
 
 -- used to enable autocompletion (assign to every lsp server config)
@@ -144,15 +87,8 @@ lspconfig["dockerls"].setup({
   on_attach = on_attach,
 })
 
--- configure golangci_linit_ls
+-- configure golangci_lint_ls
 lspconfig["golangci_lint_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  filetypes = { "go" },
-})
-
--- configure gopls
-lspconfig["gopls"].setup({
   capabilities = capabilities,
   on_attach = on_attach,
   filetypes = { "go" },
@@ -200,30 +136,8 @@ lspconfig["prosemd_lsp"].setup({
   on_attach = on_attach,
 })
 
--- configure pyright
-lspconfig["pyright"].setup({
-  on_attach = on_attach,
-  settings = {
-    pyright = { autoImportCompletion = true },
-    python = {
-      analysis = {
-        autoSearchPaths = true,
-        diagnosticMode = "workspace",
-        venvpath = "venv",
-        useLibraryCodeForTypes = true,
-      },
-    },
-  },
-})
-
 -- configure marksman
 lspconfig["marksman"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure powershell_es
-lspconfig["powershell_es"].setup({
   capabilities = capabilities,
   on_attach = on_attach,
 })
@@ -236,6 +150,27 @@ lspconfig["terraformls"].setup({
 
 -- configure powershell_es
 lspconfig["tflint"].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
+-- configure ruff_lsp
+local configs = require("lspconfig.configs")
+if not configs.ruff_lsp then
+  configs.ruff_lsp = {
+    default_config = {
+      cmd = { "ruff-lsp" },
+      filetypes = { "python" },
+      root_dir = require("lspconfig").util.find_git_ancestor,
+      init_options = {
+        settings = {
+          args = {},
+        },
+      },
+    },
+  }
+end
+lspconfig[i("ruff_lsp")].setup({
   capabilities = capabilities,
   on_attach = on_attach,
 })
