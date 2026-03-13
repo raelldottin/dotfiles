@@ -1,0 +1,8 @@
+* @raelldottin
+
+.github/workflows/* @raelldottin
+*.sh @raelldottin
+Makefile @raelldottin
+config/nvim/** @raelldottin
+docs/** @raelldottin
+

@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - "codex/**"
   workflow_dispatch:
   pull_request:
 

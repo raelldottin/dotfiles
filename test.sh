@@ -35,24 +35,9 @@ assert_installed_file_matches() {
 
 echo "Running tests on configuration files:"
 
-while IFS= read -r repo_file; do
-  assert_installed_file_matches "$repo_file" "$(dotfiles_target_for_repo_file "$REPO_ROOT" "$repo_file")"
-done < <(dotfiles_each_nvim_file "$REPO_ROOT")
-
-assert_installed_file_matches "$REPO_ROOT/zshrc" "$HOME/.zshrc"
-assert_installed_file_matches "$REPO_ROOT/pylintrc" "$HOME/.pylintrc"
-
-case "${OSTYPE:-}" in
-  linux-gnu*)
-    assert_installed_file_matches "$REPO_ROOT/linux-gnu_tmux.conf" "$HOME/.tmux.conf"
-    ;;
-  darwin*)
-    assert_installed_file_matches "$REPO_ROOT/darwin_tmux.conf" "$HOME/.tmux.conf"
-    ;;
-  *)
-    record_failure "Unable to determine operating system."
-    ;;
-esac
+while IFS=$'\t' read -r source_path target_path _; do
+  assert_installed_file_matches "$source_path" "$target_path"
+done < <(dotfiles_each_managed_file "$REPO_ROOT")
 
 if (( FAILURES > 0 )); then
   echo "Tests complete with $FAILURES failure(s)."

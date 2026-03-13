@@ -5,7 +5,7 @@ LUACHECK ?= luacheck
 PYRIGHT ?= pyright
 SHELLCHECK ?= shellcheck
 
-.PHONY: all install bootstrap dependencies zsh tmux nvim clean uninstall
+.PHONY: all install bootstrap dependencies hooks zsh tmux nvim clean uninstall
 .PHONY: lint lint-make lint-shell lint-lua lint-python
 .PHONY: test unit-test integration-test verify verify-install
 
@@ -18,6 +18,10 @@ install: zsh tmux nvim
 # Bootstrap workstation dependencies explicitly.
 bootstrap dependencies:
 	${SHELL} ./pre-install.sh
+
+# Configure the shared repository git hooks.
+hooks:
+	git config core.hooksPath .githooks
 
 # Setup zsh.
 zsh:
