@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 # https://www.viget.com/articles/two-ways-to-share-git-hooks-with-your-team/
 # git config core.hooksPath .githooks
 
 # run from the root of the repo
-.githooks/replace_by_git_vars.py README.template README.md
+python3 .githooks/replace_by_git_vars.py README.template README.md
 brew list >homebrew_installed_app.txt
 npm list -g >npm_installed_app.txt
 

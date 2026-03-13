@@ -1,36 +1,37 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-runclean() {
-	local_file="$1"
-	if rm -f "$local_file"; then
-		echo "Successfully deleted $local_file"
-	fi
-}
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/lib/dotfiles.sh"
+
+REPO_ROOT="$(dotfiles_repo_root)"
+
 echo "Uninstalling configuration files:"
-runclean "$HOME/.config/nvim/init.lua"
-runclean "$HOME/.config/nvim/lua/core/colorscheme.lua"
-runclean "$HOME/.config/nvim/lua/core/keymaps.lua"
-runclean "$HOME/.config/nvim/lua/core/options.lua"
-runclean "$HOME/.config/nvim/lua/plugins/autopairs.lua"
-runclean "$HOME/.config/nvim/lua/plugins/ts-autotag.lua"
-runclean "$HOME/.config/nvim/lua/plugins/comment.lua"
-runclean "$HOME/.config/nvim/lua/plugins/gitsigns.lua"
-runclean "$HOME/.config/nvim/lua/plugins/lsp/lspconfig.lua"
-runclean "$HOME/.config/nvim/lua/plugins/lsp/mason.lua"
-runclean "$HOME/.config/nvim/lua/plugins/lsp/null-ls.lua"
-runclean "$HOME/.config/nvim/lua/plugins/lualine.lua"
-runclean "$HOME/.config/nvim/lua/plugins/mason.lua"
-runclean "$HOME/.config/nvim/lua/plugins/nvim-cmp.lua"
-runclean "$HOME/.config/nvim/lua/plugins/nvim-tree.lua"
-runclean "$HOME/.config/nvim/lua/plugins/telescope.lua"
-runclean "$HOME/.config/nvim/lua/plugins/treesitter.lua"
-runclean "$HOME/.config/nvim/lua/plugins-setup.lua"
-runclean "$HOME/.hyper.js"
-runclean "$HOME/.tmux.conf"
-runclean "$HOME/.zshrc"
-runclean "$HOME/.pylintrc"
-if [[ -d ~/.local/nvim ]]; then
-	echo "If you encounter issues, please delete $HOME/.local/nvim"
+
+while IFS= read -r repo_file; do
+  dotfiles_remove_if_managed "$repo_file" "$(dotfiles_target_for_repo_file "$REPO_ROOT" "$repo_file")"
+done < <(dotfiles_each_nvim_file "$REPO_ROOT")
+
+dotfiles_remove_if_managed "$REPO_ROOT/zshrc" "$HOME/.zshrc"
+dotfiles_remove_if_managed "$REPO_ROOT/pylintrc" "$HOME/.pylintrc"
+
+case "${OSTYPE:-}" in
+  linux-gnu*)
+    dotfiles_remove_if_managed "$REPO_ROOT/linux-gnu_tmux.conf" "$HOME/.tmux.conf"
+    ;;
+  darwin*)
+    dotfiles_remove_if_managed "$REPO_ROOT/darwin_tmux.conf" "$HOME/.tmux.conf"
+    ;;
+esac
+
+dotfiles_prune_empty_dirs "$HOME/.config/nvim/lua/plugins/lsp"
+dotfiles_prune_empty_dirs "$HOME/.config/nvim/lua/plugins"
+dotfiles_prune_empty_dirs "$HOME/.config/nvim/lua/core"
+dotfiles_prune_empty_dirs "$HOME/.config/nvim/lua"
+dotfiles_prune_empty_dirs "$HOME/.config/nvim"
+
+if [[ -d "$HOME/.local/nvim" ]]; then
+  echo "If you encounter issues, please delete $HOME/.local/nvim"
 fi
 
 echo "Uninstallation complete."

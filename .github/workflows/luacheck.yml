@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
       - '**.lua'
   workflow_dispatch:
@@ -18,6 +19,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v10
+
+      - name: Setup LuaRocks
+        uses: leafo/gh-actions-luarocks@v5
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
       - name: Run Lua Linter
-        id: luacheck
-        uses: leafo/gh-actions-lua@v9
+        run: luacheck config/nvim

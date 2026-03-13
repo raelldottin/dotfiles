@@ -32,4 +32,4 @@ telescope.setup({
   },
 })
 
-telescope.load_extension("fzf")
+pcall(telescope.load_extension, "fzf")

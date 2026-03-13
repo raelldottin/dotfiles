@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-git config current.version $(git describe | grep -io '[0-9]\.[0-9]\.[0-9]\-[0-9]*')
-git config current.filehierarchy "$(tree -a --gitignore)"
+git config current.version "$(git describe | grep -io '[0-9]\.[0-9]\.[0-9]\-[0-9]*')"
+
+if command -v tree >/dev/null 2>&1; then
+  git config current.filehierarchy "$(tree -a --gitignore)"
+fi

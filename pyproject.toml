@@ -1,0 +1,8 @@
+[tool.pyright]
+include = ["gitvars.py", ".githooks/replace_by_git_vars.py", "tests"]
+exclude = ["**/__pycache__"]
+pythonVersion = "3.14"
+typeCheckingMode = "basic"
+reportMissingImports = "error"
+reportMissingTypeStubs = "none"
+

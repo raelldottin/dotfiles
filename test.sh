@@ -1,90 +1,62 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-runtest() {
-	repo_file="$1"
-	local_file="$2"
-	if [[ -r "$repo_file" ]]; then
-		if [[ -r "$local_file" ]]; then
-			#if diff "$repo_file" "$local_file" > /dev/null; then
-			#  echo "$repo_file" and "$local_file" are in sync.
-			#else
-			if ! diff "$repo_file" "$local_file" >/dev/null; then
-				echo "$repo_file" and "$local_file" are out of sync.
-			fi
-			if [[ $(stat -f "%l" "$local_file") -eq 1 ]]; then
-				echo "$local_file" is not a hardlink.
-			fi
-		else
-			echo "$local_file" is not readable.
-		fi
-	else
-		echo "$repo_file" is not readable.
-	fi
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/lib/dotfiles.sh"
+
+REPO_ROOT="$(dotfiles_repo_root)"
+FAILURES=0
+
+record_failure() {
+  local message="$1"
+
+  echo "$message"
+  FAILURES=$((FAILURES + 1))
 }
-echo "Runnings tests on configuration files:"
-runtest "config/nvim/init.lua" \
-	"$HOME/.config/nvim/init.lua"
-runtest "config/nvim/lua/core/colorscheme.lua" \
-	"$HOME/.config/nvim/lua/core/colorscheme.lua"
-runtest "config/nvim/lua/core/keymaps.lua" \
-	"$HOME/.config/nvim/lua/core/keymaps.lua"
-runtest "config/nvim/lua/core/options.lua" \
-	"$HOME/.config/nvim/lua/core/options.lua"
-runtest "config/nvim/lua/core/options.lua" \
-	"$HOME/.config/nvim/lua/core/options.lua"
-runtest "config/nvim/lua/plugins/autopairs.lua" \
-	"$HOME/.config/nvim/lua/plugins/autopairs.lua"
-runtest "config/nvim/lua/plugins/ts-autotag.lua" \
-	"$HOME/.config/nvim/lua/plugins/ts-autotag.lua"
-runtest "config/nvim/lua/plugins/comment.lua" \
-	"$HOME/.config/nvim/lua/plugins/comment.lua"
-runtest "config/nvim/lua/plugins/gitsigns.lua" \
-	"$HOME/.config/nvim/lua/plugins/gitsigns.lua"
-runtest "config/nvim/lua/plugins/lsp/lspconfig.lua" \
-	"$HOME/.config/nvim/lua/plugins/lsp/lspconfig.lua"
-runtest "config/nvim/lua/plugins/lsp/mason.lua" \
-	"$HOME/.config/nvim/lua/plugins/lsp/mason.lua"
-runtest "config/nvim/lua/plugins/lsp/null-ls.lua" \
-	"$HOME/.config/nvim/lua/plugins/lsp/null-ls.lua"
-runtest "config/nvim/lua/plugins/lualine.lua" \
-	"$HOME/.config/nvim/lua/plugins/lualine.lua"
-runtest "config/nvim/lua/plugins/tabline.lua" \
-	"$HOME/.config/nvim/lua/plugins/tabline.lua"
-runtest "config/nvim/lua/plugins/mason.lua" \
-	"$HOME/.config/nvim/lua/plugins/mason.lua"
-runtest "config/nvim/lua/plugins/nvim-cmp.lua" \
-	"$HOME/.config/nvim/lua/plugins/nvim-cmp.lua"
-runtest "config/nvim/lua/plugins/nvim-tree.lua" \
-	"$HOME/.config/nvim/lua/plugins/nvim-tree.lua"
-runtest "config/nvim/lua/plugins/telescope.lua" \
-	"$HOME/.config/nvim/lua/plugins/telescope.lua"
-runtest "config/nvim/lua/plugins/treesitter.lua" \
-	"$HOME/.config/nvim/lua/plugins/treesitter.lua"
-runtest "config/nvim/lua/plugins-setup.lua" \
-	"$HOME/.config/nvim/lua/plugins-setup.lua"
-runtest "hyper.js" "$HOME/.hyper.js"
-case "$OSTYPE" in
-linux-gnu)
-	tmux_conf="linux-gnu_tmux.conf"
-	;;
-darwin*)
-	tmux_conf="darwin_tmux.conf"
-	;;
-*)
-	echo "Unable to determine operating system"
-	;;
+
+assert_installed_file_matches() {
+  local source_path="$1"
+  local target_path="$2"
+
+  if [[ ! -r "$source_path" ]]; then
+    record_failure "$source_path is not readable."
+    return
+  fi
+
+  if [[ ! -r "$target_path" ]]; then
+    record_failure "$target_path is not readable."
+    return
+  fi
+
+  if ! diff "$source_path" "$target_path" >/dev/null; then
+    record_failure "$source_path and $target_path are out of sync."
+  fi
+}
+
+echo "Running tests on configuration files:"
+
+while IFS= read -r repo_file; do
+  assert_installed_file_matches "$repo_file" "$(dotfiles_target_for_repo_file "$REPO_ROOT" "$repo_file")"
+done < <(dotfiles_each_nvim_file "$REPO_ROOT")
+
+assert_installed_file_matches "$REPO_ROOT/zshrc" "$HOME/.zshrc"
+assert_installed_file_matches "$REPO_ROOT/pylintrc" "$HOME/.pylintrc"
+
+case "${OSTYPE:-}" in
+  linux-gnu*)
+    assert_installed_file_matches "$REPO_ROOT/linux-gnu_tmux.conf" "$HOME/.tmux.conf"
+    ;;
+  darwin*)
+    assert_installed_file_matches "$REPO_ROOT/darwin_tmux.conf" "$HOME/.tmux.conf"
+    ;;
+  *)
+    record_failure "Unable to determine operating system."
+    ;;
 esac
-runtest "$tmux_conf" "$HOME/.tmux.conf"
-runtest "zshrc" "$HOME/.zshrc"
-runtest "pylintrc" "$HOME/.pylintrc"
-if which brew >/dev/null; then
-	if [[ -r homebrew_installed_app.txt && "$(brew list)" == "$(cat homebrew_installed_app.txt)" ]]; then
-		echo "homebrew_installed_app.txt is out of sync with repo."
-	fi
+
+if (( FAILURES > 0 )); then
+  echo "Tests complete with $FAILURES failure(s)."
+  exit 1
 fi
-if which npm >/dev/null; then
-	if [[ -r npm_installed_app.txt && "$(npm list -g)" == "$(cat npm_installed_app.txt)" ]]; then
-		echo "npm_installed_app.txt is out of sync with repo."
-	fi
-fi
+
 echo "Tests complete."
