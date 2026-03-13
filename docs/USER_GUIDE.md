@@ -18,6 +18,7 @@ The install scripts never copy the tracked files into your home directory. They 
 - `make`
 - `python3`
 - Optional: `brew` if you want to use `make dependencies`
+- Optional: `cmake` if you want the `telescope-fzf-native.nvim` sorter build
 
 ## Installation
 
@@ -39,6 +40,8 @@ Install the managed dotfiles into your current `HOME`:
 make install
 ```
 
+Open `nvim` once so `lazy.nvim` can bootstrap the pinned plugin set on first launch.
+
 Verify the installed files:
 
 ```bash
@@ -53,6 +56,9 @@ All Neovim config lives under `config/nvim` in this repository and is installed 
 - `lua/core` contains editor defaults such as options, keymaps, and colors.
 - `lua/plugins` contains plugin registrations and plugin-specific configuration.
 - `lua/plugins/lsp` contains language-server and formatter wiring.
+- The current tooling stack is centered on native `vim.lsp`, `mason.nvim`, `pyright`, `ruff`, and `conform.nvim`.
+- `config/nvim/lazy-lock.json` pins plugin versions so the installed editor matches the reviewed repo state.
+- `telescope-fzf-native.nvim` is optional and activates only when both `cmake` and `make` are present.
 
 See [docs/NVIM.md](NVIM.md) for the module layout, plugin responsibilities, and update workflow.
 
@@ -96,6 +102,7 @@ The repository hook path lives in `.githooks`.
 - `pre-commit` regenerates `README.md` from `README.template`.
 - `pre-commit` records Homebrew and global npm snapshots only when those tools are installed.
 - `post-commit` refreshes the Git-backed version metadata used in the generated README.
+- If hooks were skipped for a commit, rerun `python3 .githooks/replace_by_git_vars.py README.template README.md` to resync the generated README.
 
 ## Uninstalling
 

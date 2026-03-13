@@ -91,15 +91,28 @@ class BuildGitVariablesTests(unittest.TestCase):
     def test_build_git_variables_derives_current_version_without_git_config(self) -> None:
         def fake_runner(args: gitvars.Sequence[str], _: Path) -> str:
             command = tuple(args)
-            if command == ("config", "current.version"):
-                raise subprocess.CalledProcessError(returncode=1, cmd=list(args))
-            if command == ("describe", "--tags", "--always"):
+            if command == ("describe", "--tags", "--long", "--always"):
                 return "v0.4.1-7-gabcdef"
+            if command == ("diff", "--cached", "--name-only"):
+                return ""
             raise AssertionError(f"Unexpected git invocation: {args}")
 
         result = gitvars.build_git_variables("Version: {{ current.version }}", Path.cwd(), fake_runner)
 
         self.assertEqual(result["current.version"], "0.4.1-7")
+
+    def test_build_git_variables_advances_current_version_for_staged_changes(self) -> None:
+        def fake_runner(args: gitvars.Sequence[str], _: Path) -> str:
+            command = tuple(args)
+            if command == ("describe", "--tags", "--long", "--always"):
+                return "v0.4.1-7-gabcdef"
+            if command == ("diff", "--cached", "--name-only"):
+                return "README.template\n"
+            raise AssertionError(f"Unexpected git invocation: {args}")
+
+        result = gitvars.build_git_variables("Version: {{ current.version }}", Path.cwd(), fake_runner)
+
+        self.assertEqual(result["current.version"], "0.4.1-8")
 
     def test_build_git_variables_falls_back_to_repo_directory_name_without_remote(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir_name:
