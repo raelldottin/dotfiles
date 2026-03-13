@@ -9,12 +9,6 @@ if not mason_lspconfig_status then
   return
 end
 
--- import mason-null-ls plugin safely
-local mason_null_ls_status, mason_null_ls = pcall(require, "mason-null-ls")
-if not mason_null_ls_status then
-  return
-end
-
 -- enable mason
 mason.setup({
   ui = {
@@ -27,7 +21,7 @@ mason.setup({
 })
 
 mason_lspconfig.setup({
-  -- list of servers for mason to install
+  -- Install the language servers most aligned with this repo's day-to-day work.
   ensure_installed = {
     "bashls", -- bash language server
     "clangd",
@@ -35,30 +29,14 @@ mason_lspconfig.setup({
     "golangci_lint_ls",
     "jsonls",
     "lua_ls",
-    "prosemd_lsp",
     "marksman",
+    "pyright",
+    "ruff",
     "terraformls",
     "tflint",
-    "ruff_lsp",
+    "ts_ls",
+    "yamlls",
+    "taplo",
   },
-  -- auto-install configured servers (with lspconfig)
-  automatic_installation = true, -- not the same as ensure_installed
-})
-
-mason_null_ls.setup({
-  -- list of formatters & linters for mason to install
-  ensure_installed = {
-    "cpplint",
-    "clang_format",
-    "hadolint",
-    "gitlint",
-    "gofumpt",
-    "alex",
-    "ruff",
-    "shellcheck",
-    "shfmt",
-    "stylua", -- lua formatter
-  },
-  -- auto-install configured formatters & linters (with null-ls)
-  automatic_setup = true,
+  automatic_enable = false,
 })

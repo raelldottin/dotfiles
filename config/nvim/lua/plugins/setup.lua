@@ -71,7 +71,7 @@ require("lazy").setup({
           .. " && make --build build --config Release"
           .. " && cmake --install build --prefix build",
         cond = function()
-          return vim.fn.executable("make") == 1
+          return vim.fn.executable("cmake") == 1 and vim.fn.executable("make") == 1
         end,
       },
     },
@@ -100,12 +100,9 @@ require("lazy").setup({
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      "williamboman/mason.nvim", -- in charge of managing lsp servers, linters & formatters
-      "williamboman/mason-lspconfig.nvim", -- bridges gap b/w mason & lspconfig
-      "jayp0521/mason-null-ls.nvim", -- bridges gap b/w mason & null-ls
-      "jose-elias-alvarez/null-ls.nvim", -- configure formatters & linters
+      "mason-org/mason.nvim", -- manage language servers
+      "mason-org/mason-lspconfig.nvim", -- bridge mason and nvim-lspconfig
       "hrsh7th/cmp-nvim-lsp", -- for autocompletion
-      "jose-elias-alvarez/typescript.nvim", -- extra tsserver actions
       "onsails/lspkind.nvim", -- vs-code like icons for autocompletion
       {
         "glepnir/lspsaga.nvim",
@@ -119,7 +116,14 @@ require("lazy").setup({
     config = function()
       require("plugins.lsp.mason")
       require("plugins.lsp.lspconfig")
-      require("plugins.lsp.null-ls")
+    end,
+  },
+
+  -- formatting
+  {
+    "stevearc/conform.nvim",
+    config = function()
+      require("plugins.lsp.conform")
     end,
   },
 

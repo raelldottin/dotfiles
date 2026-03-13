@@ -18,7 +18,9 @@ The current setup is organized around a few responsibilities:
 
 - navigation and project discovery: `nvim-tree`, `telescope`
 - editing ergonomics: `vim-sleuth`, `nvim-cmp`, `LuaSnip`
-- language tooling: `mason`, `mason-lspconfig`, `null-ls`, `nvim-lspconfig`
+- language tooling: `mason`, `mason-lspconfig`, native `vim.lsp`, `nvim-lspconfig`
+- Python workflow: `pyright` for type checking and `ruff` for linting/formatting, with Ruff hover disabled so `K` stays useful
+- formatting: `conform.nvim`
 - source-control visibility: `gitsigns`
 - presentation: `lualine`, `moonfly`
 
@@ -27,6 +29,8 @@ The current setup is organized around a few responsibilities:
 - `make install` links the entire tracked Neovim tree into `~/.config/nvim`.
 - `make verify-install` checks the installed files against the repository versions.
 - `make clean` removes only repo-managed files and leaves unrelated personal files alone.
+- `config/nvim/lazy-lock.json` pins plugin revisions so upstream plugin changes do not unexpectedly change editor behavior.
+- `telescope-fzf-native.nvim` is treated as an optional speed-up and only builds when both `cmake` and `make` are available.
 
 ## Updating The Configuration
 
