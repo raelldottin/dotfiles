@@ -25,7 +25,7 @@ vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
@@ -53,6 +53,23 @@ end
 
 -- used to enable autocompletion (assign to every lsp server config)
 local capabilities = cmp_nvim_lsp.default_capabilities()
+local default_server_options = {
+  capabilities = capabilities,
+  on_attach = on_attach,
+}
+
+local function with_defaults(extra_options)
+  return vim.tbl_deep_extend("force", default_server_options, extra_options or {})
+end
+
+local function configure_server(server_name, extra_options)
+  local server = lspconfig[server_name]
+  if server == nil then
+    return
+  end
+
+  server.setup(with_defaults(extra_options))
+end
 
 -- Change the Diagnostic symbols in the sign column (gutter)
 -- (not in youtube nvim video)
@@ -64,63 +81,32 @@ end
 
 -- configure typescript server with plugin
 typescript.setup({
-  server = {
-    capabilities = capabilities,
-    on_attach = on_attach,
-  },
-})
--- configure bashls
-lspconfig["bashls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+  server = with_defaults(),
 })
 
--- configure clangd
-lspconfig["clangd"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure dockerls
-lspconfig["dockerls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure golangci_lint_ls
-lspconfig["golangci_lint_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+configure_server("bashls")
+configure_server("clangd")
+configure_server("dockerls")
+configure_server("golangci_lint_ls", {
   filetypes = { "go" },
 })
-
--- configure jsonls
-lspconfig["jsonls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+configure_server("jsonls")
 
 -- configure lua server (with special settings)
-lspconfig["lua_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = { -- custom settings for lua
+configure_server("lua_ls", {
+  settings = {
     Lua = {
       runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
         version = "LuaJIT",
-        -- Setup your lua path
         path = {
           [vim.fn.expand("$VIMRUNTIME/lua")] = true,
           [vim.fn.stdpath("config") .. "/lua"] = true,
         },
       },
-      -- make the language server recognize "vim" global
       diagnostics = {
         globals = { "vim" },
       },
       workspace = {
-        -- make language server aware of runtime files
         library = {
           [vim.fn.expand("$VIMRUNTIME/lua")] = true,
           [vim.fn.stdpath("config") .. "/lua"] = true,
@@ -130,29 +116,10 @@ lspconfig["lua_ls"].setup({
   },
 })
 
--- configure prosemd_lsp
-lspconfig["prosemd_lsp"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure marksman
-lspconfig["marksman"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure terraformls
-lspconfig["terraformls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
--- configure powershell_es
-lspconfig["tflint"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+configure_server("prosemd_lsp")
+configure_server("marksman")
+configure_server("terraformls")
+configure_server("tflint")
 
 -- configure ruff_lsp
 local configs = require("lspconfig.configs")
@@ -170,7 +137,5 @@ if not configs.ruff_lsp then
     },
   }
 end
-lspconfig[i("ruff_lsp")].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+
+configure_server("ruff_lsp")

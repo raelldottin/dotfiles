@@ -25,16 +25,36 @@ require("lazy").setup({
   "tpope/vim-sleuth", -- detect tabstop and shiftwidth automatically
 
   -- colorscheme
-  { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
+  {
+    "bluz71/vim-moonfly-colors",
+    name = "moonfly",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("core.colorscheme")
+    end,
+  },
 
   -- tmux navigation
   "christoomey/vim-tmux-navigator", -- tmux & split window navigation
 
   -- file explorer
-  { "nvim-tree/nvim-tree.lua", dependencies = { "kyazdani42/nvim-web-devicons" } },
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("plugins.nvim-tree")
+    end,
+  },
 
   -- statusline
-  { "nvim-lualine/lualine.nvim", dependencies = { "kyazdani42/nvim-web-devicons" } },
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("plugins.lualine")
+    end,
+  },
 
   -- fuzzy finding w/ telescope
   {
@@ -45,12 +65,17 @@ require("lazy").setup({
       "nvim-lua/popup.nvim",
       {
         "nvim-telescope/telescope-fzf-native.nvim",
-        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && make --build build --config Release && cmake --install build --prefix build",
+        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release"
+          .. " && make --build build --config Release"
+          .. " && cmake --install build --prefix build",
         cond = function()
           return vim.fn.executable("make") == 1
         end,
       },
     },
+    config = function()
+      require("plugins.telescope")
+    end,
   },
 
   -- autocompletion
@@ -64,6 +89,9 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets",
       "saadparwaiz1/cmp_luasnip",
     },
+    config = function()
+      require("plugins.nvim-cmp")
+    end,
   },
 
   -- configuring lsp servers
@@ -72,8 +100,10 @@ require("lazy").setup({
     dependencies = {
       "williamboman/mason.nvim", -- in charge of managing lsp servers, linters & formatters
       "williamboman/mason-lspconfig.nvim", -- bridges gap b/w mason & lspconfig
+      "jayp0521/mason-null-ls.nvim", -- bridges gap b/w mason & null-ls
+      "jose-elias-alvarez/null-ls.nvim", -- configure formatters & linters
       "hrsh7th/cmp-nvim-lsp", -- for autocompletion
-      "jose-elias-alvarez/typescript.nvim", -- additional functionality for typescript server (e.g. rename file & update imports,
+      "jose-elias-alvarez/typescript.nvim", -- extra tsserver actions
       "onsails/lspkind.nvim", -- vs-code like icons for autocompletion
       {
         "glepnir/lspsaga.nvim",
@@ -84,21 +114,33 @@ require("lazy").setup({
       },
       { "j-hui/fidget.nvim", opts = {} },
     },
+    config = function()
+      require("plugins.lsp.mason")
+      require("plugins.lsp.lspconfig")
+      require("plugins.lsp.null-ls")
+    end,
   },
-
-  -- formatting & linting
-  "jose-elias-alvarez/null-ls.nvim", -- configure formatters & linters
-  "jayp0521/mason-null-ls.nvim", -- bridges gap b/w mason & null-ls
 
   -- treesitter configuration
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = { "nvim-treesitter/nvim-treesitter-context", "nvim-treesitter/nvim-treesitter-textobjects" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-context",
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     build = ":TSUpdate",
+    config = function()
+      require("plugins.treesitter")
+    end,
   },
 
   -- git integration
-  "lewis6991/gitsigns.nvim", -- show line modifications on left hand side
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require("plugins.gitsigns")
+    end,
+  },
 
   -- wakatime
   "wakatime/vim-wakatime",

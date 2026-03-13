@@ -1,26 +1,35 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Function to check if Homebrew is installed
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
 check_homebrew() {
-	if ! command -v brew &>/dev/null; then
-		echo "Homebrew not found. Installing Homebrew..."
-		/bin/bash ./homebrewsetup.sh
-	else
-		echo "Homebrew is already installed."
-	fi
+  if [[ "${DOTFILES_SKIP_HOMEBREW_SETUP:-0}" == "1" ]]; then
+    echo "Skipping Homebrew bootstrap because DOTFILES_SKIP_HOMEBREW_SETUP=1."
+    return
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "Homebrew not found. Installing Homebrew..."
+    sudo /bin/bash "$SCRIPT_DIR/homebrewsetup.sh"
+  else
+    echo "Homebrew is already installed."
+  fi
 }
 
-# Function for Git configuration
 configure_git() {
-	git config --global user.email "raell.dottin@gmail.com"
-	git config --global user.name "Raell Dottin"
-	echo "Git configuration completed."
+  local git_user_name="${DOTFILES_GIT_USER_NAME:-}"
+  local git_user_email="${DOTFILES_GIT_USER_EMAIL:-}"
+
+  if [[ -z "$git_user_name" || -z "$git_user_email" ]]; then
+    echo "Skipping Git configuration. Set DOTFILES_GIT_USER_NAME and DOTFILES_GIT_USER_EMAIL to opt in."
+    return
+  fi
+
+  git config --global user.email "$git_user_email"
+  git config --global user.name "$git_user_name"
+  echo "Git configuration completed."
 }
 
-# Check and install Homebrew
 check_homebrew
-
-# Run Homebrew setup script
-
-# Configure Git
 configure_git

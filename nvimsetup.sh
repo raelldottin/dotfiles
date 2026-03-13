@@ -1,65 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-createdirectory() {
-  local_directory="$1"
-  if [[ ! -d "$local_directory" ]]; then
-    echo "Creating $local_directory"
-    mkdir -p "$local_directory"
-  fi
-}
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/lib/dotfiles.sh"
 
-linkfile() {
-  repo_file="$1"
-  local_directory="$2"
-  if ln -fn "$repo_file" "$local_directory"; then
-    echo "Successfully linked $repo_file to $local_directory"
-  fi
-}
+REPO_ROOT="$(dotfiles_repo_root)"
+CONFIG_DIR="$HOME/.config"
 
-setup_nvim() {
-  echo "Setting up Nvim configuration files and folders."
+echo "Setting up Neovim configuration files."
+mkdir -p "$CONFIG_DIR"
 
-  directories=(
-    "$HOME/.config/nvim"
-    "$HOME/.config/nvim/lua"
-    "$HOME/.config/nvim/lua/core"
-    "$HOME/.config/nvim/lua/plugins"
-    "$HOME/.config/nvim/lua/plugins/lsp"
-  )
+while IFS= read -r repo_file; do
+  dotfiles_link_file "$repo_file" "$(dotfiles_target_for_repo_file "$REPO_ROOT" "$repo_file")"
+done < <(dotfiles_each_nvim_file "$REPO_ROOT")
 
-  files=(
-    "config/nvim/init.lua"
-    "config/nvim/lua/core/colorscheme.lua"
-    "config/nvim/lua/core/keymaps.lua"
-    "config/nvim/lua/core/options.lua"
-    "config/nvim/lua/plugins/autopairs.lua"
-    "config/nvim/lua/plugins/ts-autotag.lua"
-    "config/nvim/lua/plugins/comment.lua"
-    "config/nvim/lua/plugins/gitsigns.lua"
-    "config/nvim/lua/plugins/lsp/lspconfig.lua"
-    "config/nvim/lua/plugins/lsp/mason.lua"
-    "config/nvim/lua/plugins/lsp/null-ls.lua"
-    "config/nvim/lua/plugins/lualine.lua"
-    "config/nvim/lua/plugins/tabline.lua"
-    "config/nvim/lua/plugins/mason.lua"
-    "config/nvim/lua/plugins/nvim-cmp.lua"
-    "config/nvim/lua/plugins/nvim-tree.lua"
-    "config/nvim/lua/plugins/telescope.lua"
-    "config/nvim/lua/plugins/treesitter.lua"
-    "config/nvim/lua/plugins-setup.lua"
-    "pylintrc"
-  )
+dotfiles_link_file "$REPO_ROOT/pylintrc" "$HOME/.pylintrc"
 
-  for dir in "${directories[@]}"; do
-    createdirectory "$dir"
-  done
-
-  for file in "${files[@]}"; do
-    linkfile "$file" "$HOME/.config/nvim/lua/plugins"
-  done
-
-  echo "Setup complete."
-}
-
-# Run the setup function
-setup_nvim
+echo "Setup complete."

@@ -1,4 +1,6 @@
 .git
 *.log
+.DS_Store
+__pycache__/
 package-lock.json
 package.json

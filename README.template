@@ -3,54 +3,77 @@
 [![Shell Script Linter](https://github.com/{{ repository.name }}/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 [![Lua Linter](https://github.com/{{ repository.name }}/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 [![Python Linter](https://github.com/{{ repository.name }}/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
+[![Automated Tests](https://github.com/{{ repository.name }}/actions/workflows/tests.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/tests.yml)
 
 [![ v{{ current.version }} ](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)
 
-**Table of Contents**
-
-<!-- toc -->
-
-- [About](#about)
-- [Installing](#installing)
-- [Customizing](#customizing)
-- [Uninstalling](#uninstalling)
-- [Running tests](#running-tests)
-
-<!-- tocstop -->
-
 ## About
 
-My dotfiles; buyers beware!
+This repository manages my shell, tmux, and Neovim configuration as a reproducible dotfiles setup. The install scripts are idempotent, work from any current working directory, and avoid touching your real home directory during automated integration tests.
 
-### Installing
+## Quick Start
+
+1. Bootstrap optional workstation dependencies:
+
+   ```bash
+   make dependencies
+   ```
+
+2. Install the managed dotfiles into your current `HOME`:
+
+   ```bash
+   make install
+   ```
+
+3. Verify the installed files match the repo:
+
+   ```bash
+   make verify-install
+   ```
+
+## What Gets Managed
+
+- `~/.zshrc`
+- `~/.tmux.conf`
+- `~/.config/nvim/**`
+- `~/.pylintrc`
+
+The setup scripts create symlinks for managed files so edits in the repo are reflected immediately in the installed configuration.
+
+## Make Targets
+
+| Target | Purpose |
+| --- | --- |
+| `make install` | Install the managed dotfiles into the current `HOME`. |
+| `make dependencies` | Optionally bootstrap Homebrew and Git identity setup. |
+| `make clean` | Remove the files managed by this repo. |
+| `make lint` | Run `checkmake`, `shellcheck`, `luacheck`, and `pyright`. |
+| `make test` | Run the automated unit and integration test suites. |
+| `make verify` | Run every linter plus all automated tests. |
+| `make verify-install` | Compare the installed files in the current `HOME` with the repo contents. |
+
+## Testing Strategy
+
+The automated test suite follows the unit/integration split recommended in *Unit Testing: Principles, Practices, and Patterns*:
+
+- Unit tests focus on pure, deterministic behavior in the README generator.
+- Integration tests exercise the shell installers end to end in an isolated temporary `HOME`.
+- The default verification path keeps fast tests and environment-aware tests separate.
+
+Run the full local verification pipeline with:
+
+```bash
+make verify
 ```
-# ./homebrewsetup.sh
-```
 
-This will automated the homebrew installation.
+## Documentation
 
-```
-$ make
-```
+- [User Guide](docs/USER_GUIDE.md)
+- [Testing Guide](docs/TESTING.md)
+- [Sphinx Landing Page](index.rst)
 
-This will create hard links from this repo to your home folder.
+## Uninstalling
 
-### Customizing
-
-Repo file hierarchy
-
-```
-{{ current.filehierarchy }}
-```
-
-### Uninstalling
-
-```
-$ make clean
-```
-
-### Running tests
-
-```
-$ make test
+```bash
+make clean
 ```
