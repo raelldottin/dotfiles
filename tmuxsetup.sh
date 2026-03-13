@@ -4,23 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/lib/dotfiles.sh"
 
-pick_tmux_config() {
-  case "${OSTYPE:-}" in
-    linux-gnu*)
-      printf '%s\n' "linux-gnu_tmux.conf"
-      ;;
-    darwin*)
-      printf '%s\n' "darwin_tmux.conf"
-      ;;
-    *)
-      echo "Error: Unable to determine operating system"
-      exit 1
-      ;;
-  esac
-}
-
 REPO_ROOT="$(dotfiles_repo_root)"
-TMUX_CONF="$(pick_tmux_config)"
+TMUX_CONF="$(basename "$(dotfiles_tmux_source "$REPO_ROOT")")"
 TMUX_CONF_PATH="$HOME/.tmux.conf"
 TMUX_PLUGINS_DIR="$HOME/.tmux/plugins"
 TPM_DIR="$TMUX_PLUGINS_DIR/tpm"

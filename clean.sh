@@ -8,21 +8,9 @@ REPO_ROOT="$(dotfiles_repo_root)"
 
 echo "Uninstalling configuration files:"
 
-while IFS= read -r repo_file; do
-  dotfiles_remove_if_managed "$repo_file" "$(dotfiles_target_for_repo_file "$REPO_ROOT" "$repo_file")"
-done < <(dotfiles_each_nvim_file "$REPO_ROOT")
-
-dotfiles_remove_if_managed "$REPO_ROOT/zshrc" "$HOME/.zshrc"
-dotfiles_remove_if_managed "$REPO_ROOT/pylintrc" "$HOME/.pylintrc"
-
-case "${OSTYPE:-}" in
-  linux-gnu*)
-    dotfiles_remove_if_managed "$REPO_ROOT/linux-gnu_tmux.conf" "$HOME/.tmux.conf"
-    ;;
-  darwin*)
-    dotfiles_remove_if_managed "$REPO_ROOT/darwin_tmux.conf" "$HOME/.tmux.conf"
-    ;;
-esac
+while IFS=$'\t' read -r source_path target_path _; do
+  dotfiles_remove_if_managed "$source_path" "$target_path"
+done < <(dotfiles_each_managed_file "$REPO_ROOT")
 
 dotfiles_prune_empty_dirs "$HOME/.config/nvim/lua/plugins/lsp"
 dotfiles_prune_empty_dirs "$HOME/.config/nvim/lua/plugins"

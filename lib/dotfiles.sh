@@ -6,6 +6,10 @@ dotfiles_repo_root() {
   printf '%s\n' "$script_dir"
 }
 
+dotfiles_python() {
+  printf '%s\n' "${PYTHON:-python3}"
+}
+
 dotfiles_link_file() {
   local source_path="$1"
   local target_path="$2"
@@ -18,7 +22,30 @@ dotfiles_link_file() {
 dotfiles_each_nvim_file() {
   local repo_root="$1"
 
-  find "$repo_root/config/nvim" -type f | LC_ALL=C sort
+  "$(dotfiles_python)" "$repo_root/dotfiles_manifest.py" nvim-files --repo-root "$repo_root"
+}
+
+dotfiles_each_managed_file() {
+  local repo_root="$1"
+
+  "$(dotfiles_python)" "$repo_root/dotfiles_manifest.py" managed-files \
+    --repo-root "$repo_root" \
+    --home "${HOME:?HOME must be set}" \
+    --ostype "${OSTYPE:-}"
+}
+
+dotfiles_tmux_source() {
+  local repo_root="$1"
+
+  while IFS=$'\t' read -r source_path _ category; do
+    if [[ "$category" == "tmux" ]]; then
+      printf '%s\n' "$source_path"
+      return 0
+    fi
+  done < <(dotfiles_each_managed_file "$repo_root")
+
+  echo "Error: Unable to determine tmux configuration for OSTYPE='${OSTYPE:-}'." >&2
+  return 1
 }
 
 dotfiles_target_for_repo_file() {

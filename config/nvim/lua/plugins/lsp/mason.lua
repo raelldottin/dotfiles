@@ -53,7 +53,6 @@ mason_null_ls.setup({
     "hadolint",
     "gitlint",
     "gofumpt",
-    "stylua",
     "alex",
     "ruff",
     "shellcheck",

@@ -8,7 +8,9 @@ Documentation
 
 * ``README.md`` for the quick-start workflow.
 * ``docs/USER_GUIDE.md`` for installation, managed files, and troubleshooting.
+* ``docs/NVIM.md`` for the Neovim configuration layout and operating notes.
 * ``docs/TESTING.md`` for the unit/integration testing strategy and verification commands.
+* ``docs/CONTRIBUTING.md`` for the branch workflow and merge expectations.
 
 Automation
 ----------

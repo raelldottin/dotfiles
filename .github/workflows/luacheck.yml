@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - "codex/**"
     paths:
       - '**.lua'
   workflow_dispatch:
