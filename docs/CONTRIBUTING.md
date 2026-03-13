@@ -29,6 +29,16 @@ Every branch should satisfy the same baseline before review:
 - `make test`
 - `make verify-install` when installer behavior changed
 
+## Pull Requests and Ownership
+
+- GitHub pull requests should use the repository PR template so risk, validation, and rollback notes stay consistent.
+- `CODEOWNERS` marks install scripts, workflow changes, Neovim configuration, and documentation as owned review surfaces.
+- `main` and `dev` are expected to stay protected; merge through pull requests instead of direct pushes.
+
+## GitHub Settings
+
+The repository-level protection and merge policy are documented in `docs/REPOSITORY_SETTINGS.md`.
+
 ## Generated Files
 
 - `README.md` is generated from `README.template`.

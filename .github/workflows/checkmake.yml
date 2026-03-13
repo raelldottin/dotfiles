@@ -14,7 +14,7 @@ on:
 permissions: {}
 
 jobs:
-  shellcheck:
+  checkmake:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

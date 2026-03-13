@@ -93,6 +93,7 @@ The automated test suite follows the unit/integration split recommended in *Unit
 - [Neovim Guide](docs/NVIM.md)
 - [Testing Guide](docs/TESTING.md)
 - [Contributor Workflow](docs/CONTRIBUTING.md)
+- [Repository Settings](docs/REPOSITORY_SETTINGS.md)
 - [Sphinx Landing Page](index.rst)
 
 ## Branching
