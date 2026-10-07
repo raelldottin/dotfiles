@@ -75,7 +75,7 @@ in
     enableCompletion = true;
 
     autosuggestion.enable = true;
-    fastSyntaxHighlighting.enable = true;
+    syntaxHighlighting.enable = true;
 
     oh-my-zsh = {
       enable = true;

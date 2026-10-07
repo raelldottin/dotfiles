@@ -64,7 +64,7 @@ nix run home-manager/release-26.05 -- \
 ## What Nix Manages
 
 - `~/.zshrc` through Home Manager, including Oh My Zsh, autosuggestions,
-  fast syntax highlighting, and Powerlevel10k.
+  syntax highlighting, and Powerlevel10k.
 - `~/.tmux.conf` as a compatibility shim plus the generated XDG tmux config.
 - tmux plugins without TPM cloning.
 - `~/.config/nvim/**` from the existing Neovim source tree.

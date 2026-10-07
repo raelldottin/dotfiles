@@ -30,18 +30,14 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v23
 
-      - name: Resolve flake inputs
-        run: nix flake lock
-
       - name: Check flake
-        run: nix flake check --show-trace
+        run: nix flake check --no-write-lock-file --show-trace
 
       - name: Evaluate Linux Home Manager
-        run: nix eval --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
+        run: nix eval --no-write-lock-file --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
 
       - name: Evaluate macOS nix-darwin
-        run: nix eval --raw .#darwinConfigurations.macbook.config.system.build.toplevel.drvPath
+        run: nix eval --no-write-lock-file --raw .#darwinConfigurations.macbook.config.system.build.toplevel.drvPath
 
-      - name: Print generated lock file
-        if: always()
-        run: cat flake.lock
+      - name: Verify lock file is unchanged
+        run: git diff --exit-code -- flake.lock
