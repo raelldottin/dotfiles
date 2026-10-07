@@ -29,7 +29,7 @@ in
       mypy
       neovim
       nil
-      nixfmt-rfc-style
+      nixfmt
       nodejs
       openjdk
       pandoc

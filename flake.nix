@@ -65,9 +65,9 @@
       homeConfigurations.linux-aarch64 = mkHome "aarch64-linux";
 
       formatter = {
-        aarch64-darwin = (mkPkgs "aarch64-darwin").nixfmt-rfc-style;
-        x86_64-linux = (mkPkgs "x86_64-linux").nixfmt-rfc-style;
-        aarch64-linux = (mkPkgs "aarch64-linux").nixfmt-rfc-style;
+        aarch64-darwin = (mkPkgs "aarch64-darwin").nixfmt;
+        x86_64-linux = (mkPkgs "x86_64-linux").nixfmt;
+        aarch64-linux = (mkPkgs "aarch64-linux").nixfmt;
       };
     };
 }
