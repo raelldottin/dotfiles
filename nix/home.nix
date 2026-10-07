@@ -141,7 +141,7 @@ in
       }
       copycat
       extrakto
-      tmux-power
+      power-theme
     ];
 
     extraConfig = ''
