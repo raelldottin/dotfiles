@@ -1,4 +1,5 @@
 # {{ repository.name }} v{{ current.version }}
+
 [![Nix](https://github.com/{{ repository.name }}/actions/workflows/nix.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/nix.yml)
 [![Makefile Linter](https://github.com/{{ repository.name }}/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script Linter](https://github.com/{{ repository.name }}/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
@@ -6,55 +7,98 @@
 [![Python Linter](https://github.com/{{ repository.name }}/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
 [![Automated Tests](https://github.com/{{ repository.name }}/actions/workflows/tests.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/tests.yml)
 
-## About
+Declarative workstation configuration for macOS and Linux using Nix, Home Manager, nix-darwin, and nix-homebrew.
 
-This repository is the declarative configuration for my macOS and Linux
-workstations. The primary path is now Nix: Home Manager owns user packages and
-dotfiles, nix-darwin owns macOS integration, and nix-homebrew keeps Homebrew as
-the compatibility layer for GUI casks.
+## Migration Status
 
-The previous shell/Python installer is retained temporarily as a rollback path
-while the Nix configuration is validated on the real workstation.
+The Nix migration is currently staged on `dev`.
 
-## Architecture
+- `main` remains the pre-Nix stable configuration.
+- `dev` contains the Nix/Home Manager migration.
+- CI validates the flake, Linux Home Manager output, and Apple Silicon nix-darwin output.
+- The legacy shell/Python installer remains available as a rollback path.
+- Promotion from `dev` to `main` is gated on a successful activation on the real Mac.
+
+This keeps the migration reversible while changing the system that manages the workstation itself.
+
+## Configuration Stack
 
 | Layer | Responsibility |
 | --- | --- |
-| Home Manager | zsh, tmux, Neovim files, user packages, home-directory state |
-| nix-darwin | Apple Silicon macOS system integration |
-| nix-homebrew | existing Homebrew installation and GUI casks |
-| flake.lock | pinned revisions for reproducible rebuilds |
+| Nix flake | Pins configuration inputs in `flake.lock` |
+| Home Manager | User packages, shell configuration, tmux, Neovim, and home-directory state |
+| nix-darwin | macOS system integration |
+| nix-homebrew | Existing Homebrew installation and declarative GUI casks |
+| Legacy installer | Temporary rollback path during migration |
 
-## macOS Quick Start
+## Repository Layout
 
-From this repository on the Apple Silicon Mac:
+| Path | Purpose |
+| --- | --- |
+| `flake.nix` | Defines macOS and Linux configuration outputs |
+| `flake.lock` | Pins nixpkgs, Home Manager, nix-darwin, and nix-homebrew |
+| `nix/home.nix` | Shared Home Manager configuration |
+| `nix/darwin.nix` | Apple Silicon macOS configuration |
+| `config/nvim/` | Neovim configuration managed by Home Manager |
+| `docs/NIX.md` | Migration details, ownership map, and rollout notes |
+| `.github/workflows/nix.yml` | Nix evaluation and configuration validation |
+
+## macOS
+
+The macOS configuration targets Apple Silicon and is exposed as:
+
+```text
+.#macbook
+```
+
+### First Activation
+
+Use the `dev` branch while the migration is being validated:
 
 ```bash
+git switch dev
+git pull
+
 nix flake check
+
 sudo nix run nix-darwin/nix-darwin-26.05#darwin-rebuild -- \
   switch --flake .#macbook
 ```
 
-After bootstrap:
+During the first activation, Home Manager backs up conflicting managed files using the `.hm-backup` suffix.
+
+The migration intentionally does not remove unlisted Homebrew software. Existing formulae and casks remain in place while the Nix configuration is proven on the workstation.
+
+### Normal Rebuild
+
+After nix-darwin is installed:
 
 ```bash
-nix flake update
 sudo darwin-rebuild switch --flake .#macbook
 ```
 
-Home Manager backs up conflicting files using the `.hm-backup` suffix during
-the first nix-darwin activation.
+### Update Pinned Inputs
 
-## Linux Quick Start
+```bash
+nix flake update
+nix flake check
+sudo darwin-rebuild switch --flake .#macbook
+```
 
-x86_64:
+Review `flake.lock` before committing an input update.
+
+## Linux
+
+Standalone Home Manager outputs are provided for both common architectures.
+
+### x86_64
 
 ```bash
 nix run home-manager/release-26.05 -- \
   switch -b hm-backup --flake .#linux-x86_64
 ```
 
-aarch64:
+### aarch64
 
 ```bash
 nix run home-manager/release-26.05 -- \
@@ -63,39 +107,257 @@ nix run home-manager/release-26.05 -- \
 
 ## What Nix Manages
 
-- `~/.zshrc` through Home Manager, including Oh My Zsh, autosuggestions,
-  syntax highlighting, and Powerlevel10k.
-- `~/.tmux.conf` as a compatibility shim plus the generated XDG tmux config.
-- tmux plugins without TPM cloning.
-- `~/.config/nvim/**` from the existing Neovim source tree.
-- `~/.pylintrc`.
-- core CLI and development packages from nixpkgs.
-- selected macOS GUI casks through the nix-darwin Homebrew module.
+Home Manager currently owns:
 
-## Migration Safety
+- zsh
+- Oh My Zsh
+- zsh autosuggestions and syntax highlighting
+- Powerlevel10k
+- tmux
+- tmux plugins
+- Neovim configuration
+- `~/.pylintrc`
+- core CLI and development packages
 
-The first pass intentionally does **not** remove unlisted Homebrew formulae or
-delete the legacy installer. This keeps the migration reversible while the Nix
-activation is validated on the actual Mac.
+On macOS, nix-darwin and nix-homebrew additionally manage system integration and selected GUI casks.
 
-See [Nix Migration](docs/NIX.md) for the ownership map, rollout sequence, and
-cleanup plan.
+## Day-to-Day Configuration Workflow
 
-## Verification
+The repository is the source of truth. Prefer changing the declarative configuration first and then rebuilding the workstation from it.
 
-Nix configuration:
+The normal direction is:
+
+```text
+Git repository
+      ↓
+Nix / Home Manager
+      ↓
+workstation
+```
+
+Avoid treating the workstation as the authoritative copy of managed configuration.
+
+### Start a Change
+
+Update `dev`, then create a short-lived branch:
+
+```bash
+git switch dev
+git pull
+git switch -c config/<change-name>
+```
+
+Use a focused branch name such as:
+
+```text
+config/tmux-copy-mode
+config/add-ripgrep
+config/add-vscode
+config/nvim-lsp
+```
+
+### Edit the Source, Not the Generated File
+
+Common changes belong in these locations:
+
+| Change | Edit |
+| --- | --- |
+| CLI/development package | `nix/home.nix` |
+| zsh configuration | `nix/home.nix` |
+| tmux configuration/plugins | `nix/home.nix` |
+| Neovim configuration | `config/nvim/` |
+| macOS/Homebrew cask | `nix/darwin.nix` |
+| Nix inputs | `flake.nix` and generated `flake.lock` |
+| README content | `README.template` |
+
+For files owned by Home Manager, edit the repository source rather than the installed path in `$HOME`. For example, change `config/nvim/` instead of directly modifying `~/.config/nvim/`.
+
+### Validate Before Rebuilding
+
+```bash
+nix flake check
+```
+
+For a formatting pass:
+
+```bash
+nix fmt
+nix flake check
+```
+
+During the migration, the legacy repository checks remain useful as an additional regression gate:
+
+```bash
+make verify
+```
+
+### Apply the Change to macOS
+
+```bash
+sudo darwin-rebuild switch --flake .#macbook
+```
+
+Test the affected tools after the rebuild. For shell or terminal changes, start a fresh shell and tmux session rather than relying only on the current process.
+
+If the configuration needs another adjustment, edit the repository again and rerun the rebuild. Do not commit a configuration that has only passed static evaluation but has not been exercised on the workstation when the change affects runtime behavior.
+
+### Review and Commit
+
+```bash
+git status
+git diff
+git diff --check
+
+git add <changed-files>
+git commit -m "Configure <change>"
+git push -u origin HEAD
+```
+
+Review `flake.lock` carefully whenever it changes. A package/configuration edit should not unexpectedly rewrite input revisions.
+
+Open a pull request from the change branch into `dev`. After CI passes, merge it into `dev`.
+
+During the migration the promotion path is:
+
+```text
+config/* or feature branch
+          ↓
+         dev
+          ↓
+real workstation validation
+          ↓
+         main
+```
+
+Once Nix is fully promoted, `main` becomes the stable workstation definition.
+
+## Adding Software
+
+### CLI or Development Tools
+
+Prefer nixpkgs for command-line and development tools.
+
+Add the package to `home.packages` in `nix/home.nix`:
+
+```nix
+home.packages = with pkgs; [
+  jq
+  ripgrep
+];
+```
+
+Then validate and rebuild:
+
+```bash
+nix flake check
+sudo darwin-rebuild switch --flake .#macbook
+```
+
+### macOS GUI Applications
+
+GUI applications that are intentionally kept in Homebrew belong in the cask list in `nix/darwin.nix`:
+
+```nix
+homebrew.casks = [
+  "rectangle"
+  "visual-studio-code"
+];
+```
+
+Then rebuild with the same `darwin-rebuild` command.
+
+## Reconciling Manual Host Changes
+
+Nix does not automatically export workstation changes back into Git.
+
+If software or configuration is changed directly on the host, decide whether that change should be permanent. If it should, translate it into the appropriate repository configuration and rebuild.
+
+For example, after a manual:
+
+```bash
+brew install --cask visual-studio-code
+```
+
+add the cask to `nix/darwin.nix`, run `nix flake check`, rebuild, and commit the declarative change.
+
+The same rule applies to manually installed CLI tools, shell changes, tmux changes, and managed dotfiles. A manual host change is temporary until it is represented in the repository.
+
+Before pushing a workstation change, this is a useful audit sequence:
+
+```bash
+git status
+git diff
+nix flake check
+sudo darwin-rebuild switch --flake .#macbook
+```
+
+Then verify the affected behavior and commit the source configuration.
+
+## Homebrew Strategy
+
+Homebrew is not being removed.
+
+It remains useful for macOS GUI software while command-line and development tooling moves toward nixpkgs. The current migration uses:
+
+```nix
+homebrew.onActivation.cleanup = "none";
+```
+
+That prevents the first activation from deleting Homebrew software that has not yet been classified into the Nix configuration.
+
+Once the migration is proven, the remaining Homebrew inventory can be reviewed and either moved into Nix, retained as a cask, or removed.
+
+## Validation
+
+Run the Nix checks locally with:
 
 ```bash
 nix flake check
 nix fmt
 ```
 
-Legacy compatibility checks remain available while branch protection still
-requires their status contexts:
+CI also evaluates the complete Linux Home Manager configuration and Apple Silicon nix-darwin system derivation.
+
+The existing repository quality gates remain active during the migration:
 
 ```bash
 make verify
 ```
+
+Those checks cover:
+
+- checkmake
+- shellcheck
+- luacheck
+- pyright
+- unit tests
+- integration tests
+
+## Rollback
+
+The legacy installer remains available until the Nix configuration has been activated successfully on the workstation.
+
+```bash
+make dependencies
+make install
+make verify-install
+```
+
+Do not delete the legacy installer, its package inventories, or its compatibility tests until the macOS activation has been verified.
+
+## Migration Completion Criteria
+
+The migration can move from `dev` to `main` after:
+
+1. `darwin-rebuild switch --flake .#macbook` succeeds on the real Mac.
+2. zsh starts normally.
+3. tmux loads its expected plugins and bindings.
+4. Neovim starts with the existing configuration.
+5. expected CLI development tools are available.
+6. Homebrew GUI applications remain intact.
+7. a second rebuild completes cleanly and demonstrates idempotence.
+
+After that, the legacy shell/Python installer and obsolete package inventory files can be removed in a separate cleanup change.
 
 ## Documentation
 
@@ -108,18 +370,6 @@ make verify
 
 ## Branching
 
-- `main` is the stable release branch.
-- `dev` is the shared integration branch.
-- short-lived feature branches such as `codex/...` are merged into `dev`
-  before promotion to `main`.
-
-## Legacy Rollback Path
-
-Until the migration is proven on the workstation, the old commands remain
-available:
-
-```bash
-make dependencies
-make install
-make verify-install
-```
+- `main` — stable configuration
+- `dev` — integration branch and current Nix migration target
+- `codex/*` — short-lived feature branches merged into `dev`
