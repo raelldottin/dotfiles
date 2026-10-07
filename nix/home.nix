@@ -34,7 +34,7 @@ in
       openjdk
       pandoc
       php
-      composer
+      phpPackages.composer
       pyright
       python3
       ripgrep
