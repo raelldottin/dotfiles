@@ -121,6 +121,178 @@ Home Manager currently owns:
 
 On macOS, nix-darwin and nix-homebrew additionally manage system integration and selected GUI casks.
 
+## Day-to-Day Configuration Workflow
+
+The repository is the source of truth. Prefer changing the declarative configuration first and then rebuilding the workstation from it.
+
+The normal direction is:
+
+```text
+Git repository
+      ↓
+Nix / Home Manager
+      ↓
+workstation
+```
+
+Avoid treating the workstation as the authoritative copy of managed configuration.
+
+### Start a Change
+
+Update `dev`, then create a short-lived branch:
+
+```bash
+git switch dev
+git pull
+git switch -c config/<change-name>
+```
+
+Use a focused branch name such as:
+
+```text
+config/tmux-copy-mode
+config/add-ripgrep
+config/add-vscode
+config/nvim-lsp
+```
+
+### Edit the Source, Not the Generated File
+
+Common changes belong in these locations:
+
+| Change | Edit |
+| --- | --- |
+| CLI/development package | `nix/home.nix` |
+| zsh configuration | `nix/home.nix` |
+| tmux configuration/plugins | `nix/home.nix` |
+| Neovim configuration | `config/nvim/` |
+| macOS/Homebrew cask | `nix/darwin.nix` |
+| Nix inputs | `flake.nix` and generated `flake.lock` |
+| README content | `README.template` |
+
+For files owned by Home Manager, edit the repository source rather than the installed path in `$HOME`. For example, change `config/nvim/` instead of directly modifying `~/.config/nvim/`.
+
+### Validate Before Rebuilding
+
+```bash
+nix flake check
+```
+
+For a formatting pass:
+
+```bash
+nix fmt
+nix flake check
+```
+
+During the migration, the legacy repository checks remain useful as an additional regression gate:
+
+```bash
+make verify
+```
+
+### Apply the Change to macOS
+
+```bash
+sudo darwin-rebuild switch --flake .#macbook
+```
+
+Test the affected tools after the rebuild. For shell or terminal changes, start a fresh shell and tmux session rather than relying only on the current process.
+
+If the configuration needs another adjustment, edit the repository again and rerun the rebuild. Do not commit a configuration that has only passed static evaluation but has not been exercised on the workstation when the change affects runtime behavior.
+
+### Review and Commit
+
+```bash
+git status
+git diff
+git diff --check
+
+git add <changed-files>
+git commit -m "Configure <change>"
+git push -u origin HEAD
+```
+
+Review `flake.lock` carefully whenever it changes. A package/configuration edit should not unexpectedly rewrite input revisions.
+
+Open a pull request from the change branch into `dev`. After CI passes, merge it into `dev`.
+
+During the migration the promotion path is:
+
+```text
+config/* or feature branch
+          ↓
+         dev
+          ↓
+real workstation validation
+          ↓
+         main
+```
+
+Once Nix is fully promoted, `main` becomes the stable workstation definition.
+
+## Adding Software
+
+### CLI or Development Tools
+
+Prefer nixpkgs for command-line and development tools.
+
+Add the package to `home.packages` in `nix/home.nix`:
+
+```nix
+home.packages = with pkgs; [
+  jq
+  ripgrep
+];
+```
+
+Then validate and rebuild:
+
+```bash
+nix flake check
+sudo darwin-rebuild switch --flake .#macbook
+```
+
+### macOS GUI Applications
+
+GUI applications that are intentionally kept in Homebrew belong in the cask list in `nix/darwin.nix`:
+
+```nix
+homebrew.casks = [
+  "rectangle"
+  "visual-studio-code"
+];
+```
+
+Then rebuild with the same `darwin-rebuild` command.
+
+## Reconciling Manual Host Changes
+
+Nix does not automatically export workstation changes back into Git.
+
+If software or configuration is changed directly on the host, decide whether that change should be permanent. If it should, translate it into the appropriate repository configuration and rebuild.
+
+For example, after a manual:
+
+```bash
+brew install --cask visual-studio-code
+```
+
+add the cask to `nix/darwin.nix`, run `nix flake check`, rebuild, and commit the declarative change.
+
+The same rule applies to manually installed CLI tools, shell changes, tmux changes, and managed dotfiles. A manual host change is temporary until it is represented in the repository.
+
+Before pushing a workstation change, this is a useful audit sequence:
+
+```bash
+git status
+git diff
+nix flake check
+sudo darwin-rebuild switch --flake .#macbook
+```
+
+Then verify the affected behavior and commit the source configuration.
+
 ## Homebrew Strategy
 
 Homebrew is not being removed.
