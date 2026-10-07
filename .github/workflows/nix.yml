@@ -1,0 +1,47 @@
+name: Nix
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - "codex/**"
+    paths:
+      - "**.nix"
+      - "flake.lock"
+      - ".github/workflows/nix.yml"
+  pull_request:
+    paths:
+      - "**.nix"
+      - "flake.lock"
+      - ".github/workflows/nix.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v23
+
+      - name: Resolve flake inputs
+        run: nix flake lock
+
+      - name: Check flake
+        run: nix flake check --show-trace
+
+      - name: Evaluate Linux Home Manager
+        run: nix eval --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
+
+      - name: Evaluate macOS nix-darwin
+        run: nix eval --raw .#darwinConfigurations.macbook.config.system.build.toplevel.drvPath
+
+      - name: Print generated lock file
+        if: always()
+        run: cat flake.lock

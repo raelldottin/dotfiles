@@ -1,110 +1,125 @@
 # {{ repository.name }} v{{ current.version }}
+[![Nix](https://github.com/{{ repository.name }}/actions/workflows/nix.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/nix.yml)
 [![Makefile Linter](https://github.com/{{ repository.name }}/actions/workflows/checkmake.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/checkmake.yml)
 [![Shell Script Linter](https://github.com/{{ repository.name }}/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/shellcheck.yml)
 [![Lua Linter](https://github.com/{{ repository.name }}/actions/workflows/luacheck.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/luacheck.yml)
 [![Python Linter](https://github.com/{{ repository.name }}/actions/workflows/pyright.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/pyright.yml)
 [![Automated Tests](https://github.com/{{ repository.name }}/actions/workflows/tests.yml/badge.svg)](https://github.com/raelldottin/dotfiles/actions/workflows/tests.yml)
 
-[![ v{{ current.version }} ](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)](https://github.com/{{ repository.name }}/blob/main/PNGimage.png)
-
 ## About
 
-This repository manages my shell, tmux, and Neovim configuration as a reproducible dotfiles setup. The install scripts are idempotent, work from any current working directory, and avoid touching your real home directory during automated integration tests.
+This repository is the declarative configuration for my macOS and Linux
+workstations. The primary path is now Nix: Home Manager owns user packages and
+dotfiles, nix-darwin owns macOS integration, and nix-homebrew keeps Homebrew as
+the compatibility layer for GUI casks.
 
-## Quick Start
+The previous shell/Python installer is retained temporarily as a rollback path
+while the Nix configuration is validated on the real workstation.
 
-1. Bootstrap optional workstation dependencies:
+## Architecture
 
-   ```bash
-   make dependencies
-   ```
+| Layer | Responsibility |
+| --- | --- |
+| Home Manager | zsh, tmux, Neovim files, user packages, home-directory state |
+| nix-darwin | Apple Silicon macOS system integration |
+| nix-homebrew | existing Homebrew installation and GUI casks |
+| flake.lock | pinned revisions for reproducible rebuilds |
 
-2. Enable the shared Git hooks used to keep generated documentation in sync:
+## macOS Quick Start
 
-   ```bash
-   make hooks
-   ```
+From this repository on the Apple Silicon Mac:
 
-3. Install the managed dotfiles into your current `HOME`:
+```bash
+nix flake check
+sudo nix run nix-darwin/nix-darwin-26.05#darwin-rebuild -- \
+  switch --flake .#macbook
+```
 
-   ```bash
-   make install
-   ```
+After bootstrap:
 
-4. Verify the installed files match the repo:
+```bash
+nix flake update
+sudo darwin-rebuild switch --flake .#macbook
+```
 
-   ```bash
-   make verify-install
-   ```
+Home Manager backs up conflicting files using the `.hm-backup` suffix during
+the first nix-darwin activation.
 
-## What Gets Managed
+## Linux Quick Start
 
-- `~/.zshrc`
-- `~/.tmux.conf`
-- `~/.config/nvim/**`
-- `~/.pylintrc`
+x86_64:
 
-The setup scripts create symlinks for managed files so edits in the repo are reflected immediately in the installed configuration.
+```bash
+nix run home-manager/release-26.05 -- \
+  switch -b hm-backup --flake .#linux-x86_64
+```
+
+aarch64:
+
+```bash
+nix run home-manager/release-26.05 -- \
+  switch -b hm-backup --flake .#linux-aarch64
+```
+
+## What Nix Manages
+
+- `~/.zshrc` through Home Manager, including Oh My Zsh, autosuggestions,
+  fast syntax highlighting, and Powerlevel10k.
+- `~/.tmux.conf` as a compatibility shim plus the generated XDG tmux config.
+- tmux plugins without TPM cloning.
+- `~/.config/nvim/**` from the existing Neovim source tree.
+- `~/.pylintrc`.
+- core CLI and development packages from nixpkgs.
+- selected macOS GUI casks through the nix-darwin Homebrew module.
+
+## Migration Safety
+
+The first pass intentionally does **not** remove unlisted Homebrew formulae or
+delete the legacy installer. This keeps the migration reversible while the Nix
+activation is validated on the actual Mac.
+
+See [Nix Migration](docs/NIX.md) for the ownership map, rollout sequence, and
+cleanup plan.
 
 ## Verification
 
-Run the full local quality gate with:
+Nix configuration:
+
+```bash
+nix flake check
+nix fmt
+```
+
+Legacy compatibility checks remain available while branch protection still
+requires their status contexts:
 
 ```bash
 make verify
 ```
 
-That executes:
-
-- `checkmake`
-- `shellcheck`
-- `luacheck`
-- `pyright`
-- unit tests
-- integration tests
-
-## Make Targets
-
-| Target | Purpose |
-| --- | --- |
-| `make install` | Install the managed dotfiles into the current `HOME`. |
-| `make dependencies` | Optionally bootstrap Homebrew and Git identity setup. |
-| `make hooks` | Configure `.githooks` as the repository hook path. |
-| `make clean` | Remove the files managed by this repo. |
-| `make lint` | Run `checkmake`, `shellcheck`, `luacheck`, and `pyright`. |
-| `make test` | Run the automated unit and integration test suites. |
-| `make verify` | Run every linter plus all automated tests. |
-| `make verify-install` | Compare the installed files in the current `HOME` with the repo contents. |
-
-## Testing Strategy
-
-The automated test suite follows the unit/integration split recommended in *Unit Testing: Principles, Practices, and Patterns*:
-
-- Unit tests focus on pure, deterministic behavior in the README generator and install manifest.
-- Integration tests exercise the shell installers and Git hooks end to end in isolated temporary repositories.
-- The default verification path keeps fast tests and environment-aware tests separate.
-
 ## Documentation
 
+- [Nix Migration](docs/NIX.md)
 - [User Guide](docs/USER_GUIDE.md)
 - [Neovim Guide](docs/NVIM.md)
 - [Testing Guide](docs/TESTING.md)
 - [Contributor Workflow](docs/CONTRIBUTING.md)
 - [Repository Settings](docs/REPOSITORY_SETTINGS.md)
-- [Sphinx Landing Page](index.rst)
 
 ## Branching
 
-This repository uses an integration-friendly branching model:
-
 - `main` is the stable release branch.
 - `dev` is the shared integration branch.
-- short-lived feature branches such as `codex/...` are the expected place for individual changes.
+- short-lived feature branches such as `codex/...` are merged into `dev`
+  before promotion to `main`.
 
-GitHub Actions are configured to run on `main`, `dev`, pull requests, and `codex/*` push branches so feature work gets CI feedback before merge.
+## Legacy Rollback Path
 
-## Uninstalling
+Until the migration is proven on the workstation, the old commands remain
+available:
 
 ```bash
-make clean
+make dependencies
+make install
+make verify-install
 ```
