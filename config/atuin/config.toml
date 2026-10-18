@@ -1,0 +1,7 @@
+# Work-only history; zshrc isolates XDG_DATA_HOME for Atuin metadata as well.
+db_path = "~/.local/share/work/atuin/history.db"
+key_path = "~/.local/share/work/atuin/key"
+auto_sync = false
+update_check = false
+secrets_filter = true
+enter_accept = false

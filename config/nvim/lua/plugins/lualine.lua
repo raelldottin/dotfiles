@@ -1,34 +1,8 @@
--- import lualine plugin safely
-local status, lualine = pcall(require, "lualine")
-if not status then
-  return
-end
-
--- get lualine moonfly theme
-local theme_status, lualine_moonfly = pcall(require, "lualine.themes.moonfly")
-if not theme_status then
-  lualine_moonfly = "auto"
-end
-
--- configure lualine with modified theme
-lualine.setup({
-  options = {
-    theme = lualine_moonfly,
+return {
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = function(_, opts)
+      table.insert(opts.sections.lualine_z, 1, { "datetime", style = "%a %b %d" })
+    end,
   },
-  sections = {
-    lualine_a = { "mode" },
-    lualine_b = { "branch", "diff", "diagnostics" },
-    lualine_c = { "filename" },
-    lualine_x = { "location" },
-    lualine_y = { "encoding", "fileformat", "filetype" },
-    lualine_z = { "progress" },
-  },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = { "filename" },
-    lualine_x = { "location" },
-    lualine_y = {},
-    lualine_z = {},
-  },
-})
+}
