@@ -1,4 +1,4 @@
-{ config, lib, pkgs, username, homeDirectory, ... }:
+{ config, lib, pkgs, username, homeDirectory, workConfigured, ... }:
 let
   # Only public code is copied into the store. Identity is read at activation.
   guardSource = pkgs.runCommand "dotfiles-work-guard" { } ''
@@ -14,6 +14,10 @@ let
     chmod +x "$out/config/git/hooks/"*
   '';
   workCommand = pkgs.writeShellScriptBin "dotfiles-work" ''
+    if [ "${lib.boolToString workConfigured}" != true ]; then
+      echo "Set DOTFILES_WORK_USER and DOTFILES_WORK_HOME and evaluate with --impure." >&2
+      exit 1
+    fi
     export PATH="${pkgs.git}/bin:$PATH"
     exec ${pkgs.python3}/bin/python3 ${guardSource}/workstation.py \
       --expected-home ${lib.escapeShellArg homeDirectory} "$@"

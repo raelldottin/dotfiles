@@ -47,8 +47,12 @@
       home-manager.lib.homeManagerConfiguration {
         pkgs = mkPkgs system;
         extraSpecialArgs = {
-          username = builtins.getEnv "DOTFILES_WORK_USER";
-          homeDirectory = builtins.getEnv "DOTFILES_WORK_HOME";
+          username = if builtins.getEnv "DOTFILES_WORK_USER" == "" then
+            "work-profile-unconfigured" else builtins.getEnv "DOTFILES_WORK_USER";
+          homeDirectory = if builtins.getEnv "DOTFILES_WORK_HOME" == "" then
+            "/var/empty/work-profile-unconfigured" else builtins.getEnv "DOTFILES_WORK_HOME";
+          workConfigured = builtins.getEnv "DOTFILES_WORK_USER" != ""
+            && builtins.getEnv "DOTFILES_WORK_HOME" != "";
         };
         modules = [ ./nix/work.nix ];
       };
