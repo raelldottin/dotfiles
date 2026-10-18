@@ -39,6 +39,9 @@ and Intel Macs. Username and HOME must be supplied explicitly; they never fall
 back to the repo's personal username. Activation checks the selected HOME against
 the actual user before Home Manager's write boundary. Git name/email are read
 only during activation and saved in private device-local files, not the Nix store.
+Pure evaluation uses a non-activatable placeholder so generic flake checks can
+run without a real account. The helper refuses that placeholder and requires
+the explicit variables with `--impure` for activation.
 
 The work repository directory defaults to `~/Work`. Set `DOTFILES_WORK_ROOT`
 to choose another dedicated directory beneath HOME. The installer rejects HOME
