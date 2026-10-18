@@ -58,6 +58,7 @@ jobs:
         run: git diff --exit-code -- flake.lock
 
   work-mac-build:
+    if: github.event_name != 'push'
     runs-on: macos-latest
     steps:
       - name: Checkout

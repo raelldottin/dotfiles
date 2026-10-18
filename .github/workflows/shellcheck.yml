@@ -19,9 +19,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Run ShellCheck
-        id: shellcheck
-        uses: ludeeus/action-shellcheck@master
-        env:
-          SHELLCHECK_OPTS: -e SC2086 -e SC2148 -e SC2296 -e SC1090 -e SC2034 -e SC1091 -e SC2046
+      - name: Install syntax checkers
+        run: sudo apt-get update && sudo apt-get install -y shellcheck zsh
+      - name: Check Bash scripts and hooks
+        run: make lint-shell
+      - name: Check Zsh configuration
+        run: |
+          zsh -n zshrc
+          zsh -n zprofile
