@@ -1,154 +1,84 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# Portable preferences from this Mac; work state stays on the company device.
+[[ -o interactive ]] || return
+setopt interactivecomments
+typeset -U path fpath
+path=("$HOME/.local/bin" $path)
+for _dotfiles_prefix in /opt/homebrew /usr/local; do
+  [[ -d "$_dotfiles_prefix/share/zsh/site-functions" ]] &&
+    fpath=("$_dotfiles_prefix/share/zsh/site-functions" $fpath)
+done
+unset _dotfiles_prefix
+if [[ -d "${DOTFILES_PURE_SITE_FUNCTIONS:-}" ]]; then
+  fpath=("$DOTFILES_PURE_SITE_FUNCTIONS" $fpath)
 fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# Never load a personal override from the repository.
+[[ -r "$HOME/.config/dotfiles/work.local.zsh" ]] &&
+  source "$HOME/.config/dotfiles/work.local.zsh"
 
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Reassert work namespaces after local settings and inherited environments.
+export DOTFILES_PROFILE=work
+export XDG_CONFIG_HOME="$HOME/.config"
+export GIT_CONFIG_GLOBAL="$HOME/.gitconfig"
+unset GIT_AUTHOR_NAME GIT_AUTHOR_EMAIL GIT_COMMITTER_NAME GIT_COMMITTER_EMAIL EMAIL
+unset GIT_CONFIG_COUNT GIT_CONFIG_PARAMETERS
+export XDG_DATA_HOME="$HOME/.local/share/work"
+export XDG_STATE_HOME="$HOME/.local/state/work"
+export XDG_CACHE_HOME="$HOME/.cache/work"
+export ATUIN_CONFIG_DIR="$HOME/.config/atuin-work"
+export NVIM_APPNAME=nvim-work
+HISTFILE="$XDG_STATE_HOME/zsh/history"
+HISTSIZE=10000
+SAVEHIST=10000
+umask 077
+mkdir -p "$XDG_STATE_HOME/zsh" "$XDG_DATA_HOME/atuin" "$XDG_CACHE_HOME"
+setopt appendhistory histignorespace histignoredups
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-POWERLEVEL9K_INSTANT_PROMPT=quiet
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions fast-syntax-highlighting)
-
-source $ZSH/oh-my-zsh.sh
-
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
- if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
- else
-   export EDITOR='nvim'
- fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vim="nvim"
-alias vi="nvim"
-alias ls="ls -laGF"
-alias tree="tree -a"
-if [[ -x "/usr/local/microsoft/powershell/7/pwsh" ]]; then
-  alias powershell="/usr/local/microsoft/powershell/7/pwsh"
+export CLICOLOR=1
+export LSCOLORS=Gxfxcxdxbxegedabagacad
+export HEADROOM_TELEMETRY=off
+PURE_GIT_PULL=0
+if [[ -z "$SSH_CONNECTION" ]] && (( $+commands[nvim] )); then
+  export EDITOR=nvim
+else
+  export EDITOR=vi
+fi
+export VISUAL="$EDITOR"
+if (( $+commands[nvim] )); then
+  alias vim=nvim vi=nvim
+fi
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias ls='ls -laGF'
+else
+  alias ls='ls -laF --color=auto'
+fi
+alias tree='tree -a'
+if [[ -x /usr/local/microsoft/powershell/7/pwsh ]]; then
+  alias powershell=/usr/local/microsoft/powershell/7/pwsh
 fi
 
-# Display message of the day
-echo "Quote:"
-fortune -s | lolcat -fa
-echo
-echo "GitHub Activity:"
-gh status | lolcat -fa
-if [[ -n "$(brew outdated)" ]]; then
-  brew upgrade
-fi
-if [[ -n "$(npm outdated)" ]]; then
-  npm update
-fi
- 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Explicit maintenance only; opening a terminal never updates packages.
+bup() {
+  (( $+commands[brew] )) || { print -u2 'Homebrew is not installed.'; return 1; }
+  if command pgrep -x brew >/dev/null; then
+    print -u2 'Another Homebrew command is running.'
+    return 1
+  fi
+  command brew update && command brew upgrade && command brew doctor
+}
 
-# Created by `pipx` on 2023-01-21 11:16:32
-if [[ -d "$HOME/.local/bin" ]]; then
-  export PATH="$PATH:$HOME/.local/bin"
-fi
-
-# Add a python binary path
-if [[ -d "$HOME/Library/Python/3.9/bin" ]]; then
-  export PATH="$PATH:$HOME/Library/Python/3.9/bin"
+autoload -Uz compinit promptinit
+compinit -d "$XDG_CACHE_HOME/zcompdump"
+promptinit
+if (( $+functions[prompt_pure_setup] )); then
+  zstyle :prompt:pure:path color cyan
+  zstyle :prompt:pure:git:branch color magenta
+  PURE_CMD_MAX_EXEC_TIME=5
+  prompt pure
+else
+  PROMPT='%n@%m %1~ %# '
 fi
 
-# Java configuration
-if  [[ -d "/opt/homebrew/opt/openjdk/bin" ]]; then
-  export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
-fi
-if [[ -d "/opt/homebrew/opt/openjdk/include" ]]; then
-  export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
-fi
-
-if [[ -d "$HOME/bin/gamadv-xtd3/gam" ]]; then
-  alias gam='eval $HOME/bin/gamadv-xtd3/gam'
+if (( $+commands[atuin] )); then
+  eval "$(command atuin init zsh)"
 fi

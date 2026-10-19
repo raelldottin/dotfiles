@@ -5,7 +5,7 @@ LUACHECK ?= luacheck
 PYRIGHT ?= pyright
 SHELLCHECK ?= shellcheck
 
-.PHONY: all install bootstrap dependencies hooks zsh tmux nvim clean uninstall
+.PHONY: all install install-work bootstrap dependencies hooks zsh tmux nvim clean uninstall snapshot
 .PHONY: lint lint-make lint-shell lint-lua lint-python
 .PHONY: test unit-test integration-test verify verify-install
 
@@ -13,7 +13,17 @@ SHELLCHECK ?= shellcheck
 all: install
 
 # Install the managed dotfiles into the current HOME directory.
-install: zsh tmux nvim
+install: install-work
+
+# Apply only on the company Mac with an explicitly supplied work identity.
+install-work:
+	${SHELL} ./zshsetup.sh
+	${SHELL} ./tmuxsetup.sh
+	${SHELL} ./nvimsetup.sh
+
+# Refresh observational package inventories only when explicitly requested.
+snapshot:
+	${SHELL} ./snapshot.sh
 
 # Bootstrap workstation dependencies explicitly.
 bootstrap dependencies:
@@ -48,7 +58,7 @@ lint-make:
 	${CHECKMAKE} Makefile
 
 lint-shell:
-	${SHELLCHECK} --severity=style *.sh .githooks/pre-commit .githooks/post-commit lib/*.sh
+	${SHELLCHECK} --severity=style *.sh .githooks/pre-commit .githooks/prepare-commit-msg .githooks/pre-rebase .githooks/post-commit lib/*.sh
 
 lint-lua:
 	${LUACHECK} config/nvim
@@ -68,6 +78,7 @@ integration-test:
 # Verify an already-installed HOME directory matches this repo.
 verify-install:
 	${SHELL} ./test.sh
+	${PYTHON} ./workstation.py verify
 
 # Run the full local verification pipeline.
 verify: lint test

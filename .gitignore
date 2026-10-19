@@ -7,3 +7,10 @@ package.json
 result
 result-*
 .direnv/
+
+# Device-local settings and personal history audit are never transferred.
+*.local.zsh
+*.local.gitconfig
+work.json
+identity.gitconfig
+docs/NEW_JOB_SETUP_2026-11-04.md

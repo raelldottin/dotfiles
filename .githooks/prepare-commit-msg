@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ -f "$HOME/.config/dotfiles/work.json" ]]; then
+  python3 workstation.py guard
+fi

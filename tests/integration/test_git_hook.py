@@ -16,6 +16,11 @@ class GitHookIntegrationTests(unittest.TestCase):
     def test_readme_generator_cli_renders_template_and_stages_output(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir_name:
             repo_root = Path(temp_dir_name)
+            home = repo_root / ".test-home"
+            home.mkdir()
+            env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+            env.update({"HOME": str(home), "XDG_CONFIG_HOME": str(home / ".config"),
+                        "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull})
             (repo_root / ".githooks").mkdir()
 
             shutil.copy2(ROOT / "gitvars.py", repo_root / "gitvars.py")
@@ -25,20 +30,20 @@ class GitHookIntegrationTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            subprocess.run(["git", "init", "-b", "main"], cwd=repo_root, check=True)
-            subprocess.run(["git", "config", "user.name", "Test User"], cwd=repo_root, check=True)
-            subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo_root, check=True)
+            subprocess.run(["git", "init", "-b", "main"], cwd=repo_root, env=env, check=True)
+            subprocess.run(["git", "config", "user.name", "Test User"], cwd=repo_root, env=env, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo_root, env=env, check=True)
             subprocess.run(
                 ["git", "remote", "add", "origin", "git@github.com:example/dotfiles.git"],
-                cwd=repo_root,
+                cwd=repo_root, env=env,
                 check=True,
             )
-            subprocess.run(["git", "add", "."], cwd=repo_root, check=True)
-            subprocess.run(["git", "commit", "-m", "Initial commit"], cwd=repo_root, check=True)
+            subprocess.run(["git", "add", "."], cwd=repo_root, env=env, check=True)
+            subprocess.run(["git", "commit", "-m", "Initial commit"], cwd=repo_root, env=env, check=True)
 
             subprocess.run(
                 [sys.executable, ".githooks/replace_by_git_vars.py", "README.template", "README.md"],
-                cwd=repo_root,
+                cwd=repo_root, env=env,
                 check=True,
             )
 
@@ -49,7 +54,7 @@ class GitHookIntegrationTests(unittest.TestCase):
 
             staged_files = subprocess.run(
                 ["git", "diff", "--cached", "--name-only"],
-                cwd=repo_root,
+                cwd=repo_root, env=env,
                 check=True,
                 capture_output=True,
                 text=True,
@@ -59,6 +64,11 @@ class GitHookIntegrationTests(unittest.TestCase):
     def test_pre_commit_hook_succeeds_without_optional_package_managers(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir_name:
             repo_root = Path(temp_dir_name)
+            home = repo_root / ".test-home"
+            home.mkdir()
+            env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+            env.update({"HOME": str(home), "XDG_CONFIG_HOME": str(home / ".config"),
+                        "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull})
             hooks_dir = repo_root / ".githooks"
             hooks_dir.mkdir()
 
@@ -70,10 +80,10 @@ class GitHookIntegrationTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            subprocess.run(["git", "init", "-b", "main"], cwd=repo_root, check=True)
+            subprocess.run(["git", "init", "-b", "main"], cwd=repo_root, env=env, check=True)
             subprocess.run(
                 ["git", "remote", "add", "origin", "git@github.com:example/dotfiles.git"],
-                cwd=repo_root,
+                cwd=repo_root, env=env,
                 check=True,
             )
 
@@ -89,7 +99,6 @@ class GitHookIntegrationTests(unittest.TestCase):
                 target_path = shim_dir / executable_name
                 target_path.symlink_to(executable_path)
 
-            env = os.environ.copy()
             env["PATH"] = str(shim_dir)
 
             subprocess.run(["/bin/bash", ".githooks/pre-commit"], cwd=repo_root, env=env, check=True)

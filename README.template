@@ -9,6 +9,18 @@
 
 Declarative workstation configuration for macOS and Linux using Nix, Home Manager, nix-darwin, and nix-homebrew.
 
+## Company Mac
+
+Use the separate [Company Mac profile](docs/WORK_MAC.md) for work. It brings
+over the current Mac's Pure/LazyVim preferences while separating work Git
+identity, history, editor state, and local settings. It uses standalone Home
+Manager and does not import the personal nix-darwin module or its GUI apps.
+
+Do not activate `darwinConfigurations.macbook` on a company device. Supply the
+company Mac's own username and home directory explicitly as described in the
+guide. Work Git name/email are validated and written locally during activation;
+they are not evaluated into the Nix store.
+
 ## Migration Status
 
 The Nix migration is currently staged on `dev`.

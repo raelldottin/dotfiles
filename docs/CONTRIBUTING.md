@@ -42,6 +42,7 @@ The repository-level protection and merge policy are documented in `docs/REPOSIT
 ## Generated Files
 
 - `README.md` is generated from `README.template`.
-- the pre-commit hook updates environment snapshots only when the underlying commands are installed.
+- Package inventories are refreshed explicitly with `make snapshot`; pre-commit only regenerates README and checks the work identity when configured.
+- if hooks were skipped, regenerate the README with `python3 .githooks/replace_by_git_vars.py README.template README.md`
 
 Do not edit generated files by hand unless you also update the source template or automation that owns them.

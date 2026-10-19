@@ -10,12 +10,57 @@ dotfiles_python() {
   printf '%s\n' "${PYTHON:-python3}"
 }
 
+dotfiles_assert_safe_parent() {
+  local target_path="$1"
+  local parent_path
+  local home_path
+  local relative_path
+  home_path="$(cd -- "$HOME" && pwd -P)"
+  case "$target_path" in
+    "$HOME"/*) relative_path="${target_path#"$HOME"/}" ;;
+    "$home_path"/*) relative_path="${target_path#"$home_path"/}" ;;
+    *) echo "Refusing a target outside HOME: $target_path" >&2; return 1 ;;
+  esac
+  case "/$relative_path/" in
+    *"/../"*) echo "Refusing parent traversal in target: $target_path" >&2; return 1 ;;
+  esac
+  parent_path="$(dirname "$home_path/$relative_path")"
+  while [[ "$parent_path" != "$home_path" ]]; do
+    if [[ -L "$parent_path" ]]; then
+      echo "Refusing a symlinked configuration directory: $parent_path" >&2
+      return 1
+    fi
+    if [[ "$parent_path" == "/" ]]; then
+      echo "Refusing a target outside HOME: $target_path" >&2
+      return 1
+    fi
+    parent_path="$(dirname "$parent_path")"
+  done
+}
+
 dotfiles_link_file() {
   local source_path="$1"
   local target_path="$2"
 
+  dotfiles_assert_safe_parent "$target_path"
+  dotfiles_assert_safe_parent "$HOME/.local/state/dotfiles/backups/file"
+  if [[ -L "$target_path" && "$(readlink "$target_path")" == "$source_path" ]]; then
+    return
+  fi
+  if [[ -d "$target_path" && ! -L "$target_path" ]]; then
+    echo "Refusing to replace directory: $target_path" >&2
+    return 1
+  fi
   mkdir -p "$(dirname "$target_path")"
-  ln -sfn "$source_path" "$target_path"
+  if [[ -e "$target_path" || -L "$target_path" ]]; then
+    local backup_dir
+    mkdir -p "$HOME/.local/state/dotfiles/backups"
+    chmod 700 "$HOME/.local/state/dotfiles/backups"
+    backup_dir="$(mktemp -d "$HOME/.local/state/dotfiles/backups/link.XXXXXXXX")"
+    mv "$target_path" "$backup_dir/$(basename "$target_path")"
+    printf 'Preserved previous file in %s\n' "$backup_dir"
+  fi
+  ln -s "$source_path" "$target_path"
   printf 'Linked %s -> %s\n' "$target_path" "$source_path"
 }
 
@@ -53,13 +98,14 @@ dotfiles_target_for_repo_file() {
   local repo_file="$2"
   local relative_path="${repo_file#"$repo_root/config/nvim/"}"
 
-  printf '%s/.config/nvim/%s\n' "${HOME:?HOME must be set}" "$relative_path"
+  printf '%s/.config/nvim-work/%s\n' "${HOME:?HOME must be set}" "$relative_path"
 }
 
 dotfiles_remove_if_managed() {
   local source_path="$1"
   local target_path="$2"
 
+  dotfiles_assert_safe_parent "$target_path"
   if [[ -L "$target_path" ]]; then
     local resolved_target
     resolved_target="$(python3 - <<'PY' "$target_path"

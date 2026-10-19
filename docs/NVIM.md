@@ -1,43 +1,28 @@
-# Neovim Guide
+# Neovim guide
 
-## Layout
+The configuration is the LazyVim setup captured from the current Mac on
+October 18, 2026. It retains the live Lua configuration, 34-plugin lockfile,
+LazyVim metadata, and the status-line date customization. The inactive example
+plugin file and the personal plugin caches and sessions are not imported.
+The upstream starter license is retained in `config/nvim/LICENSE`.
 
-The Neovim configuration is stored under `config/nvim` and installed into `~/.config/nvim`.
+Both Nix profiles share the captured portable editor preferences. The personal
+profile retains its existing `~/.config/nvim` location. The company profile
+places files in `~/.config/nvim-work`. The managed Zsh config
+exports `NVIM_APPNAME=nvim-work` and work XDG data/cache/state paths. Use
+`nvim` from a new work terminal so Neovim uses that namespace. A graphical
+launcher must receive equivalent environment settings if used.
 
-- `init.lua` loads the plugin bootstrap and the core editor modules.
-- `lua/core/options.lua` sets editor behavior such as tabs, clipboard, splits, and search defaults.
-- `lua/core/keymaps.lua` contains user-facing keybindings.
-- `lua/core/colorscheme.lua` applies the preferred theme.
-- `lua/plugins/setup.lua` bootstraps `lazy.nvim` and declares the plugin catalog.
-- `lua/plugins/*.lua` configures individual plugins.
-- `lua/plugins/lsp/*.lua` groups language-server, formatter, and diagnostics configuration.
+The first launch bootstraps lazy.nvim and the configured plugins over the
+network. Run `:Lazy restore` to restore `lazy-lock.json` revisions. Periodic
+plugin update checking is disabled; choose updates deliberately.
 
-## Plugin Stack
+`lua/config/lazy.lua` loads LazyVim and `lua/plugins`. The current active
+override adds the date to lualine. Other config modules retain the current
+Mac's starter defaults. Keymaps and language support now come from the
+captured LazyVim revision, rather than the repo's older standalone plugin set.
 
-The current setup is organized around a few responsibilities:
-
-- navigation and project discovery: `nvim-tree`, `telescope`
-- editing ergonomics: `vim-sleuth`, `nvim-cmp`, `LuaSnip`
-- language tooling: `mason`, `mason-lspconfig`, `null-ls`, `nvim-lspconfig`
-- source-control visibility: `gitsigns`
-- presentation: `lualine`, `moonfly`
-
-## Operational Notes
-
-- `make install` links the entire tracked Neovim tree into `~/.config/nvim`.
-- `make verify-install` checks the installed files against the repository versions.
-- `make clean` removes only repo-managed files and leaves unrelated personal files alone.
-
-## Updating The Configuration
-
-1. Edit files under `config/nvim`.
-2. Run `make verify` to catch shell, Lua, Python, and test regressions.
-3. If you changed plugin structure or keybindings, update this guide and the user-facing README summary.
-
-## Key Safety Principle
-
-The repository treats Neovim as part of the same managed install surface as shell and tmux. Any change under `config/nvim` should keep these guarantees:
-
-- installation remains idempotent
-- cleanup removes only repo-managed paths
-- verification can prove the installed state matches the repo
+The automated offline smoke check compiles the actual Lua modules and evaluates
+the lazy.nvim specification and lualine override with a local stub. It does not
+download or boot the complete plugin set. First-launch plugin installation,
+language servers, and interactive behavior require verification on the company Mac.

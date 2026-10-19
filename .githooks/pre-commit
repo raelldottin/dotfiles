@@ -1,25 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-# https://www.viget.com/articles/two-ways-to-share-git-hooks-with-your-team/
-# git config core.hooksPath .githooks
-
-maybe_capture_command() {
-  local output_path="$1"
-  shift
-
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "Skipping $1 snapshot because the command is not installed."
-    return 0
-  fi
-
-  "$@" >"$output_path"
-}
-
-# run from the root of the repo
+if [[ -f "$HOME/.config/dotfiles/work.json" ]]; then
+  python3 workstation.py guard
+fi
+# Package snapshots are explicit: make snapshot.
 python3 .githooks/replace_by_git_vars.py README.template README.md
-maybe_capture_command homebrew_installed_app.txt brew list
-maybe_capture_command npm_installed_app.txt npm list -g
-
-# Example:
-# [![Integration Tests](https://github.com/{{ repository.name }}/actions/workflows/integration-tests.yaml/badge.svg?branch={{ current.branch }})](https://github.com/{{ repository.name }}/actions/workflows/integration-tests.yaml?query=branch%3A{{ current.branch }})

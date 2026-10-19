@@ -28,6 +28,9 @@ def iter_nvim_repo_files(repo_root: Path) -> list[Path]:
 def build_managed_paths(repo_root: Path, home: Path, ostype: str) -> list[ManagedPath]:
     managed_paths = [
         ManagedPath(repo_root / "zshrc", home / ".zshrc", "zsh"),
+        ManagedPath(repo_root / "zprofile", home / ".zprofile", "zsh"),
+        ManagedPath(repo_root / "config/atuin/config.toml", home / ".config/atuin-work/config.toml", "atuin"),
+        ManagedPath(repo_root / "config/git/work.conf", home / ".config/dotfiles/git.conf", "git"),
         ManagedPath(repo_root / resolve_tmux_config_name(ostype), home / ".tmux.conf", "tmux"),
         ManagedPath(repo_root / "pylintrc", home / ".pylintrc", "python"),
     ]
@@ -37,7 +40,7 @@ def build_managed_paths(repo_root: Path, home: Path, ostype: str) -> list[Manage
         managed_paths.append(
             ManagedPath(
                 repo_file,
-                home / ".config" / "nvim" / relative_path,
+                home / ".config" / "nvim-work" / relative_path,
                 "nvim",
             )
         )

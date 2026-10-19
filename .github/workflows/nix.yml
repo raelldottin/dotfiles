@@ -9,11 +9,19 @@ on:
     paths:
       - "**.nix"
       - "flake.lock"
+      - "workstation.py"
+      - "dotfiles_manifest.py"
+      - "zshrc"
+      - "config/**"
       - ".github/workflows/nix.yml"
   pull_request:
     paths:
       - "**.nix"
       - "flake.lock"
+      - "workstation.py"
+      - "dotfiles_manifest.py"
+      - "zshrc"
+      - "config/**"
       - ".github/workflows/nix.yml"
   workflow_dispatch:
 
@@ -39,5 +47,45 @@ jobs:
       - name: Evaluate macOS nix-darwin
         run: nix eval --no-write-lock-file --raw .#darwinConfigurations.macbook.config.system.build.toplevel.drvPath
 
+      - name: Evaluate work profiles for both Mac architectures
+        env:
+          DOTFILES_WORK_USER: work-ci
+          DOTFILES_WORK_HOME: /Users/work-ci
+        run: |
+          nix eval --impure --no-write-lock-file --raw .#homeConfigurations.work-aarch64-darwin.activationPackage.drvPath
+          nix eval --impure --no-write-lock-file --raw .#homeConfigurations.work-x86_64-darwin.activationPackage.drvPath
+      - name: Verify lock file is unchanged
+        run: git diff --exit-code -- flake.lock
+
+  work-mac-build:
+    if: github.event_name != 'push'
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v23
+      - name: Build work activation without applying it
+        env:
+          DOTFILES_WORK_USER: work-ci
+          DOTFILES_WORK_HOME: /Users/work-ci
+        run: |
+          work_system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+          nix build --impure --no-write-lock-file --no-link ".#homeConfigurations.work-${work_system}.activationPackage"
+      - name: Reject activation helpers for a different HOME
+        env:
+          DOTFILES_WORK_USER: work-ci
+          DOTFILES_WORK_HOME: /Users/work-ci
+        run: |
+          work_system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+          work_path="$(nix build --impure --no-write-lock-file --no-link --print-out-paths ".#homeConfigurations.work-${work_system}.config.home.path")"
+          if work_output="$("$work_path/bin/dotfiles-work" preflight 2>&1)"; then
+            echo "Work preflight unexpectedly accepted a different HOME." >&2
+            exit 1
+          fi
+          case "$work_output" in
+            *"does not match the activating user"*) ;;
+            *) printf '%s\n' "$work_output" >&2; exit 1 ;;
+          esac
       - name: Verify lock file is unchanged
         run: git diff --exit-code -- flake.lock

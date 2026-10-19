@@ -43,9 +43,21 @@
           extraSpecialArgs = { inherit username; };
           modules = [ ./nix/home.nix ];
         };
-    in
-    {
-      darwinConfigurations.macbook = nix-darwin.lib.darwinSystem {
+    mkWorkHome = system:
+      home-manager.lib.homeManagerConfiguration {
+        pkgs = mkPkgs system;
+        extraSpecialArgs = {
+          username = if builtins.getEnv "DOTFILES_WORK_USER" == "" then
+            "work-profile-unconfigured" else builtins.getEnv "DOTFILES_WORK_USER";
+          homeDirectory = if builtins.getEnv "DOTFILES_WORK_HOME" == "" then
+            "/var/empty/work-profile-unconfigured" else builtins.getEnv "DOTFILES_WORK_HOME";
+          workConfigured = builtins.getEnv "DOTFILES_WORK_USER" != ""
+            && builtins.getEnv "DOTFILES_WORK_HOME" != "";
+        };
+        modules = [ ./nix/work.nix ];
+      };
+  in {
+    darwinConfigurations.macbook = nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs username; };
         modules = [
           ./nix/darwin.nix
@@ -63,6 +75,14 @@
 
       homeConfigurations.linux-x86_64 = mkHome "x86_64-linux";
       homeConfigurations.linux-aarch64 = mkHome "aarch64-linux";
+    # Device parameters are explicit; personal username is never reused.
+    homeConfigurations.work-aarch64-darwin = mkWorkHome "aarch64-darwin";
+    homeConfigurations.work-x86_64-darwin = mkWorkHome "x86_64-darwin";
+
+    packages.aarch64-darwin.work-home-manager =
+      home-manager.packages.aarch64-darwin.home-manager;
+    packages.x86_64-darwin.work-home-manager =
+      home-manager.packages.x86_64-darwin.home-manager;
 
       formatter = {
         aarch64-darwin = (mkPkgs "aarch64-darwin").nixfmt;
