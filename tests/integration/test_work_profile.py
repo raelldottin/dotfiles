@@ -187,6 +187,15 @@ class WorkProfileTests(unittest.TestCase):
                     self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(sentinel.read_text(), "personal state")
                 target.unlink()
+        for relative, source in ((".local/share/work/nvim-work/session.vim", sentinel),
+                                 (".local/state/work/nvim-work/shada/main.shada", Path(sys.executable))):
+            with self.subTest(relative=relative):
+                target = self.home / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.symlink_to(source)
+                result = self.run_command(sys.executable, str(ROOT / "workstation.py"), "verify")
+                self.assertNotEqual(result.returncode, 0)
+                target.unlink()
 
     def test_editor_tools_can_link_within_the_work_namespace(self) -> None:
         self.install()
@@ -196,6 +205,9 @@ class WorkProfileTests(unittest.TestCase):
         binary = self.home / ".local/share/work/nvim-work/mason/bin/tool"
         binary.parent.mkdir(parents=True)
         binary.symlink_to(package)
+        environment = self.home / ".local/share/work/nvim-work/mason/packages/python-tool/.venv"
+        result = self.run_command(sys.executable, "-m", "venv", "--without-pip", str(environment))
+        self.assertEqual(result.returncode, 0, result.stderr)
         result = self.run_command(sys.executable, str(ROOT / "workstation.py"), "verify")
         self.assertEqual(result.returncode, 0, result.stderr)
 

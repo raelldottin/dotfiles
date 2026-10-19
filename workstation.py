@@ -83,8 +83,13 @@ def check_namespaces(home: Path) -> None:
         if editor.is_symlink():
             raise ValueError("Work editor state must not alias another directory.")
         for path in editor.rglob("*"):
-            if path.is_symlink() and not any(path.resolve().is_relative_to(root) for root in work_namespaces):
-                raise ValueError("Work editor state must not contain symlinks to another profile.")
+            if not path.is_symlink() or any(path.resolve().is_relative_to(root) for root in work_namespaces):
+                continue
+            # Mason virtual environments link to installed interpreters. These
+            # executable data files are not writable editor history or sessions.
+            if namespace == work_namespaces[0] and path.is_file() and os.access(path, os.X_OK):
+                continue
+            raise ValueError("Work editor state must not contain symlinks to another profile.")
 
 
 def preserve_and_write(home: Path, target: Path, content: str) -> None:

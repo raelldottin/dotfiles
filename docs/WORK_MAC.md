@@ -126,8 +126,10 @@ can remain read-only. It is seeded from the repo's captured lockfile and refresh
 when those captured revisions change. Ordinary restarts preserve deliberate
 runtime updates. To capture updated pins, copy that runtime lockfile into
 `config/nvim/lazy-lock.json` in the checkout, review it, and activate the updated
-configuration. Editor data, state, and cache aliases to other profiles are
-rejected; tool links that stay within the work namespaces remain valid.
+configuration. Editor storage directories and history files cannot alias another
+profile. Tool links within the work namespaces remain valid, and editor data
+may link to installed executable runtimes, as Python virtual environments do.
+Editor state and cache links cannot escape the work namespaces.
 
 `make snapshot` is an explicit inventory maintenance command. Ordinary commits
 no longer rewrite the Homebrew/npm inventories. These inventories remain
