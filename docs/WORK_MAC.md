@@ -78,7 +78,7 @@ and configuration links refer to the checkout path; reinstall after moving it.
 | Area | Work behavior |
 | --- | --- |
 | Git identity | Required during installation. Global default identity is empty; the selected work identity applies beneath the work root. |
-| Commits | Global pre-commit and prepare-commit-msg hooks reject repositories outside the work root and author/committer identities that differ from the selected work identity. The second hook also runs with `--no-verify`. |
+| Commits | Global pre-commit and prepare-commit-msg hooks reject repositories outside the work root and author/committer identities that differ from the selected work identity. Preserved cherry-pick authors are checked explicitly; pre-rebase checks the selected source history before rewriting it. The prepare-commit-msg hook also runs with `git commit --no-verify`. |
 | Inherited Git settings | The shell selects this Mac's managed global config and clears inherited author/committer identity and injected Git command configuration variables. |
 | Atuin | Configuration is `~/.config/atuin-work/config.toml`; history, key, and metadata use the work data namespace. Automatic sync and update checks are disabled. No account session is copied. |
 | Shell history | `~/.local/state/work/zsh/history`; existing personal shell history is not sourced or imported. |
@@ -104,7 +104,8 @@ commits. They are not an operating-system sandbox: a repository can replace
 `core.hooksPath`, a tool can ignore XDG paths, and application/browser logins
 must still use work accounts. Check existing repositories' hook configuration
 before use; preserve and integrate company-required hooks rather than silently
-overriding them. A person deliberately changing config can bypass local guards.
+overriding them. A person deliberately changing config or using Git's hook-bypass
+options can bypass local guards.
 Both author and committer must match the selected identity; importing a commit
 with another author through cherry-pick or rebase is intentionally rejected by
 this strict default and needs a reviewed company workflow.
@@ -118,6 +119,15 @@ Use `nvim` from the new terminal so it inherits `NVIM_APPNAME=nvim-work`.
 First launch downloads LazyVim plugins. Run `:Lazy restore` to restore the
 captured lockfile revisions. Periodic plugin update checking is disabled;
 updates should be deliberate. No personal plugin cache or session was copied.
+
+LazyVim writes its runtime lockfile to
+`~/.local/state/work/nvim-work/lazy-lock.json`, so the Nix-managed configuration
+can remain read-only. It is seeded from the repo's captured lockfile and refreshed
+when those captured revisions change. Ordinary restarts preserve deliberate
+runtime updates. To capture updated pins, copy that runtime lockfile into
+`config/nvim/lazy-lock.json` in the checkout, review it, and activate the updated
+configuration. Editor data, state, and cache aliases to other profiles are
+rejected; tool links that stay within the work namespaces remain valid.
 
 `make snapshot` is an explicit inventory maintenance command. Ordinary commits
 no longer rewrite the Homebrew/npm inventories. These inventories remain
@@ -142,11 +152,14 @@ It does not automatically restore the previous Git config or personal files.
 
 ## Verification recorded October 18, 2026
 
-All repository linters and **37 tests** passed: 12 unit tests and 25 integration
+All repository linters and **43 tests** passed: 12 unit tests and 31 integration
 tests, with no skips on this Mac. The actual Atuin path probe and offline
 Neovim configuration check ran. Regression tests cover linked work roots, redirected backups, standalone
 installer aliases, work history aliases, expected-HOME checks, and guard-package
-upgrades. Nix evaluation and a macOS activation-package build are checked in CI;
+upgrades. Additional regressions cover preserved cherry-pick authors, both rebase
+backends, root and explicitly selected branches, editor state aliases, internal
+tool links, and writable lockfile seeding from read-only configuration.
+Nix evaluation and a macOS activation-package build are checked in CI;
 no Nix activation has been performed on the company device.
 
 The original checkout and its uncommitted Homebrew/npm inventory edits were

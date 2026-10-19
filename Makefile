@@ -58,7 +58,7 @@ lint-make:
 	${CHECKMAKE} Makefile
 
 lint-shell:
-	${SHELLCHECK} --severity=style *.sh .githooks/pre-commit .githooks/prepare-commit-msg .githooks/post-commit lib/*.sh
+	${SHELLCHECK} --severity=style *.sh .githooks/pre-commit .githooks/prepare-commit-msg .githooks/pre-rebase .githooks/post-commit lib/*.sh
 
 lint-lua:
 	${LUACHECK} config/nvim

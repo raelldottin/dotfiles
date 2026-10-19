@@ -8,6 +8,7 @@ let
     cp ${../config/git/work.conf} "$out/config/git/work.conf"
     cp ${../config/git/hooks/pre-commit} "$out/config/git/hooks/pre-commit"
     cp ${../config/git/hooks/prepare-commit-msg} "$out/config/git/hooks/prepare-commit-msg"
+    cp ${../config/git/hooks/pre-rebase} "$out/config/git/hooks/pre-rebase"
     chmod u+w "$out/config/git/hooks/"*
     substituteInPlace "$out/config/git/hooks/"* \
       --replace-fail '#!/usr/bin/env python3' '#!${pkgs.python3}/bin/python3'

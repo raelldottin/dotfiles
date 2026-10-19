@@ -77,6 +77,14 @@ def check_namespaces(home: Path) -> None:
     atuin = home / ".local/share/work/atuin"
     if history.is_symlink() or any(path.is_symlink() for path in atuin.rglob("*")):
         raise ValueError("Work history state must not contain symlinks to another profile.")
+    work_namespaces = [home / path for path in (".local/share/work", ".local/state/work", ".cache/work")]
+    for namespace in work_namespaces:
+        editor = namespace / "nvim-work"
+        if editor.is_symlink():
+            raise ValueError("Work editor state must not alias another directory.")
+        for path in editor.rglob("*"):
+            if path.is_symlink() and not any(path.resolve().is_relative_to(root) for root in work_namespaces):
+                raise ValueError("Work editor state must not contain symlinks to another profile.")
 
 
 def preserve_and_write(home: Path, target: Path, content: str) -> None:
@@ -148,7 +156,7 @@ def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], text=True, stderr=subprocess.DEVNULL).strip()
 
 
-def guard(home: Path) -> None:
+def guard(home: Path, rebase_upstream: str | None = None, rebase_branch: str = "HEAD") -> None:
     state = read_state(home)
     work_root = validate_work_root(home, state["root"])
     repository = Path(git("rev-parse", "--show-toplevel")).resolve()
@@ -159,6 +167,25 @@ def guard(home: Path) -> None:
         match = re.fullmatch(r"(.+) <([^<>]+)> \d+ [+-]\d{4}", ident)
         if not match or (match[1], match[2]) != (state["name"], state["email"]):
             raise ValueError("Commit blocked: author and committer must match the configured work identity.")
+    expected_author = state["name"] + "\0" + state["email"]
+    # Sequencer commands can preserve an author that git var does not expose.
+    for reference in ("CHERRY_PICK_HEAD", "REBASE_HEAD"):
+        result = subprocess.run(["git", "rev-parse", "--verify", "--quiet", reference],
+                                capture_output=True, text=True)
+        if result.returncode == 0:
+            if git("show", "-s", "--format=%an%x00%ae", reference) != expected_author:
+                raise ValueError("Commit blocked: preserved author must match the configured work identity.")
+        elif result.returncode != 1:
+            raise ValueError("Unable to inspect the preserved commit author safely.")
+    if rebase_upstream is not None:
+        branch = git("rev-parse", "--verify", "--end-of-options", rebase_branch + "^{commit}")
+        revisions = branch
+        if rebase_upstream != "--root":
+            upstream = git("rev-parse", "--verify", "--end-of-options", rebase_upstream + "^{commit}")
+            revisions = upstream + ".." + branch
+        authors = git("log", "--format=%an%x00%ae", revisions)
+        if any(author != expected_author for author in authors.splitlines()):
+            raise ValueError("Rebase blocked: preserved authors must match the configured work identity.")
 
 
 def verify(home: Path) -> None:
@@ -170,7 +197,7 @@ def verify(home: Path) -> None:
         raise ValueError("Private Git identity differs from the selected work identity.")
     if (home / ".gitconfig").read_text(encoding="utf-8") != global_config(home, state):
         raise ValueError("Global Git configuration differs from the work profile.")
-    for hook in ("pre-commit", "prepare-commit-msg"):
+    for hook in ("pre-commit", "prepare-commit-msg", "pre-rebase"):
         if not os.access(ROOT / "config/git/hooks" / hook, os.X_OK):
             raise ValueError(f"Work commit guard is not executable: {hook}")
     print("Work profile and commit guards match. Identity checks run on guarded commits.")
@@ -190,12 +217,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["install", "preflight", "guard", "verify", "clean"])
     parser.add_argument("--expected-home", type=Path)
+    parser.add_argument("--rebase-upstream")
+    parser.add_argument("--rebase-branch", default="HEAD")
     args = parser.parse_args()
     try:
         home = Path.home().resolve()
         if args.expected_home is not None and args.expected_home.resolve() != home:
             raise ValueError("The selected Nix profile HOME does not match the activating user.")
-        {"install": install, "preflight": preflight, "guard": guard,
+        {"install": install, "preflight": preflight,
+         "guard": lambda selected_home: guard(selected_home, args.rebase_upstream, args.rebase_branch),
          "verify": verify, "clean": clean}[args.command](home)
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         print(f"Work profile: {error}", file=sys.stderr)

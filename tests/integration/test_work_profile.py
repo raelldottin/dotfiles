@@ -105,6 +105,100 @@ class WorkProfileTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("outside the configured work directory", result.stderr)
 
+    def replay_repository(self, name: str, author: str) -> Path:
+        repo = self.repository(self.home / "Work" / name)
+        self.run_command("git", "checkout", "-qb", "base", cwd=repo)
+        for branch, filename in (("base", "base-file"), ("external", "external-file")):
+            if branch != "base":
+                self.run_command("git", "checkout", "-qb", branch, cwd=repo)
+            (repo / filename).write_text(filename)
+            self.run_command("git", "add", filename, cwd=repo)
+            result = self.run_command(
+                "git", "-c", "core.hooksPath=/dev/null", "-c", "user.name=Work Test",
+                "-c", "user.email=work@example.test", "commit", "-qm", filename,
+                "--author", author if branch == "external" else "Work Test <work@example.test>",
+                cwd=repo)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        self.run_command("git", "checkout", "-q", "base", cwd=repo)
+        (repo / "base-extra").write_text("base-extra")
+        self.run_command("git", "add", "base-extra", cwd=repo)
+        result = self.run_command(
+            "git", "-c", "core.hooksPath=/dev/null", "-c", "user.name=Work Test",
+            "-c", "user.email=work@example.test", "commit", "-qm", "base-extra", cwd=repo)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return repo
+
+    def test_cherry_pick_rejects_the_preserved_author(self) -> None:
+        repo = self.replay_repository("cherry-pick", "Other Test <other@example.test>")
+        self.install()
+        before = self.run_command("git", "rev-parse", "HEAD", cwd=repo).stdout
+        result = self.run_command("git", "cherry-pick", "external", cwd=repo)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("configured work identity", result.stderr)
+        self.assertEqual(self.run_command("git", "rev-parse", "HEAD", cwd=repo).stdout, before)
+
+    def test_rebase_rejects_other_authors_before_rewriting_history(self) -> None:
+        repositories = [(mode, self.replay_repository("rebase-" + mode, "Other Test <other@example.test>"))
+                        for mode in ("merge", "apply", "root", "explicit")]
+        self.install()
+        for mode, repo in repositories:
+            with self.subTest(mode=mode):
+                if mode != "explicit":
+                    self.run_command("git", "checkout", "-q", "external", cwd=repo)
+                before = self.run_command("git", "rev-parse", "HEAD", cwd=repo).stdout
+                arguments = (["base", "external"] if mode == "explicit" else
+                             ["--root"] if mode == "root" else ["--" + mode, "base"])
+                result = self.run_command("git", "rebase", *arguments, cwd=repo)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("configured work identity", result.stderr)
+                self.assertEqual(self.run_command("git", "rev-parse", "HEAD", cwd=repo).stdout, before)
+
+    def test_replay_accepts_the_selected_work_author(self) -> None:
+        repositories = [(mode, self.replay_repository("work-" + mode, "Work Test <work@example.test>"))
+                        for mode in ("cherry-pick", "merge", "apply", "root", "explicit")]
+        self.install()
+        for mode, repo in repositories:
+            with self.subTest(mode=mode):
+                if mode == "cherry-pick":
+                    arguments = ["cherry-pick", "external"]
+                elif mode == "explicit":
+                    arguments = ["rebase", "base", "external"]
+                else:
+                    self.run_command("git", "checkout", "-q", "external", cwd=repo)
+                    arguments = ["rebase", "--root"] if mode == "root" else ["rebase", "--" + mode, "base"]
+                result = self.run_command("git", *arguments, cwd=repo)
+                self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_editor_namespaces_cannot_redirect_to_personal_state(self) -> None:
+        self.install()
+        personal = self.home / "personal-editor"
+        personal.mkdir()
+        sentinel = personal / "sentinel"
+        sentinel.write_text("personal state")
+        for relative in (".local/share/work/nvim-work", ".local/state/work/nvim-work",
+                         ".cache/work/nvim-work", ".local/share/work/nvim-work/lazy",
+                         ".local/state/work/nvim-work/shada"):
+            with self.subTest(relative=relative):
+                target = self.home / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.symlink_to(personal, target_is_directory=True)
+                for command in ("install", "verify"):
+                    result = self.run_command(sys.executable, str(ROOT / "workstation.py"), command)
+                    self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(sentinel.read_text(), "personal state")
+                target.unlink()
+
+    def test_editor_tools_can_link_within_the_work_namespace(self) -> None:
+        self.install()
+        package = self.home / ".local/share/work/nvim-work/mason/packages/fixture/tool"
+        package.parent.mkdir(parents=True)
+        package.write_text("fixture executable")
+        binary = self.home / ".local/share/work/nvim-work/mason/bin/tool"
+        binary.parent.mkdir(parents=True)
+        binary.symlink_to(package)
+        result = self.run_command(sys.executable, str(ROOT / "workstation.py"), "verify")
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_symlinked_work_namespace_and_external_work_root_are_rejected(self) -> None:
         (self.home / ".config").mkdir()
         (self.home / ".config/nvim-work").symlink_to(self.home / "personal-editor", target_is_directory=True)
@@ -216,7 +310,8 @@ class WorkProfileTests(unittest.TestCase):
         self.install()
         package = self.home.parent / "new-package"
         for relative in ("workstation.py", "dotfiles_manifest.py", "config/git/work.conf",
-                         "config/git/hooks/pre-commit", "config/git/hooks/prepare-commit-msg"):
+                         "config/git/hooks/pre-commit", "config/git/hooks/prepare-commit-msg",
+                         "config/git/hooks/pre-rebase"):
             target = package / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / relative, target)
@@ -281,9 +376,46 @@ class WorkProfileTests(unittest.TestCase):
             'vim.cmd("qa!")\n'
         )
         env = {**self.env, "XDG_DATA_HOME": str(self.home / "editor-data"),
+               "XDG_CONFIG_HOME": str(ROOT / "config"),
                "CONFIG_ROOT": str(ROOT / "config/nvim"), "NVIM_APPNAME": "nvim"}
         result = self.run_command("nvim", "--headless", "--clean", "-u", "NONE", "-l", str(script), env=env)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    @unittest.skipUnless(shutil.which("nvim"), "Neovim is required for the lockfile regression")
+    def test_editor_uses_a_writable_lockfile_seeded_from_read_only_config(self) -> None:
+        config = self.home / ".config/nvim-work"
+        config.mkdir(parents=True)
+        captured = self.home / "captured-lock.json"
+        captured.write_text('{"fixture":{"commit":"captured"}}\n')
+        captured.chmod(0o444)
+        (config / "lazy-lock.json").symlink_to(captured)
+        (self.home / "editor-data/nvim-work/lazy/lazy.nvim").mkdir(parents=True)
+        script = self.home / "lock-check.lua"
+        script.write_text(
+            'vim.fn.system = function() error("unexpected external command") end\n'
+            'local opts\n'
+            'package.preload["lazy"] = function() return {setup=function(s) opts=s end} end\n'
+            'local source = vim.fn.stdpath("config") .. "/lazy-lock.json"\n'
+            'local captured = vim.fn.readfile(source)\n'
+            'dofile(vim.env.CONFIG_ROOT .. "/lua/config/lazy.lua")\n'
+            'assert(opts.lockfile == vim.fn.stdpath("state") .. "/lazy-lock.json")\n'
+            'assert(vim.deep_equal(vim.fn.readfile(opts.lockfile), captured))\n'
+            'local output = assert(io.open(opts.lockfile, "wb"))\n'
+            'output:write("{}\\n"); output:close()\n'
+            'dofile(vim.env.CONFIG_ROOT .. "/lua/config/lazy.lua")\n'
+            'assert(vim.deep_equal(vim.fn.readfile(opts.lockfile), {"{}"}))\n'
+            'assert(vim.deep_equal(vim.fn.readfile(source), captured))\n'
+            'vim.cmd("qa!")\n'
+        )
+        env = {**self.env, "XDG_DATA_HOME": str(self.home / "editor-data"),
+               "CONFIG_ROOT": str(ROOT / "config/nvim"), "NVIM_APPNAME": "nvim-work"}
+        for revision in ("captured", "new-captured"):
+            with self.subTest(revision=revision):
+                captured.chmod(0o600)
+                captured.write_text('{"fixture":{"commit":"' + revision + '"}}\n')
+                captured.chmod(0o444)
+                result = self.run_command("nvim", "--headless", "--clean", "-u", "NONE", "-l", str(script), env=env)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     @unittest.skipUnless(shutil.which("zsh"), "zsh is required")
     def test_shell_reasserts_work_state_without_startup_updates(self) -> None:

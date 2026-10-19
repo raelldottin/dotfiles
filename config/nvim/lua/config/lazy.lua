@@ -14,7 +14,22 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Keep the captured revisions as a seed, including with read-only Nix config.
+local state = vim.fn.stdpath("state")
+local lockfile = state .. "/lazy-lock.json"
+local seedfile = state .. "/lazy-lock.seed.json"
+local captured = vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json")
+if vim.fn.filereadable(lockfile) == 0
+  or vim.fn.filereadable(seedfile) == 0
+  or not vim.deep_equal(vim.fn.readfile(seedfile), captured)
+then
+  vim.fn.mkdir(state, "p")
+  vim.fn.writefile(captured, lockfile)
+  vim.fn.writefile(captured, seedfile)
+end
+
 require("lazy").setup({
+  lockfile = lockfile,
   spec = {
     -- add LazyVim and import its plugins
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
