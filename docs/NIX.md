@@ -1,16 +1,21 @@
 # Nix migration
 
-This repository is moving from custom shell/Python installers to a declarative
-workstation model built from three layers:
+The declarative workstation configuration is available on `main` and is built
+from three layers:
 
 1. **Home Manager** owns user packages and dotfiles on macOS and Linux.
 2. **nix-darwin** owns macOS system integration.
 3. **nix-homebrew** adopts the existing Apple Silicon Homebrew installation and
    keeps Homebrew available for GUI casks.
 
-The legacy installer remains in the repository during the first migration pass
-so the existing workstation can be restored without reconstructing the old
-setup.
+The legacy shell/Python installer remains as a company-profile fallback when
+Nix is unavailable. It requires a work identity and does not restore the
+personal workstation configuration. Keep existing Nix generations and Home
+Manager backups until activation has been verified on the relevant device.
+
+For a company Mac, use [Company Mac setup](WORK_MAC.md). The `macbook` output
+described below is for the personal Mac. Source checks and CI do not establish
+successful activation on either device.
 
 ## Why Nix instead of chezmoi
 
@@ -72,15 +77,15 @@ nix run home-manager/release-26.05 -- \
   switch -b hm-backup --flake .#linux-aarch64
 ```
 
-## Ownership during migration
+## Configuration ownership
 
-| Area | New owner | Legacy source kept for rollback |
+| Area | Owner | Related source or inventory |
 | --- | --- | --- |
 | zsh + Oh My Zsh + Powerlevel10k | Home Manager | `zshrc`, `zshsetup.sh` |
 | tmux + plugins | Home Manager | `*_tmux.conf`, `tmuxsetup.sh` |
 | Neovim files | Home Manager | `config/nvim/**`, `nvimsetup.sh` |
 | Python lint config | Home Manager | `pylintrc` |
-| CLI/dev packages | nixpkgs/Home Manager | `homebrew_installed_app.txt` |
+| CLI/dev packages | nixpkgs/Home Manager | `homebrew_installed_app.txt` (observational only) |
 | GUI apps | nix-darwin Homebrew module | existing Homebrew install |
 | Homebrew installation | nix-homebrew | `homebrewsetup.sh` |
 
