@@ -48,6 +48,12 @@ sudo darwin-rebuild switch --flake .#macbook
 During the first activation Home Manager backs up conflicting managed files with
 the `.hm-backup` suffix.
 
+The personal Neovim configuration is managed as a whole directory. Its previous
+`~/.config/nvim` directory, including legacy plugin links and custom files, is
+preserved at `~/.config/nvim.hm-backup`. Do not merge obsolete plugin modules
+back into the new configuration. See [the Neovim workflow](NVIM.md) for the
+history-based configuration choice and language tooling.
+
 ## Linux bootstrap
 
 Two standalone Home Manager outputs are provided.

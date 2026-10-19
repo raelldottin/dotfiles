@@ -15,6 +15,7 @@ in
     (with pkgs; [
       atuin
       black
+      bash-language-server
       cargo
       checkmake
       curl
@@ -40,7 +41,10 @@ in
       ripgrep
       ruff
       rustc
+      rust-analyzer
+      rustfmt
       shellcheck
+      shfmt
       stylua
       tmux
       tree
@@ -66,7 +70,8 @@ in
 
   xdg.configFile."nvim" = {
     source = ../config/nvim;
-    recursive = true;
+    # Own the directory: first activation backs up legacy per-file links too.
+    recursive = false;
   };
 
   programs.zsh = {

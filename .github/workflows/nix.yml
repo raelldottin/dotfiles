@@ -44,6 +44,9 @@ jobs:
       - name: Evaluate Linux Home Manager
         run: nix eval --no-write-lock-file --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
 
+      - name: Exercise personal Neovim migration in a disposable HOME
+        run: python3 tests/check_nvim_migration.py
+
       - name: Evaluate macOS nix-darwin
         run: nix eval --no-write-lock-file --raw .#darwinConfigurations.macbook.config.system.build.toplevel.drvPath
 

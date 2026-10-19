@@ -38,6 +38,7 @@ in
   # User-only Home Manager: no company system settings or personal module.
   home.packages = with pkgs; [
     git gh neovim pure-prompt atuin tmux uv python3 ripgrep fd tree jq
+    bash-language-server ruff cargo rustc rust-analyzer rustfmt shfmt
     checkmake shellcheck luaPackages.luacheck pyright
     workCommand
   ];
