@@ -39,10 +39,13 @@ class BuildManagedPathsTests(unittest.TestCase):
                 [(path.source.relative_to(repo_root).as_posix(), path.target.relative_to(home).as_posix(), path.category) for path in managed_paths],
                 [
                     ("zshrc", ".zshrc", "zsh"),
+                    ("zprofile", ".zprofile", "zsh"),
+                    ("config/atuin/config.toml", ".config/atuin-work/config.toml", "atuin"),
+                    ("config/git/work.conf", ".config/dotfiles/git.conf", "git"),
                     ("linux-gnu_tmux.conf", ".tmux.conf", "tmux"),
                     ("pylintrc", ".pylintrc", "python"),
-                    ("config/nvim/init.lua", ".config/nvim/init.lua", "nvim"),
-                    ("config/nvim/lua/core/options.lua", ".config/nvim/lua/core/options.lua", "nvim"),
+                    ("config/nvim/init.lua", ".config/nvim-work/init.lua", "nvim"),
+                    ("config/nvim/lua/core/options.lua", ".config/nvim-work/lua/core/options.lua", "nvim"),
                 ],
             )
 

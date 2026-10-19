@@ -1,5 +1,5 @@
 [tool.pyright]
-include = ["gitvars.py", ".githooks/replace_by_git_vars.py", "tests"]
+include = ["gitvars.py", "dotfiles_manifest.py", "workstation.py", ".githooks/replace_by_git_vars.py", "tests"]
 exclude = ["**/__pycache__"]
 pythonVersion = "3.14"
 typeCheckingMode = "basic"

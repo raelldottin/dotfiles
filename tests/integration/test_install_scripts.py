@@ -26,9 +26,13 @@ class InstallScriptsIntegrationTests(unittest.TestCase):
             home_root.mkdir()
             (home_root / ".oh-my-zsh").mkdir()
 
-            env = os.environ.copy()
+            env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
             env["HOME"] = str(home_root)
+            env["XDG_CONFIG_HOME"] = str(home_root / ".config")
+            env.pop("DOTFILES_WORK_ROOT", None)
             env["OSTYPE"] = "linux-gnu"
+            env["DOTFILES_WORK_GIT_NAME"] = "Work Test"
+            env["DOTFILES_WORK_GIT_EMAIL"] = "work@example.test"
             env["DOTFILES_SKIP_HOMEBREW_SETUP"] = "1"
             env["DOTFILES_SKIP_OH_MY_ZSH_INSTALL"] = "1"
             env["DOTFILES_SKIP_TMUX_PLUGIN_INSTALL"] = "1"
@@ -38,7 +42,7 @@ class InstallScriptsIntegrationTests(unittest.TestCase):
 
             self.assertTrue((home_root / ".zshrc").exists())
             self.assertTrue((home_root / ".tmux.conf").exists())
-            self.assertTrue((home_root / ".config" / "nvim" / "init.lua").exists())
+            self.assertTrue((home_root / ".config" / "nvim-work" / "init.lua").exists())
             self.assertTrue((home_root / ".pylintrc").exists())
 
             subprocess.run(["bash", "clean.sh"], cwd=repo_root, env=env, check=True)
@@ -62,11 +66,13 @@ class InstallScriptsIntegrationTests(unittest.TestCase):
             (home_root / ".zshrc").write_text("# personal config\n", encoding="utf-8")
             (home_root / ".tmux.conf").write_text("# personal tmux\n", encoding="utf-8")
             (home_root / ".pylintrc").write_text("[MESSAGES CONTROL]\n", encoding="utf-8")
-            (home_root / ".config" / "nvim").mkdir(parents=True)
-            (home_root / ".config" / "nvim" / "init.lua").write_text("-- personal init\n", encoding="utf-8")
+            (home_root / ".config" / "nvim-work").mkdir(parents=True)
+            (home_root / ".config" / "nvim-work" / "init.lua").write_text("-- personal init\n", encoding="utf-8")
 
-            env = os.environ.copy()
+            env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
             env["HOME"] = str(home_root)
+            env["XDG_CONFIG_HOME"] = str(home_root / ".config")
+            env.pop("DOTFILES_WORK_ROOT", None)
             env["OSTYPE"] = "linux-gnu"
 
             subprocess.run(["bash", "clean.sh"], cwd=repo_root, env=env, check=True)
@@ -75,7 +81,7 @@ class InstallScriptsIntegrationTests(unittest.TestCase):
             self.assertEqual((home_root / ".tmux.conf").read_text(encoding="utf-8"), "# personal tmux\n")
             self.assertEqual((home_root / ".pylintrc").read_text(encoding="utf-8"), "[MESSAGES CONTROL]\n")
             self.assertEqual(
-                (home_root / ".config" / "nvim" / "init.lua").read_text(encoding="utf-8"),
+                (home_root / ".config" / "nvim-work" / "init.lua").read_text(encoding="utf-8"),
                 "-- personal init\n",
             )
 
