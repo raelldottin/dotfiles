@@ -23,15 +23,16 @@ they are not evaluated into the Nix store.
 
 ## Migration Status
 
-The Nix migration is currently staged on `dev`.
+The Nix/Home Manager configuration and isolated company Mac profile are merged
+into `main`. Use `main` for installation and `dev` for integrating changes.
 
-- `main` remains the pre-Nix stable configuration.
-- `dev` contains the Nix/Home Manager migration.
-- CI validates the flake, Linux Home Manager output, and Apple Silicon nix-darwin output.
-- The legacy shell/Python installer remains available as a rollback path.
-- Promotion from `dev` to `main` is gated on a successful activation on the real Mac.
+- CI evaluates the personal Linux/macOS outputs and both work Mac architectures.
+- Nix CI builds the work activation package on macOS without activating it.
+- `make verify` checks source and behavior in disposable home directories.
+- The legacy shell/Python installer remains available for the company profile.
 
-This keeps the migration reversible while changing the system that manages the workstation itself.
+These checks do not establish successful activation on a real workstation.
+Complete the device checks below before retiring compatibility paths.
 
 ## Configuration Stack
 
@@ -41,7 +42,7 @@ This keeps the migration reversible while changing the system that manages the w
 | Home Manager | User packages, shell configuration, tmux, Neovim, and home-directory state |
 | nix-darwin | macOS system integration |
 | nix-homebrew | Existing Homebrew installation and declarative GUI casks |
-| Legacy installer | Temporary rollback path during migration |
+| Legacy installer | Company profile fallback when Nix is unavailable |
 
 ## Repository Layout
 
@@ -65,11 +66,12 @@ The macOS configuration targets Apple Silicon and is exposed as:
 
 ### First Activation
 
-Use the `dev` branch while the migration is being validated:
+Use `main` for the personal Mac configuration. For a company device, follow the
+separate [Company Mac profile](docs/WORK_MAC.md) instead:
 
 ```bash
-git switch dev
-git pull
+git switch main
+git pull --ff-only
 
 nix flake check
 
@@ -229,7 +231,7 @@ Review `flake.lock` carefully whenever it changes. A package/configuration edit 
 
 Open a pull request from the change branch into `dev`. After CI passes, merge it into `dev`.
 
-During the migration the promotion path is:
+The change promotion path is:
 
 ```text
 config/* or feature branch
@@ -241,7 +243,8 @@ real workstation validation
          main
 ```
 
-Once Nix is fully promoted, `main` becomes the stable workstation definition.
+`main` contains the stable source definition. A merge or passing CI does not
+replace runtime validation on the affected workstation.
 
 ## Adding Software
 
@@ -345,21 +348,28 @@ Those checks cover:
 - unit tests
 - integration tests
 
-## Rollback
+## Legacy Company Mac Fallback
 
-The legacy installer remains available until the Nix configuration has been activated successfully on the workstation.
+When Nix is unavailable on an approved company device, follow the identity
+setup in [Company Mac setup](docs/WORK_MAC.md) before running:
 
 ```bash
 make dependencies
-make install
+make install-work
 make verify-install
 ```
 
-Do not delete the legacy installer, its package inventories, or its compatibility tests until the macOS activation has been verified.
+`make install` also selects the company profile. These commands do not restore
+the personal Nix configuration. Retain previous Nix generations and Home Manager
+backups for recovery, and review them before restoring files.
+
+Do not delete the legacy installer, its package inventories, or its compatibility
+tests until the relevant device installation has been verified.
 
 ## Migration Completion Criteria
 
-The migration can move from `dev` to `main` after:
+The source migration is merged. Personal Mac activation remains a separate
+verification step, with these completion criteria:
 
 1. `darwin-rebuild switch --flake .#macbook` succeeds on the real Mac.
 2. zsh starts normally.
@@ -383,5 +393,5 @@ After that, the legacy shell/Python installer and obsolete package inventory fil
 ## Branching
 
 - `main` — stable configuration
-- `dev` — integration branch and current Nix migration target
+- `dev` — integration branch
 - `codex/*` — short-lived feature branches merged into `dev`
