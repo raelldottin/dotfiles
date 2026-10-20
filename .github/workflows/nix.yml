@@ -11,8 +11,11 @@ on:
       - "flake.lock"
       - "workstation.py"
       - "dotfiles_manifest.py"
+      - "pylintrc"
       - "zshrc"
       - "config/**"
+      - "tests/check_nvim_migration.py"
+      - "tests/integration/test_nvim_workflow.py"
       - ".github/workflows/nix.yml"
   pull_request:
     paths:
@@ -20,8 +23,11 @@ on:
       - "flake.lock"
       - "workstation.py"
       - "dotfiles_manifest.py"
+      - "pylintrc"
       - "zshrc"
       - "config/**"
+      - "tests/check_nvim_migration.py"
+      - "tests/integration/test_nvim_workflow.py"
       - ".github/workflows/nix.yml"
   workflow_dispatch:
 
@@ -41,8 +47,10 @@ jobs:
       - name: Check flake
         run: nix flake check --no-write-lock-file --show-trace
 
-      - name: Evaluate Linux Home Manager
-        run: nix eval --no-write-lock-file --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
+      - name: Evaluate Linux Home Manager for both architectures
+        run: |
+          nix eval --no-write-lock-file --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
+          nix eval --no-write-lock-file --raw .#homeConfigurations.linux-aarch64.activationPackage.drvPath
 
       - name: Exercise personal Neovim migration in a disposable HOME
         run: python3 tests/check_nvim_migration.py

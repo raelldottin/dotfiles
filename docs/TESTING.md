@@ -28,7 +28,15 @@ separate checks on the company Mac. `make verify-install` validates installed
 files and the generated work Git configuration; it does not certify every
 repository's hook overrides or application account choices.
 
-Nix CI also evaluates the personal Linux/macOS outputs and both work Mac
-architectures, then builds the work activation package on a macOS runner without
+Nix CI also evaluates both personal Linux architectures (`x86_64` and `aarch64`),
+the personal macOS output, and both work Mac architectures. It then builds the
+work activation package on a macOS runner without
 activating it. The work profile keeps Git identity out of Nix evaluation and tests
 its preflight HOME gate and guard-package upgrade behavior locally.
+
+The workflow runs when Nix definitions, their managed configuration sources
+(including `pylintrc`), or the Neovim migration driver/integration checks change.
+The migration check uses the pinned Nix Neovim in a disposable HOME; changing its
+Python checks must not skip that runtime validation. `workflow_dispatch` allows
+the same validation to run on demand. Evaluation and activation-package builds
+do not establish successful activation on the company device.
