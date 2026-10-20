@@ -13,6 +13,11 @@ personal Mac merely to export settings.
 
 ## Install on the company Mac
 
+Start with the [first-time setup guide](USER_GUIDE.md) for prerequisites and
+HTTPS clone instructions. Run the commands below from that stable checkout on
+the company device. Git and an approved Nix installation with `nix-command`
+and `flakes` enabled must be available before the Nix activation.
+
 Finish company provisioning first. Use an approved Nix installation. The
 company outputs use **standalone Home Manager**; they do not import the personal
 `nix/darwin.nix` settings or install its personal GUI applications. Do not run
@@ -64,9 +69,22 @@ Git guard configuration. Home Manager owns the shell/editor file generations.
 
 Use the shell installer only if the company permits this alternative. Do not
 apply it over a Home Manager-owned installation. Provision Git, Python 3.10+ and
-Homebrew using company-approved methods. Optionally run `make dependencies`
-for the curated Brewfile, supply the same work Git variables above, and run
-`make install-work`. `make install` selects that same work profile.
+Homebrew using company-approved methods; `make` must also be available.
+From the stable checkout, optionally run `make dependencies` to install the
+curated Brewfile. Then supply the identity for this device explicitly:
+
+```sh
+printf 'Work Git name: '; IFS= read -r DOTFILES_WORK_GIT_NAME
+printf 'Work Git email: '; IFS= read -r DOTFILES_WORK_GIT_EMAIL
+export DOTFILES_WORK_GIT_NAME DOTFILES_WORK_GIT_EMAIL
+python3 workstation.py preflight
+make install-work
+unset DOTFILES_WORK_GIT_NAME DOTFILES_WORK_GIT_EMAIL
+make verify-install
+```
+
+The preflight validates the identity and work paths before installation.
+`make install` selects the same work profile as `make install-work`.
 
 The fallback does not install Homebrew, run `sudo`, or replay either personal
 package inventory. It backs up replaced files and uses the same work identity

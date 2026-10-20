@@ -9,6 +9,13 @@
 
 Declarative workstation configuration for macOS and Linux using Nix, Home Manager, nix-darwin, and nix-homebrew.
 
+## Start Here
+
+New machine? Start with the [first-time setup guide](docs/USER_GUIDE.md) to choose
+the personal or company profile, check prerequisites, clone the stable branch,
+and verify the first login. The personal Nix outputs are configured for this
+repository's owner; the company profile takes the device's own account details.
+
 ## Company Mac
 
 Use the separate [Company Mac profile](docs/WORK_MAC.md) for work. It brings
@@ -158,7 +165,7 @@ Update `dev`, then create a short-lived branch:
 ```bash
 git switch dev
 git pull
-git switch -c config/<change-name>
+git switch -c codex/my-config-change
 ```
 
 Use a focused branch name such as:
@@ -222,7 +229,7 @@ git status
 git diff
 git diff --check
 
-git add <changed-files>
+git add --patch
 git commit -m "Configure <change>"
 git push -u origin HEAD
 ```
