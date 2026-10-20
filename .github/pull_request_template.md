@@ -15,6 +15,7 @@
 - [ ] `make lint`
 - [ ] `make test`
 - [ ] `make verify`
+- [ ] `agent-review/<target>` published for the exact PR head (after code review)
 - [ ] `make verify-install` (if install behavior changed)
 
 ## Documentation
