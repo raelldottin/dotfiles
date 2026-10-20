@@ -29,11 +29,16 @@ Required checks:
 - `luacheck`
 - `pyright`
 - `tests`
+- `agent-review/main` on `main`, or `agent-review/dev` on `dev`
 
 Review expectations:
 
-- `main` requires at least one approval and code owner review
-- `dev` requires at least one approval
+- `main` and `dev` require zero mandatory human approvals and no mandatory
+  code-owner approval; pull requests remain required.
+- Both branches require their target-specific agent-review status on the exact reviewed commit,
+  alongside all existing CI checks. It links to a published agent review.
+- A new commit requires a new agent review. This is an operator-attested review
+  gate, not an independent GitHub approval. See [Agent Review](AGENT_REVIEW.md).
 
 ## Security
 
