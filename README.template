@@ -236,7 +236,8 @@ git push -u origin HEAD
 
 Review `flake.lock` carefully whenever it changes. A package/configuration edit should not unexpectedly rewrite input revisions.
 
-Open a pull request from the change branch into `dev`. After CI passes, merge it into `dev`.
+Open a pull request from the change branch into `dev`. After CI and the
+commit-specific [agent review](docs/AGENT_REVIEW.md) pass, merge it into `dev`.
 
 The change promotion path is:
 

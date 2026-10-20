@@ -19,7 +19,10 @@ Avoid committing directly to `main` when the change can move through `dev` or a 
 4. Make the change.
 5. Run `make verify`.
 6. Push the feature branch and open a pull request into `dev`.
-7. Merge `dev` into `main` only when the integration branch is ready for release.
+7. Conduct and publish the [agent review](AGENT_REVIEW.md) for the exact PR head.
+8. Merge normally after `agent-review/dev` and the required CI checks pass.
+9. Promote reviewed integration commits through a release branch based on current
+   `main`; review and validate that branch before its own PR is merged.
 
 ## Quality Gate
 
@@ -28,11 +31,14 @@ Every branch should satisfy the same baseline before review:
 - `make lint`
 - `make test`
 - `make verify-install` when installer behavior changed
+- `agent-review/<target>` on the exact head before merging; CI alone does not satisfy review
 
 ## Pull Requests and Ownership
 
 - GitHub pull requests should use the repository PR template so risk, validation, and rollback notes stay consistent.
 - `CODEOWNERS` marks install scripts, workflow changes, Neovim configuration, and documentation as owned review surfaces.
+- Human/code-owner approvals are optional. The mandatory review gate is the
+  commit-specific `agent-review/<target>` status, with its published review report.
 - `main` and `dev` are expected to stay protected; merge through pull requests instead of direct pushes.
 
 ## GitHub Settings
