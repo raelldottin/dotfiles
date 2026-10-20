@@ -29,6 +29,12 @@ packages move to nixpkgs over time.
 
 ## macOS bootstrap
 
+For clone instructions and profile selection, start with
+[first-time setup](USER_GUIDE.md). The personal outputs use the fixed `username`
+in `flake.nix` and derive `/Users/<username>` or `/home/<username>` from it.
+Review that account and the personal modules before activating another user's
+machine. The company outputs instead require explicit device-local values.
+
 The macOS output is named `macbook` and targets Apple Silicon.
 
 Install a Nix implementation first. nix-darwin currently recommends an
@@ -60,6 +66,9 @@ back into the new configuration. See [the Neovim workflow](NVIM.md) for the
 history-based configuration choice and language tooling.
 
 ## Linux bootstrap
+
+Review the personal account assumptions above before activating these outputs.
+Use the committed lockfile for the initial installation.
 
 Two standalone Home Manager outputs are provided.
 
