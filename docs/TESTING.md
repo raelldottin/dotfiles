@@ -22,6 +22,13 @@ They cover:
 CI installs Zsh so its startup test runs. Optional Neovim and Atuin probes are
 skipped where those tools are unavailable; local results must say whether they ran.
 
+Nix rehearsal safety tests run in the regular unit suite without Nix installed.
+They check platform/CI refusal before Nix access, inherited Git and activation
+environment cleanup, rejection of legacy Home Manager profiles and GC roots
+(including broken links), global-profile snapshots, and disposable profile/XDG
+paths. The Nix subprocess is mocked; these tests cover isolation safeguards and
+failure handling, while the native CI rehearsals below provide activation proof.
+
 No test authenticates accounts or installs Homebrew packages. Plugin download,
 fresh-machine installation, employer configuration, and work account access are
 separate checks on the company Mac. `make verify-install` validates installed
