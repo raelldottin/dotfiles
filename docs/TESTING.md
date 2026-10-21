@@ -29,12 +29,17 @@ files and the generated work Git configuration; it does not certify every
 repository's hook overrides or application account choices.
 
 Nix CI also evaluates both personal Linux architectures (`x86_64` and `aarch64`),
-the personal macOS output, and both work Mac architectures. The Linux runtime
-fixture imports the full personal module and activates it twice in a disposable
+the personal macOS output, and both work Mac architectures. Native x86_64 and
+ARM64 Linux runners each execute the full Linux runtime fixture. The workflow
+checks both `uname -m` and Nix's current system before evaluation/activation;
+the status names are `nix` and `nix-arm64`, with fail-fast disabled so a failing
+architecture does not cancel the other one's evidence. The fixture imports
+the full personal module and activates it twice in a disposable
 HOME, checks Neovim migration/backup conflicts and managed shell/Pylint backups,
 and smoke-tests generated Zsh/tmux configuration. Only fixture account paths
-are overridden and user services are disabled for the headless runner; this is
-x86_64 Linux runtime evidence, not ARM runtime or workstation activation proof.
+are overridden and user services are disabled for the headless runners; these
+checks establish fixture runtime coverage on both Linux architectures, not
+user-service or real workstation activation proof.
 Both activation drivers use shared private-profile helpers, refuse non-CI
 execution or legacy Home Manager state, and check global profiles are unchanged.
 CI then builds the
