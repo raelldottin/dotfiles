@@ -88,9 +88,13 @@ def main() -> None:
             subprocess.run([str(tools / "bin/tmux"), "-S", socket, "kill-server"],
                            env=isolated, capture_output=True, timeout=30, check=False)
         isolated["PATH"] = str(Path(tools) / "bin") + os.pathsep + os.environ["PATH"]
-        run([sys.executable, "-m", "unittest", "tests.integration.test_nvim_workflow"], isolated)
+        probe_output = run([sys.executable, "tests/check_pinned_tools.py", str(tools / "bin")], isolated)
+        if profile_snapshot(global_profiles) != before_global:
+            raise AssertionError("Tool probes changed the runner's global Nix profiles")
+        print(probe_output, flush=True)
         print("Personal Neovim migration: backup preserved, obsolete imports excluded, second activation clean.")
         print("Offline language, tmux keymap, and Zsh diagnostics checks passed with pinned Neovim.")
+        print("Pinned work editor and Atuin probes passed with no skips.")
         print("Full personal Linux module: two activations, shell/tmux smoke checks, managed backups and private profiles passed.")
 
 
