@@ -30,12 +30,17 @@ repository's hook overrides or application account choices.
 
 Nix CI also evaluates both personal Linux architectures (`x86_64` and `aarch64`),
 the personal macOS output, and both work Mac architectures. It then builds the
-work activation package on a macOS runner without
-activating it. The work profile keeps Git identity out of Nix evaluation and tests
-its preflight HOME gate and guard-package upgrade behavior locally.
+work activation package on a macOS runner. A CI-only rehearsal activates the
+actual work profile twice in a disposable HOME with private Nix profiles. It
+checks missing-identity rejection before managed file writes, personal-file and
+backup preservation, private permissions, and the packaged Git guards through
+real successful and rejected commits. It refuses runners with legacy Home
+Manager generations and verifies global Nix profiles are unchanged. The work
+profile keeps Git identity out of Nix evaluation; the existing wrong-HOME
+rejection and local guard-package upgrade tests remain in place.
 
 The workflow runs when Nix definitions, their managed configuration sources
-(including `pylintrc`), or the Neovim migration driver/integration checks change.
+(including `pylintrc`), or the activation/migration drivers and integration checks change.
 The migration check uses the pinned Nix Neovim in a disposable HOME; changing its
 Python checks must not skip that runtime validation. `workflow_dispatch` allows
 the same validation to run on demand. Evaluation and activation-package builds
