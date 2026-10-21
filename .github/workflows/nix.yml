@@ -40,13 +40,34 @@ permissions:
 
 jobs:
   nix:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.check }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - check: nix
+            runner: ubuntu-latest
+            system: x86_64-linux
+          - check: nix-arm64
+            runner: ubuntu-24.04-arm
+            system: aarch64-linux
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v23
+
+      - name: Verify native runner architecture
+        env:
+          EXPECTED_NIX_SYSTEM: ${{ matrix.system }}
+        run: |
+          runner_arch="$(uname -m)"
+          runner_nix_system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+          printf 'Native runner: %s; Nix system: %s\n' "$runner_arch" "$runner_nix_system"
+          test "$runner_arch" = "${EXPECTED_NIX_SYSTEM%-linux}"
+          test "$runner_nix_system" = "$EXPECTED_NIX_SYSTEM"
 
       - name: Check flake
         run: nix flake check --no-write-lock-file --show-trace
