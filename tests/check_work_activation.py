@@ -2,36 +2,17 @@
 
 from __future__ import annotations
 
-import hashlib
 import os
 from pathlib import Path
 import pwd
-import subprocess
 import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-
-def run(command: list[str], env: dict[str, str], cwd: Path = ROOT,
-        timeout: int = 180, error: str | None = None) -> str:
-    result = subprocess.run(command, cwd=cwd, env=env, capture_output=True,
-                            text=True, timeout=timeout)
-    output = result.stdout + result.stderr
-    if error is not None:
-        if result.returncode == 0 or error not in output:
-            raise AssertionError(f"Expected rejection containing {error!r}:\n{output}")
-    elif result.returncode:
-        raise RuntimeError(f"{command[0]} failed:\n{output}")
-    return result.stdout.strip()
-
-
-def profile_snapshot(directory: Path) -> dict[str, str]:
-    if not directory.exists():
-        return {}
-    return {path.name: str(path.readlink()) if path.is_symlink()
-            else hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in directory.iterdir() if path.is_symlink() or path.is_file()}
+from tests.nix_activation import clean_environment, guard_global_profiles, private_environment, profile_snapshot, run
 
 
 def main() -> None:
@@ -39,21 +20,12 @@ def main() -> None:
     if sys.platform != "darwin" or os.environ.get("GITHUB_ACTIONS") != "true":
         raise RuntimeError("Run this rehearsal only on a disposable macOS GitHub Actions runner.")
     username = pwd.getpwuid(os.getuid()).pw_name
-    nix_state = Path(os.environ.get("NIX_STATE_DIR", "/nix/var/nix"))
-    global_profiles = nix_state / "profiles/per-user" / username
-    # Home Manager can migrate/remove legacy generations outside HOME. Refuse
-    # such a runner before activation rather than exercising that migration.
-    legacy_root = nix_state / "gcroots/per-user" / username / "current-home"
-    if list(global_profiles.glob("home-manager*")) or legacy_root.exists() or legacy_root.is_symlink():
-        raise RuntimeError("The runner already has legacy Home Manager state; refusing activation.")
-    before_global = profile_snapshot(global_profiles)
+    global_profiles, before_global = guard_global_profiles()
 
     with tempfile.TemporaryDirectory(prefix="work-activation-") as temporary:
         home = Path(temporary).resolve() / "home"
         home.mkdir()
-        env = {key: value for key, value in os.environ.items()
-               if not key.startswith(("GIT_", "DOTFILES_", "HOME_MANAGER_"))
-               and key not in {"NIX_PROFILE", "DRY_RUN_CMD", "DRY_RUN"}}
+        env = clean_environment()
         env.update({"DOTFILES_WORK_USER": username, "DOTFILES_WORK_HOME": str(home)})
         system = run(["nix", "eval", "--impure", "--raw", "--expr", "builtins.currentSystem"], env)
         activation = Path(run([
@@ -61,22 +33,7 @@ def main() -> None:
             "--print-out-paths", f".#homeConfigurations.work-{system}.activationPackage",
         ], env, timeout=900))
 
-        state = home / ".local/state/work"
-        profiles = state / "nix/profiles"
-        profiles.mkdir(parents=True)
-        profile = profiles / "profile"
-        isolated = {**env, "HOME": str(home), "USER": username, "LOGNAME": username,
-                    "XDG_CONFIG_HOME": str(home / ".config"),
-                    "XDG_DATA_HOME": str(home / ".local/share/work"),
-                    "XDG_STATE_HOME": str(state), "XDG_CACHE_HOME": str(home / ".cache/work"),
-                    "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": str(home / ".gitconfig"),
-                    "HOME_MANAGER_BACKUP_EXT": "hm-backup"}
-        # Both default-profile aliases resolve to an explicit private profile.
-        # Otherwise nix-env may initialize a global per-user profile.
-        run(["nix-env", "--profile", str(profile), "--set", str(activation / "home-path")], isolated)
-        (home / ".nix-profile").symlink_to(profile)
-        (state / "nix/profile").symlink_to(profile)
-        isolated["PATH"] = str(home / ".nix-profile/bin") + os.pathsep + os.environ["PATH"]
+        isolated = private_environment(home, activation, env, namespace="work")
 
         personal = {
             home / ".config/nvim/init.lua": b"-- personal editor sentinel\n",
