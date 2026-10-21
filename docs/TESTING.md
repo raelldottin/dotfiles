@@ -42,9 +42,12 @@ checks establish fixture runtime coverage on both Linux architectures, not
 user-service or real workstation activation proof.
 Both activation drivers use shared private-profile helpers, refuse non-CI
 execution or legacy Home Manager state, and check global profiles are unchanged.
-CI then builds the
-work activation package on a macOS runner. A CI-only rehearsal activates the
-actual work profile twice in a disposable HOME with private Nix profiles. It
+CI also builds the work activation package and runs its real activation twice
+on native Apple Silicon and Intel macOS runners. Each Mac job verifies host and
+Nix architecture before activation; `work-mac-build` retains the Apple Silicon
+status and `work-mac-intel` covers Intel, with fail-fast disabled. These jobs run
+for pull requests and manual dispatches, not pushes. Each CI-only rehearsal uses
+a disposable HOME with private Nix profiles. It
 checks missing-identity rejection before managed file writes, personal-file and
 backup preservation, private permissions, and the packaged Git guards through
 real successful and rejected commits. It refuses runners with legacy Home
