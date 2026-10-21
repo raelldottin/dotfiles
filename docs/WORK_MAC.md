@@ -166,6 +166,10 @@ It cannot certify company account selection or overridden hooks in every repo.
 Fresh company-Mac installation and first plugin downloads still need checking
 on that device.
 
+The macOS Nix CI rehearsal runs the actual work activation twice in a disposable
+HOME and checks backup preservation and packaged Git guards. It uses private
+Nix profiles and does not establish activation or account access on your device.
+
 For the legacy fallback, `make clean` removes matching managed links and the unchanged generated global
 Git config. It keeps private work settings, history, sessions, and backups.
 It does not automatically restore the previous Git config or personal files.

@@ -15,6 +15,7 @@ on:
       - "zshrc"
       - "config/**"
       - "tests/check_nvim_migration.py"
+      - "tests/check_work_activation.py"
       - "tests/integration/test_nvim_workflow.py"
       - ".github/workflows/nix.yml"
   pull_request:
@@ -27,6 +28,7 @@ on:
       - "zshrc"
       - "config/**"
       - "tests/check_nvim_migration.py"
+      - "tests/check_work_activation.py"
       - "tests/integration/test_nvim_workflow.py"
       - ".github/workflows/nix.yml"
   workflow_dispatch:
@@ -76,6 +78,8 @@ jobs:
         uses: actions/checkout@v7
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v23
+      - name: Rehearse real work activation in a disposable HOME
+        run: python3 tests/check_work_activation.py
       - name: Build work activation without applying it
         env:
           DOTFILES_WORK_USER: work-ci
