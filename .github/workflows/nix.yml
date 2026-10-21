@@ -95,12 +95,35 @@ jobs:
 
   work-mac-build:
     if: github.event_name != 'push'
-    runs-on: macos-latest
+    name: ${{ matrix.check }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - check: work-mac-build
+            runner: macos-latest
+            system: aarch64-darwin
+            host_arch: arm64
+          - check: work-mac-intel
+            runner: macos-15-intel
+            system: x86_64-darwin
+            host_arch: x86_64
     steps:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v23
+      - name: Verify native Mac architecture
+        env:
+          EXPECTED_NIX_SYSTEM: ${{ matrix.system }}
+          EXPECTED_HOST_ARCH: ${{ matrix.host_arch }}
+        run: |
+          runner_arch="$(uname -m)"
+          runner_nix_system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+          printf 'Native Mac runner: %s; Nix system: %s\n' "$runner_arch" "$runner_nix_system"
+          test "$runner_arch" = "$EXPECTED_HOST_ARCH"
+          test "$runner_nix_system" = "$EXPECTED_NIX_SYSTEM"
       - name: Rehearse real work activation in a disposable HOME
         run: python3 tests/check_work_activation.py
       - name: Build work activation without applying it
