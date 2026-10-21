@@ -15,9 +15,11 @@ on:
       - "zshrc"
       - "config/**"
       - "tests/check_nvim_migration.py"
+      - "tests/check_pinned_tools.py"
       - "tests/check_work_activation.py"
       - "tests/nix_activation.py"
       - "tests/integration/test_nvim_workflow.py"
+      - "tests/integration/test_work_profile.py"
       - ".github/workflows/nix.yml"
   pull_request:
     paths:
@@ -29,9 +31,11 @@ on:
       - "zshrc"
       - "config/**"
       - "tests/check_nvim_migration.py"
+      - "tests/check_pinned_tools.py"
       - "tests/check_work_activation.py"
       - "tests/nix_activation.py"
       - "tests/integration/test_nvim_workflow.py"
+      - "tests/integration/test_work_profile.py"
       - ".github/workflows/nix.yml"
   workflow_dispatch:
 

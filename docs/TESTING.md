@@ -47,6 +47,14 @@ and smoke-tests generated Zsh/tmux configuration. Only fixture account paths
 are overridden and user services are disabled for the headless runners; these
 checks establish fixture runtime coverage on both Linux architectures, not
 user-service or real workstation activation proof.
+Each Linux rehearsal also runs all six optional editor/history probes with the
+activated profile's pinned Neovim, Atuin, and Zsh. This includes offline work
+editor loading, writable lockfile seeding from read-only configuration, and
+Atuin's work database/key/metadata paths, alongside the existing language,
+tmux-keymap, and Zsh diagnostics checks. The probe runner verifies PATH resolves
+to the selected profile tools and rejects skips, failures, or an empty suite.
+The regular test job can still skip optional probes when those tools are absent;
+both native Linux Nix jobs require them to execute successfully.
 Both activation drivers use shared private-profile helpers, refuse non-CI
 execution or legacy Home Manager state, and check global profiles are unchanged.
 CI also builds the work activation package and runs its real activation twice
@@ -63,7 +71,8 @@ profile keeps Git identity out of Nix evaluation; the existing wrong-HOME
 rejection and local guard-package upgrade tests remain in place.
 
 The workflow runs when Nix definitions, their managed configuration sources
-(including `pylintrc`), or the activation/migration drivers and integration checks change.
+(including `pylintrc`), or the activation/migration/probe drivers and their editor
+and work-profile integration checks change.
 The migration check uses the pinned Nix Neovim in a disposable HOME; changing its
 Python checks must not skip that runtime validation. `workflow_dispatch` allows
 the same validation to run on demand. Evaluation and activation-package builds
