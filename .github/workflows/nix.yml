@@ -16,6 +16,7 @@ on:
       - "config/**"
       - "tests/check_nvim_migration.py"
       - "tests/check_work_activation.py"
+      - "tests/nix_activation.py"
       - "tests/integration/test_nvim_workflow.py"
       - ".github/workflows/nix.yml"
   pull_request:
@@ -29,6 +30,7 @@ on:
       - "config/**"
       - "tests/check_nvim_migration.py"
       - "tests/check_work_activation.py"
+      - "tests/nix_activation.py"
       - "tests/integration/test_nvim_workflow.py"
       - ".github/workflows/nix.yml"
   workflow_dispatch:
@@ -54,7 +56,7 @@ jobs:
           nix eval --no-write-lock-file --raw .#homeConfigurations.linux-x86_64.activationPackage.drvPath
           nix eval --no-write-lock-file --raw .#homeConfigurations.linux-aarch64.activationPackage.drvPath
 
-      - name: Exercise personal Neovim migration in a disposable HOME
+      - name: Rehearse personal Linux profile and Neovim migration in a disposable HOME
         run: python3 tests/check_nvim_migration.py
 
       - name: Evaluate macOS nix-darwin

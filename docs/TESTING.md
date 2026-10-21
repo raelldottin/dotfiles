@@ -29,7 +29,15 @@ files and the generated work Git configuration; it does not certify every
 repository's hook overrides or application account choices.
 
 Nix CI also evaluates both personal Linux architectures (`x86_64` and `aarch64`),
-the personal macOS output, and both work Mac architectures. It then builds the
+the personal macOS output, and both work Mac architectures. The Linux runtime
+fixture imports the full personal module and activates it twice in a disposable
+HOME, checks Neovim migration/backup conflicts and managed shell/Pylint backups,
+and smoke-tests generated Zsh/tmux configuration. Only fixture account paths
+are overridden and user services are disabled for the headless runner; this is
+x86_64 Linux runtime evidence, not ARM runtime or workstation activation proof.
+Both activation drivers use shared private-profile helpers, refuse non-CI
+execution or legacy Home Manager state, and check global profiles are unchanged.
+CI then builds the
 work activation package on a macOS runner. A CI-only rehearsal activates the
 actual work profile twice in a disposable HOME with private Nix profiles. It
 checks missing-identity rejection before managed file writes, personal-file and
