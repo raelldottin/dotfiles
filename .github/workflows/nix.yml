@@ -130,6 +130,12 @@ jobs:
           test "$runner_nix_system" = "$EXPECTED_NIX_SYSTEM"
       - name: Rehearse real work activation in a disposable HOME
         run: python3 tests/check_work_activation.py
+      - name: Build personal nix-darwin system without activating it
+        if: matrix.system == 'aarch64-darwin'
+        run: |
+          darwin_path="$(nix build --no-write-lock-file --no-link --print-out-paths .#darwinConfigurations.macbook.config.system.build.toplevel)"
+          test -x "$darwin_path/activate"
+          printf 'Personal nix-darwin system built without activation: %s\n' "$darwin_path"
       - name: Build work activation without applying it
         env:
           DOTFILES_WORK_USER: work-ci
