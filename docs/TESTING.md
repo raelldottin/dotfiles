@@ -70,6 +70,14 @@ Manager generations and verifies global Nix profiles are unchanged. The work
 profile keeps Git identity out of Nix evaluation; the existing wrong-HOME
 rejection and local guard-package upgrade tests remain in place.
 
+The Apple Silicon job also builds the full personal nix-darwin `macbook` system
+package with `--no-write-lock-file --no-link` and checks that its activation
+entry point is executable. It never runs that entry point or `darwin-rebuild`.
+This adds native package-build proof for the personal Apple Silicon output;
+Homebrew installation, services, system activation, and real-device behavior
+remain separate checks. The personal configuration targets Apple Silicon, so
+the Intel work-profile job does not attempt this build.
+
 The workflow runs when Nix definitions, their managed configuration sources
 (including `pylintrc`), or the activation/migration/probe drivers and their editor
 and work-profile integration checks change.
