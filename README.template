@@ -34,6 +34,8 @@ The Nix/Home Manager configuration and isolated company Mac profile are merged
 into `main`. Use `main` for installation and `dev` for integrating changes.
 
 - CI evaluates the personal Linux/macOS outputs and both work Mac architectures.
+- Native Apple Silicon CI builds the personal nix-darwin system package without
+  activating it.
 - Native x86_64 and ARM64 Linux CI runners rehearse the personal module twice
   in disposable home directories.
 - Native Apple Silicon and Intel macOS CI runners rehearse the work profile
