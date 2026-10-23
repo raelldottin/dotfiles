@@ -21,10 +21,14 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Lua
-        uses: leafo/gh-actions-lua@v10
+        uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: "5.4"
 
       - name: Setup LuaRocks
-        uses: leafo/gh-actions-luarocks@v5
+        uses: leafo/gh-actions-luarocks@v6
+        with:
+          luaRocksVersion: "3.11.1"
 
       - name: Install luacheck
         run: luarocks install luacheck
