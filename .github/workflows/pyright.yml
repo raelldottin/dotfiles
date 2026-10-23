@@ -22,7 +22,7 @@ jobs:
 
       - name: Run Pyright
         id: pyright
-        uses: jakebailey/pyright-action@v1
+        uses: jakebailey/pyright-action@v3
         with:
           python-platform: Darwin
-          no-comments: true
+          annotate: "none"
