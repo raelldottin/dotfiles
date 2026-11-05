@@ -15,8 +15,9 @@ personal Mac merely to export settings.
 
 Start with the [first-time setup guide](USER_GUIDE.md) for prerequisites and
 HTTPS clone instructions. Run the commands below from that stable checkout on
-the company device. Git and an approved Nix installation with `nix-command`
-and `flakes` enabled must be available before the Nix activation.
+the company device. Git and an approved Nix installation must be available before
+Nix activation. The activation block enables `nix-command` and `flakes` for its
+subshell and Home Manager's child commands, preserving any existing `NIX_CONFIG`.
 
 Finish company provisioning first. Use an approved Nix installation. The
 company outputs use **standalone Home Manager**; they do not import the personal
@@ -27,17 +28,23 @@ Clone this branch to a stable location on the **company Mac**. Supply work Git
 identity locally, then activate the correct architecture:
 
 ```sh
+(
+export NIX_CONFIG="${NIX_CONFIG-}
+extra-experimental-features = nix-command flakes"
 printf 'Work Git name: '; IFS= read -r DOTFILES_WORK_GIT_NAME
 printf 'Work Git email: '; IFS= read -r DOTFILES_WORK_GIT_EMAIL
 export DOTFILES_WORK_GIT_NAME DOTFILES_WORK_GIT_EMAIL
 export DOTFILES_WORK_USER="$(id -un)"
 export DOTFILES_WORK_HOME="$HOME"
-work_system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+work_system="$(nix eval --impure --raw --expr builtins.currentSystem)" || exit 1
 nix run --no-write-lock-file .#work-home-manager -- switch \
   --flake ".#work-${work_system}" --impure -b hm-backup
-unset DOTFILES_WORK_GIT_NAME DOTFILES_WORK_GIT_EMAIL
-unset DOTFILES_WORK_USER DOTFILES_WORK_HOME work_system
+)
 ```
+
+The subshell keeps the feature setting and work identity local to this run.
+If Nix evaluation fails, the block stops before activation. Rerun the entire
+block after correcting the error so both work identity fields are supplied.
 
 The `work-aarch64-darwin` and `work-x86_64-darwin` outputs support Apple Silicon
 and Intel Macs. Username and HOME must be supplied explicitly; they never fall
@@ -64,6 +71,23 @@ a previous global configuration.
 Open a new login terminal. Clone company repositories beneath the selected work
 root, and run `dotfiles-work verify`. It checks the private identity and global
 Git guard configuration. Home Manager owns the shell/editor file generations.
+
+### If Nix reports disabled experimental features
+
+An error such as `experimental Nix feature 'nix-command' is disabled` means Nix
+is installed but its newer command interface is disabled. Rerun the activation
+block above, which supplies both required features through `NIX_CONFIG`.
+
+For a single diagnostic command, the flag requires a value:
+
+```sh
+nix --extra-experimental-features "nix-command flakes" \
+  eval --impure --raw --expr builtins.currentSystem
+```
+
+Running `nix --extra-experimental-features` alone reports that an argument is
+missing. Passing the flag to one Nix command only affects that invocation;
+the activation block uses the environment so Home Manager inherits the setting.
 
 ### Legacy fallback when Nix is unavailable
 

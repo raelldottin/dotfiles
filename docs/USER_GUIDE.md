@@ -4,7 +4,7 @@
 
 | Machine | Setup path | Prerequisites |
 | --- | --- | --- |
-| Company Mac, Apple Silicon or Intel | [Company Mac with Home Manager](WORK_MAC.md#install-on-the-company-mac) | Company provisioning complete, approved Nix installation with flakes, work Git name/email |
+| Company Mac, Apple Silicon or Intel | [Company Mac with Home Manager](WORK_MAC.md#install-on-the-company-mac) | Company provisioning complete, approved Nix installation, work Git name/email; activation enables the required Nix features |
 | Company Mac where Nix is unavailable | [Legacy fallback](WORK_MAC.md#legacy-fallback-when-nix-is-unavailable) | Company approval, Git, Python 3.10+, Homebrew, and `make` |
 | Personal Apple Silicon Mac | [Personal macOS bootstrap](NIX.md#macos-bootstrap) | Git, Nix with flakes, account/configuration review, administrator access for nix-darwin |
 | Personal Linux, x86_64 or aarch64 | [Linux bootstrap](NIX.md#linux-bootstrap) | Git, Nix with flakes, account/configuration review |
