@@ -66,6 +66,7 @@ Complete the device checks below before retiring compatibility paths.
 | `nix/darwin.nix` | Apple Silicon macOS configuration |
 | `config/nvim/` | Neovim configuration managed by Home Manager |
 | `docs/NIX.md` | Migration details, ownership map, and rollout notes |
+| `vm/` | Disposable macOS VM tests of both profiles ([VM testing](docs/VM_TESTING.md)) |
 | `.github/workflows/nix.yml` | Nix evaluation and configuration validation |
 
 ## macOS
@@ -361,6 +362,15 @@ Those checks cover:
 - unit tests
 - integration tests
 
+To rehearse a fresh-machine installation in a disposable macOS 27 VM, see
+[VM testing](docs/VM_TESTING.md):
+
+```bash
+make vm-tools vm-base
+make vm-test-personal
+make vm-test-work
+```
+
 ## Legacy Company Mac Fallback
 
 When Nix is unavailable on an approved company device, follow the identity
@@ -400,6 +410,7 @@ After that, the legacy shell/Python installer and obsolete package inventory fil
 - [User Guide](docs/USER_GUIDE.md)
 - [Neovim Guide](docs/NVIM.md)
 - [Testing Guide](docs/TESTING.md)
+- [VM Testing](docs/VM_TESTING.md)
 - [Contributor Workflow](docs/CONTRIBUTING.md)
 - [Repository Settings](docs/REPOSITORY_SETTINGS.md)
 
