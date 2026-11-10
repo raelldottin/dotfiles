@@ -15,6 +15,7 @@ targets below. Run VM tests through these scripts rather than ad hoc `tart` or
 | `vm/golden-gate.pkr.hcl` | host (Packer) | Defines the base image |
 | `vm/build-base.sh` | host | Builds the base image with Packer |
 | `vm/run-test.sh` | host | Clones the base image, runs one profile test, deletes the clone |
+| `vm/shell.sh` | host | Opens a shell in a test VM kept with `--keep` |
 | `vm/guest/test-personal.sh` | guest | Personal nix-darwin activation (`docs/NIX.md`) |
 | `vm/guest/test-work.sh` | guest | Work Home Manager activation (`docs/WORK_MAC.md`) |
 | `vm/lib.sh`, `vm/guest/common.sh` | both | Shared helpers |
@@ -135,6 +136,8 @@ account sign-in, FileVault, or MDM policies, and it does not test the legacy
 | `Tart ... is older than 2.33.0` | Run `make vm-tools` |
 | Base image is missing | Run `make vm-base` |
 | `tart run` refuses to start | Two macOS VMs are already running; stop one with `tart stop <name>` |
+| The guest cannot resolve names | The runner passes the host's resolvers to the guest, which switches to them when the NAT gateway's DNS forwarder does not answer; set `DOTFILES_VM_DNS=server1,server2` to choose others |
 | SSH never comes up | Rerun with `--keep`, then open the VM with `tart run <name>` to see its screen |
+| Inspect a kept VM | `vm/shell.sh <name>` opens a shell; `vm/shell.sh <name> <command>` runs one command |
 | A guest step fails | Read the log path printed at the end, fix the repo, commit, and rerun |
 | Leftover test VMs | `tart list`, then `tart delete dotfiles-test-<profile>-<timestamp>` |

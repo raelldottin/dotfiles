@@ -29,12 +29,36 @@ load_nix() {
   set -u
 }
 
+can_reach() {
+  curl --proto '=https' -sSfI --max-time 10 "$1" >/dev/null 2>&1
+}
+
+# Point the guest at the host's own resolvers. Some hosts block the DNS
+# forwarder on Tart's NAT gateway while direct DNS to their resolvers works.
+use_host_dns() {
+  local servers="${DOTFILES_VM_DNS:-}"
+  local service
+
+  [[ -n "$servers" ]] || return 1
+  service="$(networksetup -listnetworkserviceorder |
+    awk '/^\([0-9]+\) /{sub(/^\([0-9]+\) /, ""); name=$0} /Device: en0\)/{print name; exit}')"
+  [[ -n "$service" ]] || return 1
+  step "The NAT gateway's DNS is not answering; using the host's resolvers ${servers//,/ } on $service"
+  # shellcheck disable=SC2086 # One argument per server.
+  sudo networksetup -setdnsservers "$service" ${servers//,/ }
+}
+
 # SSH can come up before a freshly booted guest can resolve names.
 wait_for_network() {
   local url="$1"
   local waited=0
+  local switched=0
 
-  until curl --proto '=https' -sSfI --max-time 10 "$url" >/dev/null 2>&1; do
+  until can_reach "$url"; do
+    if (( waited >= 30 && switched == 0 )); then
+      switched=1
+      use_host_dns || true
+    fi
     if (( waited >= 180 )); then
       curl --proto '=https' -sSfI --max-time 10 "$url" >/dev/null || true
       fail "the guest could not reach $url within 180 seconds"
@@ -53,10 +77,10 @@ wait_for_network() {
 install_nix() {
   local installer="${DOTFILES_VM_NIX_INSTALLER:-https://install.lix.systems/lix}"
 
+  wait_for_network "$installer"
   if [[ -e /nix/var/nix/profiles/default/bin/nix ]]; then
     step "Nix is already installed"
   else
-    wait_for_network "$installer"
     step "Installing Nix from $installer"
     curl --proto '=https' --tlsv1.2 -sSfL "$installer" | sh -s -- install --no-confirm
   fi

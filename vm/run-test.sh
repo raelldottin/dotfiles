@@ -63,6 +63,15 @@ if [[ "$profile" == personal ]]; then
   guest_args+=("$personal_user")
 fi
 
+# The guest falls back to the host's resolvers when the DNS forwarder on
+# Tart's NAT gateway does not answer (DOTFILES_VM_DNS overrides them).
+host_dns="${DOTFILES_VM_DNS:-}"
+if [[ -z "$host_dns" ]] && command -v scutil >/dev/null 2>&1; then
+  host_dns="$(scutil --dns |
+    awk '/^resolver #1$/{found=1; next} found && /nameserver\[/{print $3} found && /^$/{exit}' |
+    paste -sd, -)"
+fi
+
 vm_ensure_state_dir
 vm_name="dotfiles-test-$profile-$(date +%Y%m%d-%H%M%S)"
 log="$VM_STATE_DIR/logs/$vm_name.log"
@@ -116,7 +125,8 @@ vm_ssh "$address" 'chmod -R a+rX /tmp/dotfiles-vm'
 
 vm_log "Running the $profile profile test in $vm_name"
 set +e
-vm_ssh "$address" /bin/bash /tmp/dotfiles-vm/guest/test-"$profile".sh \
+vm_ssh "$address" env "DOTFILES_VM_DNS=$host_dns" \
+  /bin/bash /tmp/dotfiles-vm/guest/test-"$profile".sh \
   "${guest_args[@]}" 2>&1 | tee -a "$log"
 status=${PIPESTATUS[0]}
 set -e
