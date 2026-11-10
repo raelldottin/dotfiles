@@ -50,7 +50,7 @@ main() {
   tail -n 5 /tmp/dotfiles-vm/unconfigured.log
   # Fail for the intended reason: Home Manager's account check or the
   # profile's own preflight, not an unrelated build or fetch error.
-  grep -Eq 'but we expect "work-profile-unconfigured"|Set DOTFILES_WORK_USER and DOTFILES_WORK_HOME' \
+  grep -Eq 'expected "work-profile-unconfigured"|Set DOTFILES_WORK_USER and DOTFILES_WORK_HOME' \
     /tmp/dotfiles-vm/unconfigured.log || fail "activation failed for an unexpected reason"
 
   step "First work activation (docs/WORK_MAC.md)"
