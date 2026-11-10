@@ -29,7 +29,7 @@ environment cleanup, rejection of legacy Home Manager profiles and GC roots
 paths. The Nix subprocess is mocked; these tests cover isolation safeguards and
 failure handling, while the native CI rehearsals below provide activation proof.
 
-No test authenticates accounts or installs Homebrew packages. Plugin download,
+No CI test authenticates accounts or installs Homebrew packages. Plugin download,
 fresh-machine installation, employer configuration, and work account access are
 separate checks on the company Mac. `make verify-install` validates installed
 files and the generated work Git configuration; it does not certify every
@@ -85,3 +85,14 @@ The migration check uses the pinned Nix Neovim in a disposable HOME; changing it
 Python checks must not skip that runtime validation. `workflow_dispatch` allows
 the same validation to run on demand. Evaluation and activation-package builds
 do not establish successful activation on the company device.
+
+## VM tests
+
+[VM testing](VM_TESTING.md) covers fresh-machine installation on a local Apple
+Silicon Mac: `make vm-test-personal` runs the real personal nix-darwin
+activation, including Homebrew casks, and `make vm-test-work` runs the work
+Home Manager activation with a placeholder identity, each in a disposable
+macOS 27 VM. These tests need Tart, a local base image, and network access, so
+they run on demand rather than in CI. `tests/integration/test_vm_scripts.py`
+checks the runner's orchestration and cleanup with stand-in Tart and SSH tools
+and runs with the other integration tests.

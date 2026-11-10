@@ -8,6 +8,7 @@ SHELLCHECK ?= shellcheck
 .PHONY: all install install-work bootstrap dependencies hooks zsh tmux nvim clean uninstall snapshot
 .PHONY: lint lint-make lint-shell lint-lua lint-python
 .PHONY: test unit-test integration-test verify verify-install
+.PHONY: vm-tools vm-base vm-test-personal vm-test-work
 
 # Build all managed dotfiles.
 all: install
@@ -58,7 +59,7 @@ lint-make:
 	${CHECKMAKE} Makefile
 
 lint-shell:
-	${SHELLCHECK} --severity=style *.sh .githooks/pre-commit .githooks/prepare-commit-msg .githooks/pre-rebase .githooks/post-commit lib/*.sh
+	${SHELLCHECK} --severity=style *.sh .githooks/pre-commit .githooks/prepare-commit-msg .githooks/pre-rebase .githooks/post-commit lib/*.sh vm/*.sh vm/guest/*.sh
 
 lint-lua:
 	${LUACHECK} config/nvim
@@ -82,3 +83,19 @@ verify-install:
 
 # Run the full local verification pipeline.
 verify: lint test
+
+# Install Tart and Packer for the VM tests (docs/VM_TESTING.md).
+vm-tools:
+	${SHELL} ./vm/install-tools.sh
+
+# Build the macOS base image that the VM tests clone.
+vm-base:
+	${SHELL} ./vm/build-base.sh
+
+# Rehearse the personal nix-darwin activation in a disposable VM.
+vm-test-personal:
+	${SHELL} ./vm/run-test.sh personal
+
+# Rehearse the work Home Manager activation in a disposable VM.
+vm-test-work:
+	${SHELL} ./vm/run-test.sh work
