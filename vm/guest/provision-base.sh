@@ -23,7 +23,7 @@ reset_dns() {
 }
 
 main() {
-  local label
+  local label=""
 
   wait_for_network "https://swscan.apple.com"
   trap 'rm -f "$MARKER"; reset_dns' EXIT
@@ -33,9 +33,19 @@ main() {
   else
     step "Installing the Command Line Tools"
     touch "$MARKER"
-    label="$(softwareupdate --list 2>/dev/null |
-      sed -n 's/^[[:space:]]*\* Label: \(Command Line Tools.*\)$/\1/p' | sort -V | tail -n 1)"
-    [[ -n "$label" ]] || fail "softwareupdate does not offer the Command Line Tools"
+    local attempt listing=""
+    for attempt in 1 2 3; do
+      listing="$(softwareupdate --list 2>&1 || true)"
+      label="$(sed -n 's/^[[:space:]]*\* Label: \(Command Line Tools.*\)$/\1/p' <<<"$listing" |
+        sort -V | tail -n 1)"
+      [[ -z "$label" ]] || break
+      step "Command Line Tools not listed yet (attempt $attempt)"
+      sleep 20
+    done
+    if [[ -z "$label" ]]; then
+      printf '%s\n' "$listing"
+      fail "softwareupdate does not offer the Command Line Tools"
+    fi
     run sudo softwareupdate --install "$label" --agree-to-license
   fi
   run xcode-select -p

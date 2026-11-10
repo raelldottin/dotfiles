@@ -5,6 +5,7 @@
 #
 # --force deletes and rebuilds an existing base image.
 # DOTFILES_VM_IPSW selects another restore image URL or local path.
+# DOTFILES_VM_KEEP_FAILED=1 leaves a failed build VM for vm/shell.sh.
 set -euo pipefail
 
 # shellcheck source=vm/lib.sh
@@ -15,7 +16,7 @@ while (( $# > 0 )); do
   case "$1" in
     --force) force=1 ;;
     -h | --help)
-      sed -n '2,7s/^# \{0,1\}//p' "${BASH_SOURCE[0]}"
+      sed -n '2,8s/^# \{0,1\}//p' "${BASH_SOURCE[0]}"
       exit 0
       ;;
     *) vm_die "unknown argument: $1" ;;
@@ -58,5 +59,9 @@ log="$VM_STATE_DIR/logs/build-$VM_BASE_IMAGE-$(date +%Y%m%d-%H%M%S).log"
 vm_log "Building $VM_BASE_IMAGE (log: $log)"
 packer init "$template"
 packer validate "${packer_args[@]}" "$template"
-PACKER_LOG=1 PACKER_LOG_PATH="$log" packer build "${packer_args[@]}" "$template"
+build_args=()
+if [[ "${DOTFILES_VM_KEEP_FAILED:-0}" == 1 ]]; then
+  build_args+=(-on-error=abort)
+fi
+PACKER_LOG=1 PACKER_LOG_PATH="$log" packer build "${build_args[@]}" "${packer_args[@]}" "$template"
 vm_log "Built $VM_BASE_IMAGE"
