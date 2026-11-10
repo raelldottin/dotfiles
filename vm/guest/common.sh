@@ -122,7 +122,7 @@ run_pinned_probes() {
   local tools
   local zsh_bin="$profile_bin/zsh"
 
-  tools="$(mktemp -d /tmp/dotfiles-vm/pinned-tools.XXXXXX)"
+  tools="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-vm-tools.XXXXXX")"
   ln -s "$profile_bin/nvim" "$tools/nvim"
   ln -s "$profile_bin/atuin" "$tools/atuin"
   if [[ ! -x "$zsh_bin" ]]; then
