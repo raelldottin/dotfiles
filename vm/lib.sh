@@ -97,6 +97,18 @@ vm_ensure_ssh_key() {
   fi
 }
 
+# The guests fall back to the host's resolvers when the DNS forwarder on
+# Tart's NAT gateway does not answer. DOTFILES_VM_DNS overrides them.
+vm_host_dns() {
+  if [[ -n "${DOTFILES_VM_DNS:-}" ]]; then
+    printf '%s\n' "$DOTFILES_VM_DNS"
+  elif command -v scutil >/dev/null 2>&1; then
+    scutil --dns |
+      awk '/^resolver #1$/{found=1; next} found && /nameserver\[/{print $3} found && /^$/{exit}' |
+      paste -sd, -
+  fi
+}
+
 vm_exists() {
   tart list --quiet 2>/dev/null | grep -Fxq -- "$1"
 }

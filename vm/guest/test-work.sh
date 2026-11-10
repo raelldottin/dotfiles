@@ -41,13 +41,17 @@ main() {
   clone_bundle "$bundle" "$checkout" "$nixpkgs_rev"
   cd "$checkout"
 
-  step "Activation without a work identity must be refused"
+  step "Activation without the account settings must be refused"
   if nix "${NIX_FLAGS[@]}" run --no-write-lock-file .#work-home-manager -- switch \
     --flake ".#work-$(nix "${NIX_FLAGS[@]}" eval --impure --raw --expr builtins.currentSystem)" \
     --impure -b hm-backup >/tmp/dotfiles-vm/unconfigured.log 2>&1; then
     fail "activation succeeded without DOTFILES_WORK_* settings"
   fi
   tail -n 5 /tmp/dotfiles-vm/unconfigured.log
+  # Fail for the intended reason: Home Manager's account check or the
+  # profile's own preflight, not an unrelated build or fetch error.
+  grep -Eq 'but we expect "work-profile-unconfigured"|Set DOTFILES_WORK_USER and DOTFILES_WORK_HOME' \
+    /tmp/dotfiles-vm/unconfigured.log || fail "activation failed for an unexpected reason"
 
   step "First work activation (docs/WORK_MAC.md)"
   activate_work_profile

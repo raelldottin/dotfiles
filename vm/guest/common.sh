@@ -35,13 +35,17 @@ can_reach() {
 
 # Point the guest at the host's own resolvers. Some hosts block the DNS
 # forwarder on Tart's NAT gateway while direct DNS to their resolvers works.
+network_service() {
+  networksetup -listnetworkserviceorder |
+    awk '/^\([0-9]+\) /{sub(/^\([0-9]+\) /, ""); name=$0} /Device: en0\)/{print name; exit}'
+}
+
 use_host_dns() {
   local servers="${DOTFILES_VM_DNS:-}"
   local service
 
   [[ -n "$servers" ]] || return 1
-  service="$(networksetup -listnetworkserviceorder |
-    awk '/^\([0-9]+\) /{sub(/^\([0-9]+\) /, ""); name=$0} /Device: en0\)/{print name; exit}')"
+  service="$(network_service)"
   [[ -n "$service" ]] || return 1
   step "The NAT gateway's DNS is not answering; using the host's resolvers ${servers//,/ } on $service"
   # shellcheck disable=SC2086 # One argument per server.

@@ -18,6 +18,7 @@ targets below. Run VM tests through these scripts rather than ad hoc `tart` or
 | `vm/shell.sh` | host | Opens a shell in a test VM kept with `--keep` |
 | `vm/guest/test-personal.sh` | guest | Personal nix-darwin activation (`docs/NIX.md`) |
 | `vm/guest/test-work.sh` | guest | Work Home Manager activation (`docs/WORK_MAC.md`) |
+| `vm/guest/provision-base.sh` | guest (Packer) | Installs the Command Line Tools in the base image |
 | `vm/lib.sh`, `vm/guest/common.sh` | both | Shared helpers |
 
 ## Requirements
@@ -48,8 +49,9 @@ script replaces it.
 `make vm-base` builds `dotfiles-golden-gate-base` from Apple's macOS 27.2
 restore image. Tart's first-boot provisioning creates the `admin` account,
 automatic login, and SSH, so the build needs no keystrokes. Packer then enables
-passwordless sudo, turns off sleep and the screen lock, and installs a
-per-host SSH key from `~/.local/state/dotfiles-vm/id_ed25519`. Tests sign in
+passwordless sudo, turns off sleep and the screen lock, installs the Command
+Line Tools (the guides' Git prerequisite; Nix also runs `git` to read a
+checkout) with `vm/guest/provision-base.sh`, and installs a per-host SSH key from `~/.local/state/dotfiles-vm/id_ed25519`. Tests sign in
 with that key. The `admin` password is random for each build, because macOS 27
 requires at least 12 characters with letters and digits; it is saved in
 `~/.local/state/dotfiles-vm/admin-password` (mode 600) for unlocking the VM's
@@ -87,8 +89,8 @@ The runner exits with the guest script's status.
 
 Both guest scripts install Nix with the Lix installer
 (`DOTFILES_VM_NIX_INSTALLER` overrides the URL) and clone the bundle with Git
-from the nixpkgs revision pinned in `flake.lock`, because a fresh macOS
-install has no Git.
+from the nixpkgs revision pinned in `flake.lock`, so the clone does not depend
+on the image's Git.
 
 ### Personal profile
 
@@ -112,7 +114,8 @@ installers call sudo during activation. As that user it then:
 `Dotfiles VM Test <dotfiles-vm-test@example.invalid>`. It:
 
 1. Clones the commit to `~/Work/dotfiles`.
-2. Checks that activation without the `DOTFILES_WORK_*` settings is refused.
+2. Checks that activation without the `DOTFILES_WORK_*` settings is refused
+   by the account check, not by an unrelated error.
 3. Runs the activation command from `docs/WORK_MAC.md` twice.
 4. In fresh login shells, runs `dotfiles-work verify`, checks that
    `NVIM_APPNAME` is `nvim-work`, and starts tmux and headless Neovim.

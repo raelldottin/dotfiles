@@ -46,6 +46,7 @@ template="$VM_DIR/golden-gate.pkr.hcl"
 packer_args=(
   -var "vm_name=$VM_BASE_IMAGE"
   -var "ssh_public_key=$(<"$VM_SSH_KEY.pub")"
+  -var "dns_servers=$(vm_host_dns)"
 )
 # Pass the password through the environment so Packer masks it in its logs.
 export PKR_VAR_password="$password"

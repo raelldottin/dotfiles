@@ -1,5 +1,6 @@
 # Base image for the dotfiles VM tests: a vanilla macOS 27 (Golden Gate)
-# install with an `admin` account, automatic login, SSH, and passwordless sudo.
+# install with an `admin` account, automatic login, SSH, passwordless sudo,
+# and the Command Line Tools (for Git).
 # The account password is generated per build by vm/build-base.sh.
 #
 # Adapted from cirruslabs/macos-image-templates
@@ -32,6 +33,12 @@ variable "password" {
   type        = string
   sensitive   = true
   description = "Password for the admin account: 12+ characters with letters and digits, no commas."
+}
+
+variable "dns_servers" {
+  type        = string
+  default     = ""
+  description = "Comma-separated host resolvers to use if the NAT gateway's DNS does not answer."
 }
 
 variable "ssh_public_key" {
@@ -91,9 +98,23 @@ build {
     ]
   }
 
+  provisioner "file" {
+    source      = "${path.root}/guest"
+    destination = "/tmp/dotfiles-vm-guest"
+  }
+
+  provisioner "shell" {
+    environment_vars = ["DOTFILES_VM_DNS=${var.dns_servers}"]
+    inline = [
+      "/bin/bash /tmp/dotfiles-vm-guest/provision-base.sh",
+      "rm -rf /tmp/dotfiles-vm-guest",
+    ]
+  }
+
   provisioner "shell" {
     inline = [
       "sudo -n true",
+      "/usr/bin/git --version",
       "sudo fdesetup status | grep -q 'FileVault is Off'",
       "test ! -e /nix",
       "sw_vers",
