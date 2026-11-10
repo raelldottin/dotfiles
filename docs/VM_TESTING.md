@@ -100,7 +100,10 @@ on the image's Git.
 `flake.nix` with a random password and passwordless sudo, because cask
 installers call sudo during activation. As that user it then:
 
-1. Clones the commit to `~/dotfiles` and runs `nix flake check`.
+1. Clones the commit to `~/dotfiles` and runs `nix flake check`. It then
+   generates `~/dotfiles-vm-flake`, which extends `.#macbook` without the
+   casks listed in `VM_EXCLUDED_CASKS`: Multipass, whose installer needs
+   nested virtualization that macOS VMs do not have. Nothing else changes.
 2. Runs the first activation from `docs/NIX.md`, with one difference: it runs
    `darwin-rebuild` from the nix-darwin revision pinned in `flake.lock`
    (`nix run --inputs-from . nix-darwin#darwin-rebuild`) instead of the
@@ -109,7 +112,8 @@ installers call sudo during activation. As that user it then:
 3. Activates again with the installed `darwin-rebuild`.
 4. In fresh login shells, checks that zsh, tmux, Neovim, Atuin, Python, and
    Homebrew resolve. Neovim must come from the Home Manager profile. It also
-   starts a tmux server and headless Neovim, and lists the installed casks.
+   starts a tmux server and headless Neovim, and checks that every
+   non-excluded cask is installed.
 5. Runs `tests/check_pinned_tools.py` with Neovim and Atuin from the user's
    Home Manager profile, which fails on any skipped probe. If the profile has
    no zsh, the probes use zsh from the pinned nixpkgs revision.
@@ -138,7 +142,7 @@ A pass shows that the committed configuration installs and activates on a
 clean macOS 27 machine and that its shells, editors, and Git guards work
 there. It does not prove behavior on your real Mac, which has existing files,
 company provisioning, signed-in accounts, and personal data. It does not test
-account sign-in, FileVault, or MDM policies, and it does not test the legacy
+account sign-in, FileVault, MDM policies, the Multipass cask, or the legacy
 `make install-work` fallback.
 
 ## Troubleshooting
