@@ -29,8 +29,9 @@ load_nix() {
   set -u
 }
 
+# Any HTTP response, including an error status, means the network works.
 can_reach() {
-  curl --proto '=https' -sSfI --max-time 10 "$1" >/dev/null 2>&1
+  curl --proto '=https' -sSI --max-time 10 -o /dev/null "$1" 2>/dev/null
 }
 
 # Point the guest at the host's own resolvers. Some hosts block the DNS
@@ -64,7 +65,7 @@ wait_for_network() {
       use_host_dns || true
     fi
     if (( waited >= 180 )); then
-      curl --proto '=https' -sSfI --max-time 10 "$url" >/dev/null || true
+      curl --proto '=https' -sSI --max-time 10 -o /dev/null "$url" || true
       fail "the guest could not reach $url within 180 seconds"
     fi
     sleep 5
