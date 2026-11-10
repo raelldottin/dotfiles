@@ -63,5 +63,5 @@ build_args=()
 if [[ "${DOTFILES_VM_KEEP_FAILED:-0}" == 1 ]]; then
   build_args+=(-on-error=abort)
 fi
-PACKER_LOG=1 PACKER_LOG_PATH="$log" packer build "${build_args[@]}" "${packer_args[@]}" "$template"
+PACKER_LOG=1 PACKER_LOG_PATH="$log" packer build ${build_args[@]+"${build_args[@]}"} "${packer_args[@]}" "$template"
 vm_log "Built $VM_BASE_IMAGE"
