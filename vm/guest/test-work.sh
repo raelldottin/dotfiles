@@ -61,7 +61,7 @@ main() {
   step "Fresh login shell checks"
   login_shell 'dotfiles-work verify'
   login_shell '[[ "$NVIM_APPNAME" == nvim-work ]]' || fail "NVIM_APPNAME is not nvim-work"
-  login_shell 'for tool in git nvim tmux atuin python3; do printf "%s -> %s\n" "$tool" "$(command -v "$tool")"; done'
+  require_tools git nvim tmux atuin python3
   login_shell 'tmux -L dotfiles-vm new-session -d "sleep 30" && tmux -L dotfiles-vm has-session && tmux -L dotfiles-vm kill-server'
   login_shell 'nvim --headless +qa'
 

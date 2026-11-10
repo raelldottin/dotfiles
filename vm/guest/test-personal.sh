@@ -24,7 +24,7 @@ write_vm_flake() {
   local checkout="$1"
   local destination="$2"
   local excluded=""
-  local cask
+  local cask casks
 
   for cask in "${VM_EXCLUDED_CASKS[@]}"; do
     excluded+=" \"$cask\""
@@ -89,7 +89,7 @@ as_user() {
   run sudo -H /run/current-system/sw/bin/darwin-rebuild switch --flake "$vm_flake#macbook"
 
   step "Fresh login shell, tmux, and Neovim"
-  login_shell 'for tool in zsh tmux nvim atuin python3 brew; do printf "%s -> %s\n" "$tool" "$(command -v "$tool")"; done'
+  require_tools zsh tmux nvim atuin python3 brew
   login_shell '[[ "$(command -v nvim)" == /etc/profiles/per-user/* ]]' ||
     fail "nvim does not come from the Home Manager profile"
   login_shell 'tmux -L dotfiles-vm new-session -d "sleep 30" && tmux -L dotfiles-vm has-session && tmux -L dotfiles-vm kill-server'
@@ -98,8 +98,11 @@ as_user() {
 
   step "Every other Homebrew cask from nix/darwin.nix is installed"
   login_shell 'brew list --cask'
-  for cask in $(nix "${NIX_FLAGS[@]}" eval --raw "$vm_flake#darwinConfigurations.macbook.config.homebrew.casks" \
-    --apply 'casks: builtins.concatStringsSep " " (map (cask: cask.name) casks)'); do
+  # Assign first: a failed substitution in a for list would not stop the script.
+  casks="$(nix "${NIX_FLAGS[@]}" eval --raw "$vm_flake#darwinConfigurations.macbook.config.homebrew.casks" \
+    --apply 'casks: builtins.concatStringsSep " " (map (cask: cask.name) casks)')"
+  [[ -n "$casks" ]] || fail "no Homebrew casks were evaluated"
+  for cask in $casks; do
     login_shell "brew list --cask $(printf '%q' "$cask") >/dev/null" || fail "cask $cask is not installed"
   done
 

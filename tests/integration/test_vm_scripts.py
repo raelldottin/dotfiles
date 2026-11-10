@@ -108,6 +108,8 @@ class VmRunnerTests(unittest.TestCase):
             "FAKE_STATE": str(self.state),
             "DOTFILES_VM_STATE_DIR": str(self.state),
             "TMPDIR": str(root),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
         })
         git = ["git", "-C", str(self.repo), "-c", "user.name=VM Test", "-c", "user.email=vm@example.test"]
         subprocess.run([*git, "init", "-q"], check=True, env=self.env)
@@ -211,6 +213,10 @@ class VmVersionTests(unittest.TestCase):
         self.assertTrue(self.check("10.0", "2.33.0"))
         self.assertFalse(self.check("2.32.1", "2.33.0"))
         self.assertFalse(self.check("2.4", "2.33.0"))
+
+    def test_version_suffixes_are_ignored(self) -> None:
+        self.assertTrue(self.check("2.41.1-beta", "2.33.0"))
+        self.assertFalse(self.check("2.32.9-rc1", "2.33.0"))
 
 
 if __name__ == "__main__":

@@ -51,17 +51,35 @@ restore image. Tart's first-boot provisioning creates the `admin` account,
 automatic login, and SSH, so the build needs no keystrokes. Packer then enables
 passwordless sudo, turns off sleep and the screen lock, installs the Command
 Line Tools (the guides' Git prerequisite; Nix also runs `git` to read a
-checkout) with `vm/guest/provision-base.sh`, and installs a per-host SSH key
-from `~/.local/state/dotfiles-vm/id_ed25519`. Tests sign in with that key.
+checkout) with `vm/guest/provision-base.sh`, and installs a per-host SSH
+public key, `id_ed25519.pub` in the state directory. Tests sign in with that
+key.
 The `admin` password is random for each build, because macOS 27 requires at
 least 12 characters with letters and digits; it is saved in
 `~/.local/state/dotfiles-vm/admin-password` (mode 600) for unlocking the VM's
-screen by hand. Neither the key nor the password is committed. After the
+screen by hand. Neither the key nor the password is committed. During the
+build the password appears in the arguments of the `tart run` and guest
+`sudo` processes, which other local users can see; it only opens the
+disposable, NAT-only image. After the
 restore image download, the build takes about 10 minutes, most of it the
 Command Line Tools download.
 
 Rebuild the image with `vm/build-base.sh --force`. To use another restore
-image, set `DOTFILES_VM_IPSW` to its URL or path.
+image, set `DOTFILES_VM_IPSW` to its URL or path. Set
+`DOTFILES_VM_KEEP_FAILED=1` to leave a failed build VM running for
+`vm/shell.sh`.
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `DOTFILES_VM_BASE` | `dotfiles-golden-gate-base` | Base image name |
+| `DOTFILES_VM_STATE_DIR` | `$XDG_STATE_HOME/dotfiles-vm`, else `~/.local/state/dotfiles-vm` | SSH key, admin password, logs |
+| `DOTFILES_VM_IPSW` | macOS 27.2 restore image | Base image source |
+| `DOTFILES_VM_KEEP_FAILED` | unset | Keep a failed build VM |
+| `DOTFILES_VM_CPU`, `DOTFILES_VM_MEMORY_MB` | `6`, `16384` | Test clone resources |
+| `DOTFILES_VM_DNS` | the host's first resolver set | DNS fallback servers |
+| `DOTFILES_VM_NIX_INSTALLER` | `https://install.lix.systems/lix` | Nix installer URL |
+
+Paths below assume the default state directory.
 
 ## Run a profile test
 
@@ -79,8 +97,8 @@ vm/run-test.sh --keep work
 The runner tests the **committed HEAD** of this checkout. It warns about, and
 does not copy, uncommitted changes. Each run:
 
-1. Clones the base image to `dotfiles-test-<profile>-<timestamp>` and gives it
-   6 CPUs and 16 GB of memory (`DOTFILES_VM_CPU`, `DOTFILES_VM_MEMORY_MB`).
+1. Clones the base image to `dotfiles-test-<profile>-<timestamp>-<pid>` and
+   gives it 6 CPUs and 16 GB of memory.
 2. Boots it without a window and waits for SSH.
 3. Copies a Git bundle of HEAD and `vm/guest/` into `/tmp/dotfiles-vm`.
 4. Runs the profile's guest script and streams its output to the terminal and
@@ -110,8 +128,8 @@ installers call sudo during activation. As that user it then:
    `nix-darwin-26.05` branch. Resolving the branch calls the GitHub API, whose
    unauthenticated rate limit repeated test runs exhaust.
 3. Activates again with the installed `darwin-rebuild`.
-4. In fresh login shells, checks that zsh, tmux, Neovim, Atuin, Python, and
-   Homebrew resolve. Neovim must come from the Home Manager profile. It also
+4. In fresh login shells, fails unless zsh, tmux, Neovim, Atuin, Python, and
+   Homebrew all resolve. Neovim must come from the Home Manager profile. It also
    starts a tmux server and headless Neovim, and checks that every
    non-excluded cask is installed.
 5. Runs `tests/check_pinned_tools.py` with Neovim and Atuin from the user's
@@ -128,7 +146,8 @@ installers call sudo during activation. As that user it then:
    by the account check, not by an unrelated error.
 3. Runs the activation command from `docs/WORK_MAC.md` twice.
 4. In fresh login shells, runs `dotfiles-work verify`, checks that
-   `NVIM_APPNAME` is `nvim-work`, and starts tmux and headless Neovim.
+   `NVIM_APPNAME` is `nvim-work`, fails unless Git, Neovim, tmux, Atuin, and
+   Python resolve, and starts tmux and headless Neovim.
 5. Checks that a commit under `~/Work` uses the work identity, that a commit
    outside it has no identity, and that the commit guard rejects it even with
    a local identity.
@@ -156,4 +175,4 @@ account sign-in, FileVault, MDM policies, the Multipass cask, or the legacy
 | SSH never comes up | Rerun with `--keep`, then open the VM with `tart run <name>` to see its screen |
 | Inspect a kept VM | `vm/shell.sh <name>` opens a shell; `vm/shell.sh <name> <command>` runs one command |
 | A guest step fails | Read the log path printed at the end, fix the repo, commit, and rerun |
-| Leftover test VMs | `tart list`, then `tart delete dotfiles-test-<profile>-<timestamp>` |
+| Leftover test VMs | `tart list`, then `tart delete <name>` for each `dotfiles-test-*` VM |

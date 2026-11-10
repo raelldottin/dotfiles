@@ -106,6 +106,11 @@ clone_bundle() {
     git -C "$destination" log -1 --format='Testing %H %s'
 }
 
+# Fail unless every named tool resolves in a fresh login shell; print each path.
+require_tools() {
+  login_shell "for tool in $*; do tool_path=\"\$(command -v \"\$tool\")\" || { echo \"missing: \$tool\"; exit 1; }; printf '%s -> %s\\n' \"\$tool\" \"\$tool_path\"; done"
+}
+
 # Run a command in a fresh login shell, as a new terminal would.
 login_shell() {
   printf '+ zsh -lc %q\n' "$1"

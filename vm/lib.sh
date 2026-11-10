@@ -59,6 +59,9 @@ vm_version_at_least() {
   read -r -a have <<<"$1"
   read -r -a want <<<"$2"
   for index in 0 1 2; do
+    # Keep only the leading digits of each part, so 2.41.1-beta compares as 2.41.1.
+    have[index]="$(printf '%s' "${have[index]:-0}" | sed 's/[^0-9].*//')"
+    want[index]="$(printf '%s' "${want[index]:-0}" | sed 's/[^0-9].*//')"
     if (( 10#${have[index]:-0} > 10#${want[index]:-0} )); then
       return 0
     fi

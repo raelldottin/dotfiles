@@ -66,12 +66,12 @@ fi
 host_dns="$(vm_host_dns)"
 
 vm_ensure_state_dir
-vm_name="dotfiles-test-$profile-$(date +%Y%m%d-%H%M%S)"
+vm_name="dotfiles-test-$profile-$(date +%Y%m%d-%H%M%S)-$$"
 log="$VM_STATE_DIR/logs/$vm_name.log"
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-vm.XXXXXX")"
 tart_pid=""
 
-# shellcheck disable=SC2329 # Invoked by the EXIT trap.
+# shellcheck disable=SC2317,SC2329 # Invoked by the EXIT trap.
 cleanup() {
   local status=$?
 
@@ -91,6 +91,7 @@ cleanup() {
 }
 trap cleanup EXIT
 trap 'exit 130' INT TERM
+trap 'exit 129' HUP
 
 {
   printf 'profile: %s\ncommit: %s\nbase image: %s\nvm: %s\nhost: %s, Tart %s\n' \
