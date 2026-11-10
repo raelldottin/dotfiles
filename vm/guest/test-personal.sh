@@ -42,9 +42,12 @@ write_vm_flake() {
       darwinConfigurations.macbook = macbook.extendModules {
         modules = [
           ({ lib, ... }: {
-            homebrew.casks = lib.mkForce (builtins.filter
-              (cask: !(builtins.elem cask.name excluded))
-              macbook.config.homebrew.casks);
+            # Re-declare the remaining casks without nix-darwin's generated,
+            # read-only brewfileLine; every other cask setting is kept.
+            homebrew.casks = lib.mkForce (map
+              (cask: builtins.removeAttrs cask [ "brewfileLine" ])
+              (builtins.filter (cask: !(builtins.elem cask.name excluded))
+                macbook.config.homebrew.casks));
           })
         ];
       };
