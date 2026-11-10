@@ -1,5 +1,6 @@
 # Base image for the dotfiles VM tests: a vanilla macOS 27 (Golden Gate)
 # install with an `admin` account, automatic login, SSH, and passwordless sudo.
+# The account password is generated per build by vm/build-base.sh.
 #
 # Adapted from cirruslabs/macos-image-templates
 # (templates/vanilla-golden-gate.pkr.hcl at 272699ea5afa5aa78a5b9dc20a199c95dad1ef4c,
@@ -27,15 +28,20 @@ variable "vm_name" {
   default = "dotfiles-golden-gate-base"
 }
 
+variable "password" {
+  type        = string
+  sensitive   = true
+  description = "Password for the admin account: 12+ characters with letters and digits, no commas."
+}
+
 variable "ssh_public_key" {
   type        = string
   description = "Public key that vm/run-test.sh uses to reach clones of this image."
 }
 
 locals {
-  # Disposable, NAT-only test VM credentials, matching Cirrus Labs' images.
   username = "admin"
-  password = "admin"
+  password = var.password
 }
 
 source "tart-cli" "golden_gate" {

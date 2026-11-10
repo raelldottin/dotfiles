@@ -45,11 +45,14 @@ you. If an old Tart from the abandoned `cirruslabs/cli` tap is installed, the
 script replaces it.
 
 `make vm-base` builds `dotfiles-golden-gate-base` from Apple's macOS 27.2
-restore image. Tart's first-boot provisioning creates the `admin` account
-(password `admin`), automatic login, and SSH, so the build needs no keystrokes.
-Packer then enables passwordless sudo, turns off sleep and the screen lock,
-and installs a per-host SSH key from `~/.local/state/dotfiles-vm/id_ed25519`.
-The key is created on first use and is never committed. The build takes
+restore image. Tart's first-boot provisioning creates the `admin` account,
+automatic login, and SSH, so the build needs no keystrokes. Packer then enables
+passwordless sudo, turns off sleep and the screen lock, and installs a
+per-host SSH key from `~/.local/state/dotfiles-vm/id_ed25519`. Tests sign in
+with that key. The `admin` password is random for each build, because macOS 27
+requires at least 12 characters with letters and digits; it is saved in
+`~/.local/state/dotfiles-vm/admin-password` (mode 600) for unlocking the VM's
+screen by hand. Neither the key nor the password is committed. The build takes
 about 20 minutes after the download.
 
 Rebuild the image with `vm/build-base.sh --force`. To use another restore

@@ -25,7 +25,7 @@ done
 
 vm_require_apple_silicon
 vm_require_tart
-vm_require packer ssh-keygen
+vm_require packer ssh-keygen openssl
 vm_ensure_ssh_key
 
 if vm_exists "$VM_BASE_IMAGE"; then
@@ -37,11 +37,18 @@ if vm_exists "$VM_BASE_IMAGE"; then
   tart delete "$VM_BASE_IMAGE"
 fi
 
+# macOS 27 requires 12+ characters with letters and digits. Tests sign in with
+# the SSH key; the password is kept only for opening the VM's screen by hand.
+password="dotfiles1-$(openssl rand -hex 12)"
+(umask 077 && printf '%s\n' "$password" >"$VM_ADMIN_PASSWORD_FILE")
+
 template="$VM_DIR/golden-gate.pkr.hcl"
 packer_args=(
   -var "vm_name=$VM_BASE_IMAGE"
   -var "ssh_public_key=$(<"$VM_SSH_KEY.pub")"
 )
+# Pass the password through the environment so Packer masks it in its logs.
+export PKR_VAR_password="$password"
 if [[ -n "${DOTFILES_VM_IPSW:-}" ]]; then
   packer_args+=(-var "ipsw=$DOTFILES_VM_IPSW")
 fi

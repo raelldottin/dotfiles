@@ -10,6 +10,7 @@ VM_REPO_ROOT="$(cd -- "$VM_DIR/.." && pwd)"
 VM_BASE_IMAGE="${DOTFILES_VM_BASE:-dotfiles-golden-gate-base}"
 VM_STATE_DIR="${DOTFILES_VM_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles-vm}"
 VM_SSH_KEY="$VM_STATE_DIR/id_ed25519"
+VM_ADMIN_PASSWORD_FILE="$VM_STATE_DIR/admin-password"
 VM_GUEST_USER="admin"
 VM_MIN_TART_VERSION="2.33.0"
 
