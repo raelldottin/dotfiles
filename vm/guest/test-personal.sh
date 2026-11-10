@@ -29,12 +29,16 @@ as_user() {
   step "Checking the flake (docs/NIX.md)"
   run nix "${NIX_FLAGS[@]}" flake check --no-write-lock-file
 
-  step "First nix-darwin activation (docs/NIX.md)"
-  run sudo "$(command -v nix)" "${NIX_FLAGS[@]}" run nix-darwin/nix-darwin-26.05#darwin-rebuild -- \
+  # docs/NIX.md runs darwin-rebuild from the nix-darwin-26.05 branch, which
+  # Nix resolves through the GitHub API. Use the revision pinned in flake.lock
+  # instead: it needs no API lookup, so unauthenticated rate limits cannot
+  # fail the run, and it is the version the configuration is locked to.
+  step "First nix-darwin activation (docs/NIX.md, pinned nix-darwin)"
+  run sudo -H "$(command -v nix)" "${NIX_FLAGS[@]}" run --inputs-from . nix-darwin#darwin-rebuild -- \
     switch --flake .#macbook --no-write-lock-file
 
   step "Second activation with the installed darwin-rebuild"
-  run sudo /run/current-system/sw/bin/darwin-rebuild switch --flake .#macbook --no-write-lock-file
+  run sudo -H /run/current-system/sw/bin/darwin-rebuild switch --flake .#macbook --no-write-lock-file
 
   step "Fresh login shell, tmux, and Neovim"
   login_shell 'for tool in zsh tmux nvim atuin python3 brew; do printf "%s -> %s\n" "$tool" "$(command -v "$tool")"; done'

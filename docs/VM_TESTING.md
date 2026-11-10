@@ -101,8 +101,11 @@ on the image's Git.
 installers call sudo during activation. As that user it then:
 
 1. Clones the commit to `~/dotfiles` and runs `nix flake check`.
-2. Runs the first activation from `docs/NIX.md`:
-   `sudo nix run nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake .#macbook`.
+2. Runs the first activation from `docs/NIX.md`, with one difference: it runs
+   `darwin-rebuild` from the nix-darwin revision pinned in `flake.lock`
+   (`nix run --inputs-from . nix-darwin#darwin-rebuild`) instead of the
+   `nix-darwin-26.05` branch. Resolving the branch calls the GitHub API, whose
+   unauthenticated rate limit repeated test runs exhaust.
 3. Activates again with the installed `darwin-rebuild`.
 4. In fresh login shells, checks that zsh, tmux, Neovim, Atuin, Python, and
    Homebrew resolve. Neovim must come from the Home Manager profile. It also
