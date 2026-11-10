@@ -107,8 +107,9 @@ installers call sudo during activation. As that user it then:
 4. In fresh login shells, checks that zsh, tmux, Neovim, Atuin, Python, and
    Homebrew resolve. Neovim must come from the Home Manager profile. It also
    starts a tmux server and headless Neovim, and lists the installed casks.
-5. Runs `tests/check_pinned_tools.py` against the user's Home Manager profile,
-   which fails on any skipped probe.
+5. Runs `tests/check_pinned_tools.py` with Neovim and Atuin from the user's
+   Home Manager profile, which fails on any skipped probe. If the profile has
+   no zsh, the probes use zsh from the pinned nixpkgs revision.
 
 ### Work profile
 
@@ -121,9 +122,12 @@ installers call sudo during activation. As that user it then:
 3. Runs the activation command from `docs/WORK_MAC.md` twice.
 4. In fresh login shells, runs `dotfiles-work verify`, checks that
    `NVIM_APPNAME` is `nvim-work`, and starts tmux and headless Neovim.
-5. Checks that a commit under `~/Work` uses the work identity and that a
-   commit outside it is rejected.
-6. Runs `tests/check_pinned_tools.py` against `~/.nix-profile/bin`.
+5. Checks that a commit under `~/Work` uses the work identity, that a commit
+   outside it has no identity, and that the commit guard rejects it even with
+   a local identity.
+6. Runs `tests/check_pinned_tools.py` with Neovim and Atuin from
+   `~/.nix-profile/bin`. The work profile uses the system's login zsh, so the
+   probes take zsh from the pinned nixpkgs revision, as the CI fixture does.
 
 ## What a pass establishes
 

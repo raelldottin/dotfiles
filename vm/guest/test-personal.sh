@@ -48,7 +48,7 @@ as_user() {
   login_shell 'brew list --cask'
 
   step "Pinned editor/history probes with the activated tools"
-  login_shell "cd $(printf '%q' "$checkout") && python3 tests/check_pinned_tools.py $(printf '%q' "$tools")"
+  run_pinned_probes "$checkout" "$tools" "$nixpkgs_rev"
 
   step "Personal profile test passed"
 }

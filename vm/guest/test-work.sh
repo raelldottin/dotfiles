@@ -73,16 +73,29 @@ main() {
   printf '%s\n' "$email"
   [[ "${email##*$'\n'}" == "$TEST_EMAIL" ]] || fail "the commit did not use the work identity"
 
-  step "A commit outside the work root is rejected"
+  step "A commit outside the work root has no identity"
   if login_shell 'set -e
     mkdir -p ~/outside-work && cd ~/outside-work
     git init -q && printf "sample\n" > sample.txt && git add sample.txt
-    git commit -q -m "must be rejected"'; then
+    git commit -q -m "must be rejected"' >/tmp/dotfiles-vm/outside.log 2>&1; then
     fail "a commit outside the work root was accepted"
   fi
+  cat /tmp/dotfiles-vm/outside.log
+  grep -q 'empty ident name' /tmp/dotfiles-vm/outside.log ||
+    fail "the outside commit failed for an unexpected reason"
+
+  step "The commit guard rejects it even with a local identity"
+  if login_shell 'cd ~/outside-work && git -c user.name="Dotfiles VM Test" \
+    -c user.email=dotfiles-vm-test@example.invalid commit -q -m "must be rejected"' \
+    >/tmp/dotfiles-vm/guard.log 2>&1; then
+    fail "the commit guard accepted a commit outside the work root"
+  fi
+  cat /tmp/dotfiles-vm/guard.log
+  grep -q 'outside the configured work directory' /tmp/dotfiles-vm/guard.log ||
+    fail "the commit was not rejected by the work-root guard"
 
   step "Pinned editor/history probes with the activated tools"
-  login_shell "cd $(printf '%q' "$checkout") && python3 tests/check_pinned_tools.py \"\$HOME/.nix-profile/bin\""
+  run_pinned_probes "$checkout" "$HOME/.nix-profile/bin" "$nixpkgs_rev"
 
   step "Work profile test passed"
 }

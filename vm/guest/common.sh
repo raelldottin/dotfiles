@@ -111,3 +111,25 @@ login_shell() {
   printf '+ zsh -lc %q\n' "$1"
   /bin/zsh -lc "$1"
 }
+
+# Run tests/check_pinned_tools.py with the activated profile's Neovim and
+# Atuin. A profile that relies on the system's zsh gets zsh from the pinned
+# nixpkgs revision instead, as the CI fixture does.
+run_pinned_probes() {
+  local checkout="$1"
+  local profile_bin="$2"
+  local nixpkgs_rev="$3"
+  local tools
+  local zsh_bin="$profile_bin/zsh"
+
+  tools="$(mktemp -d /tmp/dotfiles-vm/pinned-tools.XXXXXX)"
+  ln -s "$profile_bin/nvim" "$tools/nvim"
+  ln -s "$profile_bin/atuin" "$tools/atuin"
+  if [[ ! -x "$zsh_bin" ]]; then
+    zsh_bin="$(nix "${NIX_FLAGS[@]}" build --no-link --print-out-paths \
+      "github:NixOS/nixpkgs/$nixpkgs_rev#zsh")/bin/zsh"
+  fi
+  ln -s "$zsh_bin" "$tools/zsh"
+  printf 'Probe tools: nvim, atuin from %s; zsh from %s\n' "$profile_bin" "$zsh_bin"
+  login_shell "cd $(printf '%q' "$checkout") && PATH=$(printf '%q' "$tools"):\$PATH python3 tests/check_pinned_tools.py $(printf '%q' "$tools")"
+}
