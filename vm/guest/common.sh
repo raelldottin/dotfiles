@@ -29,6 +29,24 @@ load_nix() {
   set -u
 }
 
+# SSH can come up before a freshly booted guest can resolve names.
+wait_for_network() {
+  local url="$1"
+  local waited=0
+
+  until curl --proto '=https' -sSfI --max-time 10 "$url" >/dev/null 2>&1; do
+    if (( waited >= 180 )); then
+      curl --proto '=https' -sSfI --max-time 10 "$url" >/dev/null || true
+      fail "the guest could not reach $url within 180 seconds"
+    fi
+    sleep 5
+    waited=$((waited + 5))
+  done
+  if (( waited > 0 )); then
+    step "Network ready after ${waited}s"
+  fi
+}
+
 # Fresh-machine Nix install. nix-darwin recommends an installer with a
 # reliable uninstaller; the Lix installer is one and the personal profile runs
 # Lix after activation.
@@ -38,6 +56,7 @@ install_nix() {
   if [[ -e /nix/var/nix/profiles/default/bin/nix ]]; then
     step "Nix is already installed"
   else
+    wait_for_network "$installer"
     step "Installing Nix from $installer"
     curl --proto '=https' --tlsv1.2 -sSfL "$installer" | sh -s -- install --no-confirm
   fi
