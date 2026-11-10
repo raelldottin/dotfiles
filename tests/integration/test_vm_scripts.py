@@ -10,9 +10,11 @@ from __future__ import annotations
 from pathlib import Path
 import os
 import shutil
+import signal
 import subprocess
 import tempfile
 import textwrap
+import time
 import unittest
 
 
@@ -39,7 +41,10 @@ FAKE_SSH = """\
 #!/usr/bin/env bash
 printf 'ssh %s\\n' "$*" >> "$FAKE_LOG"
 case "$*" in
-  *test-personal.sh* | *test-work.sh*) echo "guest output"; exit "${FAKE_GUEST_STATUS:-0}" ;;
+  *test-personal.sh* | *test-work.sh*)
+    echo "guest output"
+    [[ -z "${FAKE_GUEST_SLEEP:-}" ]] || sleep "$FAKE_GUEST_SLEEP"
+    exit "${FAKE_GUEST_STATUS:-0}" ;;
 esac
 exit 0
 """
@@ -165,6 +170,26 @@ class VmRunnerTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 3, result.stderr)
         self.assertIn("failed with status 3", result.stderr)
+        self.assertEqual(self.vms(), ["dotfiles-golden-gate-base"])
+
+    def test_hangup_during_the_guest_step_still_deletes_the_vm(self) -> None:
+        env = {**self.env, "FAKE_GUEST_SLEEP": "30"}
+        runner = subprocess.Popen(
+            ["bash", str(self.repo / "vm/run-test.sh"), "work"],
+            env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            start_new_session=True,
+        )
+        deadline = time.monotonic() + 30
+        while not any("test-work.sh" in call for call in self.calls()):
+            self.assertIsNone(runner.poll(), "the runner exited before the guest step")
+            self.assertLess(time.monotonic(), deadline, "the guest step never started")
+            time.sleep(0.1)
+        # A closing terminal signals the whole process group, as here.
+        os.killpg(runner.pid, signal.SIGHUP)
+        _, stderr = runner.communicate(timeout=20)
+
+        self.assertEqual(runner.returncode, 129, stderr)
+        self.assertTrue(any(call.startswith("tart delete dotfiles-test-work-") for call in self.calls()))
         self.assertEqual(self.vms(), ["dotfiles-golden-gate-base"])
 
     def test_keep_leaves_the_vm_for_inspection(self) -> None:
