@@ -131,6 +131,15 @@ class VmRunnerTests(unittest.TestCase):
             env=env, text=True, capture_output=True, timeout=60, check=False,
         )
 
+    @staticmethod
+    def stop_process_group(process: subprocess.Popen[str]) -> None:
+        if process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.communicate()
+
     def calls(self) -> list[str]:
         return self.log.read_text().splitlines() if self.log.exists() else []
 
@@ -172,6 +181,8 @@ class VmRunnerTests(unittest.TestCase):
         self.assertIn("failed with status 3", result.stderr)
         self.assertEqual(self.vms(), ["dotfiles-golden-gate-base"])
 
+    @unittest.skipIf(signal.getsignal(signal.SIGHUP) == signal.SIG_IGN,
+                     "SIGHUP is ignored here (for example under nohup), so bash cannot trap it")
     def test_hangup_during_the_guest_step_still_deletes_the_vm(self) -> None:
         env = {**self.env, "FAKE_GUEST_SLEEP": "30"}
         runner = subprocess.Popen(
@@ -179,6 +190,7 @@ class VmRunnerTests(unittest.TestCase):
             env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             start_new_session=True,
         )
+        self.addCleanup(self.stop_process_group, runner)
         deadline = time.monotonic() + 30
         while not any("test-work.sh" in call for call in self.calls()):
             self.assertIsNone(runner.poll(), "the runner exited before the guest step")
