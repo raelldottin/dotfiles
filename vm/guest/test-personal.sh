@@ -24,7 +24,7 @@ write_vm_flake() {
   local checkout="$1"
   local destination="$2"
   local excluded=""
-  local cask casks
+  local cask
 
   for cask in "${VM_EXCLUDED_CASKS[@]}"; do
     excluded+=" \"$cask\""
@@ -62,7 +62,7 @@ as_user() {
   local checkout="$HOME/dotfiles"
   local tools="/etc/profiles/per-user/$USER/bin"
   local vm_flake="$HOME/dotfiles-vm-flake"
-  local cask
+  local cask casks
 
   cd /
   load_nix

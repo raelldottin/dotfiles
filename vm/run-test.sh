@@ -75,7 +75,9 @@ tart_pid=""
 cleanup() {
   local status=$?
 
-  trap - EXIT INT TERM
+  # Finish deleting the clone even if another signal or a write error occurs.
+  set +e
+  trap - EXIT INT TERM HUP
   if (( keep == 1 )); then
     vm_log "Keeping $vm_name; remove it with: tart stop $vm_name; tart delete $vm_name"
   elif vm_exists "$vm_name"; then
